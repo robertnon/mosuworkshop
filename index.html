@@ -207,6 +207,55 @@
     color:var(--silk-dim);
   }
 
+  /* ---------- Toggle + dropdown reveal ---------- */
+  .toggle-row{ margin-bottom:0; }
+  .dropdown-frame{
+    margin-top:10px;
+    padding:16px;
+    border:1px solid var(--copper-dim);
+    border-radius:10px;
+    background:var(--panel-2);
+  }
+  .dropdown-frame[hidden]{ display:none; }
+  .dropdown-frame.nested{
+    margin-top:14px;
+    padding:14px;
+    border-color:var(--line);
+    background:var(--panel);
+  }
+  .dropdown-label{
+    display:block;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--silk-dim);
+    margin-bottom:10px;
+  }
+  .select-input{
+    width:100%;
+    padding:12px 40px 12px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background-color:var(--panel);
+    color:var(--silk);
+    font-family:var(--sans);
+    font-size:14.5px;
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23F0A868' stroke-width='2'><path d='M5 7l5 5 5-5'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    background-size:14px;
+  }
+  .select-input:hover{ border-color:var(--copper-dim); }
+  .select-input:focus-visible{
+    outline:2px solid var(--copper-bright);
+    outline-offset:2px;
+  }
+  .select-input option{ background:var(--panel); color:var(--silk); }
+
   .error-msg{
     display:none;
     align-items:center;
@@ -325,6 +374,15 @@
     color:var(--silk-dim);
   }
   .confirm-code span{ color:var(--silk); font-weight:600; }
+  .confirm-sync-status{
+    margin:0 0 14px;
+    font-family:var(--mono);
+    font-size:11.5px;
+  }
+  .confirm-sync-status.pending{ color:var(--silk-dim); }
+  .confirm-sync-status.ok{ color:var(--ok); }
+  .confirm-sync-status.warn{ color:var(--silk-dim); }
+  .confirm-sync-status.fail{ color:var(--required); }
   .copy-btn{
     width:100%;
     padding:10px;
@@ -425,34 +483,36 @@
             <span class="field-title">ปุ่มหลัง<span class="req">*</span></span>
           </span>
         </legend>
-        <div class="options">
-          <label class="option">
-            <input type="radio" name="paddles" value="none" data-price="0">
-            <span class="option-text">
-              <span class="option-title">ไม่มี</span>
-              <span class="option-sub">ฝาหลังมาตรฐาน</span>
-            </span>
-            <span class="option-price included">รวมแล้ว</span>
-          </label>
-          <label class="option">
-            <input type="radio" name="paddles" value="one" data-price="300">
-            <span class="option-text">
-              <span class="option-title">1 ปุ่ม</span>
-              <span class="option-sub">เพิ่มปุ่มหลัง 1 ตำแหน่ง</span>
-            </span>
-            <span class="option-price">+฿300</span>
-          </label>
-          <label class="option">
-            <input type="radio" name="paddles" value="two" data-price="500">
-            <span class="option-text">
-              <span class="option-title">2 ปุ่ม</span>
-              <span class="option-sub">เพิ่มปุ่มหลัง 2 ตำแหน่ง</span>
-            </span>
-            <span class="option-price">+฿500</span>
-          </label>
+
+        <label class="option toggle-row">
+          <input type="checkbox" id="paddlesToggle">
+          <span class="option-text">
+            <span class="option-title">ต้องการเพิ่มปุ่มหลัง</span>
+            <span class="option-sub">ไม่ติ๊ก = ไม่เพิ่มปุ่มหลัง (ฝาหลังมาตรฐาน)</span>
+          </span>
+        </label>
+
+        <div class="dropdown-frame" id="paddlesFrame" hidden>
+          <label class="dropdown-label" for="paddlesSelect">เลือกจำนวนปุ่มหลัง</label>
+          <select class="select-input" id="paddlesSelect">
+            <option value="" disabled selected>เลือกจำนวน...</option>
+            <option value="one">1 ปุ่ม — +฿300</option>
+            <option value="two">2 ปุ่ม — +฿500</option>
+          </select>
+
+          <div class="dropdown-frame nested" id="paddleSideFrame" hidden>
+            <label class="dropdown-label" for="paddleSideSelect">เลือกด้านที่ต้องการติดตั้ง (1 ปุ่ม)</label>
+            <select class="select-input" id="paddleSideSelect">
+              <option value="" disabled selected>เลือกด้าน...</option>
+              <option value="left">ด้านซ้าย (L)</option>
+              <option value="right">ด้านขวา (R)</option>
+            </select>
+            <p class="error-msg" id="paddlesSideError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกด้านที่ต้องการติดตั้งปุ่มหลัง</p>
+          </div>
         </div>
+
         <p class="field-note">※ฝาหลังของคอนโทรลเลอร์ที่ส่งมาจะถูกเปลี่ยนตามจำนวนปุ่มที่เลือก โดยไม่ขึ้นกับสภาพเดิมก่อนส่ง</p>
-        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกจำนวนปุ่มหลัง</p>
+        <p class="error-msg" id="paddlesCountError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกจำนวนปุ่มหลัง</p>
       </fieldset>
 
       <!-- 03 Trigger / Bumper -->
@@ -637,6 +697,7 @@
         <div class="confirm-box hidden" id="confirmBox">
           <p class="confirm-title">✓ รับคำสั่งซื้อแล้ว</p>
           <p class="confirm-code">เลขที่คำสั่งซื้อ: <span id="orderCode"></span></p>
+          <p class="confirm-sync-status" id="syncStatus"></p>
           <button type="button" class="copy-btn" id="copyBtn">คัดลอกสรุปคำสั่งซื้อ</button>
         </div>
       </div>
@@ -652,6 +713,12 @@
 
 <script>
 (function(){
+  // ==== ตั้งค่าตรงนี้ ====
+  // วางลิงก์ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่ได้จากขั้นตอน Deploy
+  // ถ้ายังไม่ใส่ ระบบจะยังใช้งานได้ปกติ แค่จะไม่ส่งข้อมูลเข้า Google Sheets อัตโนมัติ
+  const ORDER_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDK0CNLKnR4byEFwDmwwZy3BvQUOoCa_1m_0Z3_fZMgwwWsrUiOjpvxM-Dsnej6TEF/exec';
+  // =======================
+
   const priceData = {
     pcb: {
       suiovoi:    { label:'SuiOvOi 8K',    price:2000 },
@@ -687,13 +754,12 @@
   };
 
   const requiredGroups = [
-    { name:'pcb',     fieldId:'field-pcb',     label:'บอร์ด PCB' },
-    { name:'paddles', fieldId:'field-paddles', label:'ปุ่มหลัง' },
-    { name:'triggerBumper', fieldId:'field-trigger', label:'Clicky Trigger/Bumper' },
-    { name:'faceButtons', fieldId:'field-face', label:'D-pad / Full Face Clicky Button' },
-    { name:'analogL', fieldId:'field-analogL', label:'Analog ซ้าย' },
-    { name:'analogR', fieldId:'field-analogR', label:'Analog ขวา' },
-    { name:'ps4shell', fieldId:'field-ps4shell', label:'กรอบคอนโทรลเลอร์ PS4' }
+    { name:'pcb',     fieldId:'field-pcb',     label:'บอร์ด PCB',     getValue:function(){ return getSelected('pcb'); } },
+    { name:'triggerBumper', fieldId:'field-trigger', label:'Clicky Trigger/Bumper', getValue:function(){ return getSelected('triggerBumper'); } },
+    { name:'faceButtons', fieldId:'field-face', label:'D-pad / Full Face Clicky Button', getValue:function(){ return getSelected('faceButtons'); } },
+    { name:'analogL', fieldId:'field-analogL', label:'Analog ซ้าย', getValue:function(){ return getSelected('analogL'); } },
+    { name:'analogR', fieldId:'field-analogR', label:'Analog ขวา', getValue:function(){ return getSelected('analogR'); } },
+    { name:'ps4shell', fieldId:'field-ps4shell', label:'กรอบคอนโทรลเลอร์ PS4', getValue:function(){ return getSelected('ps4shell'); } }
   ];
 
   const form = document.getElementById('orderForm');
@@ -714,6 +780,20 @@
     return el ? el.value : null;
   }
 
+  function getPaddlesValue(){
+    const toggle = document.getElementById('paddlesToggle');
+    if(!toggle || !toggle.checked) return 'none';
+    const sel = document.getElementById('paddlesSelect');
+    return sel && sel.value ? sel.value : null;
+  }
+
+  function getPaddleSideValue(){
+    const sel = document.getElementById('paddlesSelect');
+    if(!sel || sel.value !== 'one') return 'na';
+    const sideSel = document.getElementById('paddleSideSelect');
+    return sideSel && sideSel.value ? sideSel.value : null;
+  }
+
   function currency(n){
     return '฿' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
@@ -732,16 +812,30 @@
     const items = [];
     let total = 0;
 
-    ['pcb','paddles'].forEach(function(group){
-      const val = getSelected(group);
-      if(val){
-        const d = priceData[group][val];
-        items.push({ name:d.label, price:d.price });
-        total += d.price;
-      } else {
-        items.push({ name:null, price:null });
+    const pcbVal = getSelected('pcb');
+    if(pcbVal){
+      const d = priceData.pcb[pcbVal];
+      items.push({ name:d.label, price:d.price });
+      total += d.price;
+    } else {
+      items.push({ name:null, price:null });
+    }
+
+    const paddlesVal = getPaddlesValue();
+    if(paddlesVal){
+      const d = priceData.paddles[paddlesVal];
+      let paddlesLabel = d.label;
+      if(paddlesVal === 'one'){
+        const sideVal = getPaddleSideValue();
+        if(sideVal && sideVal !== 'na'){
+          paddlesLabel += sideVal === 'left' ? ' (ด้านซ้าย)' : ' (ด้านขวา)';
+        }
       }
-    });
+      items.push({ name:paddlesLabel, price:d.price });
+      total += d.price;
+    } else {
+      items.push({ name:null, price:null });
+    }
 
     const triggerVal = getSelected('triggerBumper');
     if(triggerVal){
@@ -785,8 +879,23 @@
     });
   }
 
-  form.querySelectorAll('input').forEach(function(el){
+  form.querySelectorAll('input, select').forEach(function(el){
     el.addEventListener('change', computeAndRender);
+  });
+
+  const paddlesToggle = document.getElementById('paddlesToggle');
+  const paddlesFrame = document.getElementById('paddlesFrame');
+  paddlesToggle.addEventListener('change', function(){
+    paddlesFrame.hidden = !paddlesToggle.checked;
+  });
+
+  const paddlesSelect = document.getElementById('paddlesSelect');
+  const paddleSideFrame = document.getElementById('paddleSideFrame');
+  const paddleSideSelect = document.getElementById('paddleSideSelect');
+  paddlesSelect.addEventListener('change', function(){
+    const showSide = paddlesSelect.value === 'one';
+    paddleSideFrame.hidden = !showSide;
+    if(!showSide){ paddleSideSelect.value = ''; }
   });
 
   submitBtn.addEventListener('click', function(){
@@ -794,7 +903,7 @@
     let allValid = true;
 
     requiredGroups.forEach(function(g){
-      const val = getSelected(g.name);
+      const val = g.getValue();
       const fieldEl = document.getElementById(g.fieldId);
       if(!val){
         fieldEl.classList.add('invalid');
@@ -804,6 +913,36 @@
         fieldEl.classList.remove('invalid');
       }
     });
+
+    // Field 02 has two independent conditions: paddle count, and side (only when count = 1)
+    const paddlesFieldEl = document.getElementById('field-paddles');
+    const paddlesCountError = document.getElementById('paddlesCountError');
+    const paddlesSideError = document.getElementById('paddlesSideError');
+    const countVal = getPaddlesValue();
+    const sideVal = getPaddleSideValue();
+    let paddlesOk = true;
+
+    if(!countVal){
+      paddlesCountError.style.display = 'flex';
+      paddlesOk = false;
+    } else {
+      paddlesCountError.style.display = 'none';
+    }
+
+    if(sideVal === null){
+      paddlesSideError.style.display = 'flex';
+      paddlesOk = false;
+    } else {
+      paddlesSideError.style.display = 'none';
+    }
+
+    if(!paddlesOk){
+      paddlesFieldEl.classList.add('invalid');
+      allValid = false;
+      if(!firstInvalid) firstInvalid = paddlesFieldEl;
+    } else {
+      paddlesFieldEl.classList.remove('invalid');
+    }
 
     if(!allValid){
       confirmBox.classList.add('hidden');
@@ -815,6 +954,7 @@
     orderCodeEl.textContent = code;
     confirmBox.classList.remove('hidden');
     confirmBox.dataset.code = code;
+    sendOrderToSheet(code);
   });
 
   function buildOrderText(code){
@@ -830,6 +970,40 @@
     lines.push('------------------------------');
     lines.push('ยอดรวมทั้งหมด: ' + currency(lastTotal));
     return lines.join('\n');
+  }
+
+  function sendOrderToSheet(code){
+    const statusEl = document.getElementById('syncStatus');
+    if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
+      if(statusEl){
+        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)';
+        statusEl.className = 'confirm-sync-status warn';
+      }
+      return;
+    }
+    if(statusEl){
+      statusEl.textContent = 'กำลังบันทึกลง Google Sheets...';
+      statusEl.className = 'confirm-sync-status pending';
+    }
+    const payload = { orderCode: code, summary: buildOrderText(code), total: lastTotal };
+    fetch(ORDER_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(){
+        if(statusEl){
+          statusEl.textContent = '✓ บันทึกลง Google Sheets แล้ว';
+          statusEl.className = 'confirm-sync-status ok';
+        }
+      })
+      .catch(function(){
+        if(statusEl){
+          statusEl.textContent = '⚠ บันทึกอัตโนมัติไม่สำเร็จ กรุณากดคัดลอกแล้วส่งเอง';
+          statusEl.className = 'confirm-sync-status fail';
+        }
+      });
   }
 
   copyBtn.addEventListener('click', function(){
