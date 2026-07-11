@@ -23,7 +23,7 @@
     --mono:'IBM Plex Mono', ui-monospace, monospace;
     --sans:'IBM Plex Sans Thai','IBM Plex Sans', system-ui, sans-serif;
   }
-
+ 
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
   body{
@@ -35,15 +35,15 @@
       radial-gradient(circle at 1px 1px, rgba(201,122,61,0.07) 1px, transparent 1px);
     background-size: 28px 28px;
   }
-
+ 
   a{ color:var(--copper-text); }
-
+ 
   .page{
     max-width:1180px;
     margin:0 auto;
     padding:56px 24px 140px;
   }
-
+ 
   /* ---------- Hero ---------- */
   .hero{
     max-width:720px;
@@ -82,7 +82,7 @@
     margin:20px 0 0;
   }
   .legend-help .req{ margin-left:0; margin-right:4px; }
-
+ 
   /* ---------- Layout ---------- */
   .layout{
     display:grid;
@@ -94,7 +94,7 @@
     .layout{ grid-template-columns: 1fr; }
     .summary-col{ position:static; }
   }
-
+ 
   .form-col{
     border-left:1px solid var(--line);
     padding-left:24px;
@@ -102,7 +102,7 @@
   @media (max-width:560px){
     .form-col{ padding-left:16px; }
   }
-
+ 
   /* ---------- Field / fieldset ---------- */
   fieldset.field{
     border:none;
@@ -111,7 +111,7 @@
     border-bottom:1px solid var(--line);
   }
   fieldset.field:last-of-type{ border-bottom:none; padding-bottom:6px; }
-
+ 
   .field-legend{
     display:flex;
     align-items:flex-start;
@@ -153,13 +153,13 @@
     color:var(--silk);
   }
   .req{ color:var(--required); margin-left:3px; }
-
+ 
   .options{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
     gap:10px;
   }
-
+ 
   .option{
     display:flex;
     align-items:center;
@@ -199,14 +199,14 @@
     flex:0 0 auto;
   }
   .option-price.included{ color:var(--silk-dim); font-weight:500; font-size:11.5px; }
-
+ 
   .field-note{
     margin:16px 0 0;
     font-size:12.5px;
     line-height:1.7;
     color:var(--silk-dim);
   }
-
+ 
   /* ---------- Toggle + dropdown reveal ---------- */
   .toggle-row{ margin-bottom:0; }
   .dropdown-frame{
@@ -255,7 +255,7 @@
     outline-offset:2px;
   }
   .select-input option{ background:var(--panel); color:var(--silk); }
-
+ 
   .error-msg{
     display:none;
     align-items:center;
@@ -265,10 +265,10 @@
     font-size:13px;
   }
   .field.invalid .error-msg{ display:flex; }
-
+ 
   /* ---------- BOM / summary panel ---------- */
   .summary-col{ position:sticky; top:32px; }
-
+ 
   .bom-panel{
     position:relative;
     background:var(--panel-2);
@@ -288,7 +288,7 @@
     background-position:left top;
     background-repeat:repeat-x;
   }
-
+ 
   .bom-eyebrow{
     font-family:var(--mono);
     font-size:11px;
@@ -304,7 +304,7 @@
     margin:0 0 20px;
     color:var(--silk);
   }
-
+ 
   .bom-list{ display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
   .bom-row{
     display:flex;
@@ -324,7 +324,7 @@
     min-width:8px;
   }
   .bom-price{ flex:0 0 auto; font-weight:600; }
-
+ 
   .bom-total-row{
     display:flex;
     justify-content:space-between;
@@ -340,7 +340,69 @@
     font-weight:700;
     color:var(--copper-bright);
   }
-
+ 
+  /* ---------- Discount code ---------- */
+  .discount-block{ margin:2px 0 18px; }
+  .discount-row{ display:flex; gap:8px; }
+  .discount-input{
+    flex:1 1 auto;
+    min-width:0;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--panel);
+    color:var(--silk);
+    font-family:var(--mono);
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  .discount-input::placeholder{ color:var(--silk-dim); text-transform:none; letter-spacing:normal; }
+  .discount-input:focus-visible{
+    outline:2px solid var(--copper-bright);
+    outline-offset:2px;
+    border-color:var(--copper-dim);
+  }
+  .discount-input:disabled{ opacity:0.65; cursor:not-allowed; }
+  .discount-btn{
+    flex:0 0 auto;
+    padding:11px 16px;
+    border:1px solid var(--copper-dim);
+    border-radius:8px;
+    background:var(--panel);
+    color:var(--copper-text);
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .discount-btn:hover{ border-color:var(--copper); background:var(--panel-2); }
+  .discount-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:2px; }
+  .discount-btn.applied{ border-color:var(--ok); color:var(--ok); }
+  .discount-btn.applied:hover{ background:rgba(127,211,162,0.12); }
+  .discount-msg{
+    margin:8px 0 0;
+    font-family:var(--mono);
+    font-size:12px;
+    min-height:14px;
+  }
+  .discount-msg.ok{ color:var(--ok); }
+  .discount-msg.fail{ color:var(--required); }
+ 
+  .bom-subtotal-row, .bom-discount-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--silk-dim);
+    padding-top:10px;
+  }
+  .bom-discount-row{ color:var(--ok); }
+  .bom-subtotal-row.hidden, .bom-discount-row.hidden{ display:none; }
+ 
   .submit-btn{
     width:100%;
     padding:14px;
@@ -357,7 +419,7 @@
   .submit-btn:hover{ filter:brightness(1.08); }
   .submit-btn:active{ transform:scale(0.99); }
   .submit-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:3px; }
-
+ 
   .confirm-box{
     margin-top:16px;
     padding:16px;
@@ -397,7 +459,7 @@
     transition:background .15s ease;
   }
   .copy-btn:hover{ background:rgba(127,211,162,0.12); }
-
+ 
   /* ---------- Mobile total pill ---------- */
   .mobile-pill{
     display:none;
@@ -424,26 +486,26 @@
     }
     .mobile-pill-label{ font-family:var(--sans); font-weight:600; font-size:12.5px; opacity:0.75; }
   }
-
+ 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
   }
 </style>
 </head>
 <body>
-
+ 
 <div class="page">
-
+ 
   <header class="hero">
     <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
     <h1>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</h1>
     <p>เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
     <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
   </header>
-
+ 
   <div class="layout">
     <form class="form-col" id="orderForm">
-
+ 
       <!-- 01 PCB -->
       <fieldset class="field" id="field-pcb">
         <legend class="field-legend">
@@ -473,7 +535,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกบอร์ด PCB</p>
       </fieldset>
-
+ 
       <!-- 02 Paddles -->
       <fieldset class="field" id="field-paddles">
         <legend class="field-legend">
@@ -483,7 +545,7 @@
             <span class="field-title">ปุ่มหลัง<span class="req">*</span></span>
           </span>
         </legend>
-
+ 
         <label class="option toggle-row">
           <input type="checkbox" id="paddlesToggle">
           <span class="option-text">
@@ -491,7 +553,7 @@
             <span class="option-sub">ไม่ติ๊ก = ไม่เพิ่มปุ่มหลัง (ฝาหลังมาตรฐาน)</span>
           </span>
         </label>
-
+ 
         <div class="dropdown-frame" id="paddlesFrame" hidden>
           <label class="dropdown-label" for="paddlesSelect">เลือกจำนวนปุ่มหลัง</label>
           <select class="select-input" id="paddlesSelect">
@@ -499,7 +561,7 @@
             <option value="one">1 ปุ่ม — +฿300</option>
             <option value="two">2 ปุ่ม — +฿500</option>
           </select>
-
+ 
           <div class="dropdown-frame nested" id="paddleSideFrame" hidden>
             <label class="dropdown-label" for="paddleSideSelect">เลือกด้านที่ต้องการติดตั้ง (1 ปุ่ม)</label>
             <select class="select-input" id="paddleSideSelect">
@@ -510,11 +572,11 @@
             <p class="error-msg" id="paddlesSideError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกด้านที่ต้องการติดตั้งปุ่มหลัง</p>
           </div>
         </div>
-
+ 
         <p class="field-note">※ฝาหลังของคอนโทรลเลอร์ที่ส่งมาจะถูกเปลี่ยนตามจำนวนปุ่มที่เลือก โดยไม่ขึ้นกับสภาพเดิมก่อนส่ง</p>
         <p class="error-msg" id="paddlesCountError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกจำนวนปุ่มหลัง</p>
       </fieldset>
-
+ 
       <!-- 03 Trigger / Bumper -->
       <fieldset class="field" id="field-trigger">
         <legend class="field-legend">
@@ -544,7 +606,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Clicky Trigger/Bumper</p>
       </fieldset>
-
+ 
       <!-- 04 D-pad / Full Face buttons -->
       <fieldset class="field" id="field-face">
         <legend class="field-legend">
@@ -574,7 +636,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก D-pad หรือ Full Face Clicky Button</p>
       </fieldset>
-
+ 
       <!-- 05 Analog L -->
       <fieldset class="field" id="field-analogL">
         <legend class="field-legend">
@@ -612,7 +674,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Analog ซ้าย</p>
       </fieldset>
-
+ 
       <!-- 06 Analog R -->
       <fieldset class="field" id="field-analogR">
         <legend class="field-legend">
@@ -650,7 +712,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Analog ขวา</p>
       </fieldset>
-
+ 
       <!-- 07 PS4 Shell -->
       <fieldset class="field" id="field-ps4shell">
         <legend class="field-legend">
@@ -681,14 +743,33 @@
         <p class="field-note">※หากเลือก "ส่งจอยมาให้ทำ" กรุณาแนบคอนโทรลเลอร์ PS4 มาพร้อมพัสดุที่จัดส่ง</p>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกตัวเลือกกรอบคอนโทรลเลอร์ PS4</p>
       </fieldset>
-
+ 
     </form>
-
+ 
     <aside class="summary-col" id="summaryCol">
       <div class="bom-panel">
         <span class="bom-eyebrow">Bill of Materials</span>
         <h2 class="bom-title">สรุปรายการสั่งซื้อ</h2>
         <div class="bom-list" id="bomList"></div>
+ 
+        <div class="discount-block">
+          <label class="dropdown-label" for="discountInput">โค้ดส่วนลด (ถ้ามี)</label>
+          <div class="discount-row">
+            <input type="text" class="discount-input" id="discountInput" placeholder="กรอกโค้ดส่วนลด" autocomplete="off">
+            <button type="button" class="discount-btn" id="discountBtn">ใช้โค้ด</button>
+          </div>
+          <p class="discount-msg" id="discountMsg"></p>
+        </div>
+ 
+        <div class="bom-subtotal-row hidden" id="subtotalRow">
+          <span>ราคารวมก่อนลด</span>
+          <span id="subtotalValue">฿0</span>
+        </div>
+        <div class="bom-discount-row hidden" id="discountAppliedRow">
+          <span id="discountAppliedLabel">ส่วนลด</span>
+          <span id="discountAppliedValue">-฿0</span>
+        </div>
+ 
         <div class="bom-total-row">
           <span>ยอดรวมทั้งหมด</span>
           <span class="bom-total-value" id="bomTotal">฿0</span>
@@ -703,22 +784,31 @@
       </div>
     </aside>
   </div>
-
+ 
 </div>
-
+ 
 <button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
   <span class="mobile-pill-label">รวม</span>
   <span id="mobilePillTotal">฿0</span>
 </button>
-
+ 
 <script>
 (function(){
   // ==== ตั้งค่าตรงนี้ ====
   // วางลิงก์ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่ได้จากขั้นตอน Deploy
   // ถ้ายังไม่ใส่ ระบบจะยังใช้งานได้ปกติ แค่จะไม่ส่งข้อมูลเข้า Google Sheets อัตโนมัติ
   const ORDER_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDK0CNLKnR4byEFwDmwwZy3BvQUOoCa_1m_0Z3_fZMgwwWsrUiOjpvxM-Dsnej6TEF/exec';
+ 
+  // รายชื่อโค้ดส่วนลด: 'โค้ด' (พิมพ์ใหญ่ทั้งหมด) : เปอร์เซ็นต์ส่วนลด
+  // เพิ่ม/ลบ/แก้ไขโค้ดได้ตรงนี้ — ตรวจสอบฝั่ง browser เท่านั้น ไม่ได้ผูกกับฐานข้อมูลจริง
+  // (ลูกค้าที่เปิดดู source code ของหน้านี้จะเห็นโค้ดทั้งหมดได้)
+  const DISCOUNT_CODES = 
+  {
+    'WELCOME10': 10,
+    'XZERHUMYAI10': 10
+  };
   // =======================
-
+ 
   const priceData = {
     pcb: {
       suiovoi:    { label:'SuiOvOi 8K',    price:2000 },
@@ -752,7 +842,7 @@
       noController:   { label:'ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)',     price:400 }
     }
   };
-
+ 
   const requiredGroups = [
     { name:'pcb',     fieldId:'field-pcb',     label:'บอร์ด PCB',     getValue:function(){ return getSelected('pcb'); } },
     { name:'triggerBumper', fieldId:'field-trigger', label:'Clicky Trigger/Bumper', getValue:function(){ return getSelected('triggerBumper'); } },
@@ -761,7 +851,7 @@
     { name:'analogR', fieldId:'field-analogR', label:'Analog ขวา', getValue:function(){ return getSelected('analogR'); } },
     { name:'ps4shell', fieldId:'field-ps4shell', label:'กรอบคอนโทรลเลอร์ PS4', getValue:function(){ return getSelected('ps4shell'); } }
   ];
-
+ 
   const form = document.getElementById('orderForm');
   const bomList = document.getElementById('bomList');
   const bomTotalEl = document.getElementById('bomTotal');
@@ -770,34 +860,45 @@
   const confirmBox = document.getElementById('confirmBox');
   const orderCodeEl = document.getElementById('orderCode');
   const copyBtn = document.getElementById('copyBtn');
+  const discountInput = document.getElementById('discountInput');
+  const discountBtn = document.getElementById('discountBtn');
+  const discountMsg = document.getElementById('discountMsg');
+  const subtotalRow = document.getElementById('subtotalRow');
+  const subtotalValueEl = document.getElementById('subtotalValue');
+  const discountAppliedRow = document.getElementById('discountAppliedRow');
+  const discountAppliedLabel = document.getElementById('discountAppliedLabel');
+  const discountAppliedValue = document.getElementById('discountAppliedValue');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+ 
   let lastItems = [];
   let lastTotal = 0;
-
+  let lastSubtotal = 0;
+  let lastDiscountAmount = 0;
+  let appliedDiscount = null; // { code, percent } เมื่อใช้โค้ดส่วนลดสำเร็จ
+ 
   function getSelected(name){
     const el = form.querySelector('input[name="' + name + '"]:checked');
     return el ? el.value : null;
   }
-
+ 
   function getPaddlesValue(){
     const toggle = document.getElementById('paddlesToggle');
     if(!toggle || !toggle.checked) return 'none';
     const sel = document.getElementById('paddlesSelect');
     return sel && sel.value ? sel.value : null;
   }
-
+ 
   function getPaddleSideValue(){
     const sel = document.getElementById('paddlesSelect');
     if(!sel || sel.value !== 'one') return 'na';
     const sideSel = document.getElementById('paddleSideSelect');
     return sideSel && sideSel.value ? sideSel.value : null;
   }
-
+ 
   function currency(n){
     return '฿' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
-
+ 
   function rowHtml(name, price){
     if(name === null){
       return '<div class="bom-row muted"><span class="bom-name">— ยังไม่ได้เลือก —</span></div>';
@@ -807,11 +908,11 @@
            '<span class="bom-dots"></span>' +
            '<span class="bom-price">' + priceLabel + '</span></div>';
   }
-
+ 
   function computeAndRender(){
     const items = [];
     let total = 0;
-
+ 
     const pcbVal = getSelected('pcb');
     if(pcbVal){
       const d = priceData.pcb[pcbVal];
@@ -820,7 +921,7 @@
     } else {
       items.push({ name:null, price:null });
     }
-
+ 
     const paddlesVal = getPaddlesValue();
     if(paddlesVal){
       const d = priceData.paddles[paddlesVal];
@@ -836,7 +937,7 @@
     } else {
       items.push({ name:null, price:null });
     }
-
+ 
     const triggerVal = getSelected('triggerBumper');
     if(triggerVal){
       const d = priceData.triggerBumper[triggerVal];
@@ -845,7 +946,7 @@
     } else {
       items.push({ name:null, price:null });
     }
-
+ 
     const faceVal = getSelected('faceButtons');
     if(faceVal){
       const d = priceData.faceButtons[faceVal];
@@ -854,7 +955,7 @@
     } else {
       items.push({ name:null, price:null });
     }
-
+ 
     ['analogL','analogR','ps4shell'].forEach(function(group){
       const val = getSelected(group);
       if(val){
@@ -865,30 +966,49 @@
         items.push({ name:null, price:null });
       }
     });
-
+ 
     lastItems = items;
-    lastTotal = total;
-
+    lastSubtotal = total;
+ 
+    let discountAmount = 0;
+    if(appliedDiscount){
+      discountAmount = Math.round(total * appliedDiscount.percent / 100);
+    }
+    lastDiscountAmount = discountAmount;
+    lastTotal = total - discountAmount;
+ 
     bomList.innerHTML = items.map(function(it){ return rowHtml(it.name, it.price); }).join('');
-    bomTotalEl.textContent = currency(total);
-    mobilePillTotal.textContent = currency(total);
-
+ 
+    if(appliedDiscount){
+      subtotalRow.classList.remove('hidden');
+      subtotalValueEl.textContent = currency(lastSubtotal);
+      discountAppliedRow.classList.remove('hidden');
+      discountAppliedLabel.textContent = 'ส่วนลด (' + appliedDiscount.code + ' -' + appliedDiscount.percent + '%)';
+      discountAppliedValue.textContent = '-' + currency(discountAmount);
+    } else {
+      subtotalRow.classList.add('hidden');
+      discountAppliedRow.classList.add('hidden');
+    }
+ 
+    bomTotalEl.textContent = currency(lastTotal);
+    mobilePillTotal.textContent = currency(lastTotal);
+ 
     document.querySelectorAll('.option').forEach(function(opt){
       const input = opt.querySelector('input');
       opt.classList.toggle('selected', !!(input && input.checked));
     });
   }
-
+ 
   form.querySelectorAll('input, select').forEach(function(el){
     el.addEventListener('change', computeAndRender);
   });
-
+ 
   const paddlesToggle = document.getElementById('paddlesToggle');
   const paddlesFrame = document.getElementById('paddlesFrame');
   paddlesToggle.addEventListener('change', function(){
     paddlesFrame.hidden = !paddlesToggle.checked;
   });
-
+ 
   const paddlesSelect = document.getElementById('paddlesSelect');
   const paddleSideFrame = document.getElementById('paddleSideFrame');
   const paddleSideSelect = document.getElementById('paddleSideSelect');
@@ -897,11 +1017,56 @@
     paddleSideFrame.hidden = !showSide;
     if(!showSide){ paddleSideSelect.value = ''; }
   });
-
+ 
+  function applyDiscount(){
+    const raw = discountInput.value.trim().toUpperCase();
+    if(!raw){
+      discountMsg.textContent = 'กรุณากรอกโค้ดส่วนลด';
+      discountMsg.className = 'discount-msg fail';
+      return;
+    }
+    const percent = DISCOUNT_CODES[raw];
+    if(!percent){
+      discountMsg.textContent = 'โค้ดนี้ไม่ถูกต้องหรือหมดอายุแล้ว';
+      discountMsg.className = 'discount-msg fail';
+      return;
+    }
+    appliedDiscount = { code: raw, percent: percent };
+    discountInput.value = raw;
+    discountInput.disabled = true;
+    discountBtn.textContent = 'ยกเลิกโค้ด';
+    discountBtn.classList.add('applied');
+    discountMsg.textContent = '✓ ใช้โค้ด ' + raw + ' ส่วนลด ' + percent + '% แล้ว';
+    discountMsg.className = 'discount-msg ok';
+    computeAndRender();
+  }
+ 
+  function removeDiscount(){
+    appliedDiscount = null;
+    discountInput.value = '';
+    discountInput.disabled = false;
+    discountBtn.textContent = 'ใช้โค้ด';
+    discountBtn.classList.remove('applied');
+    discountMsg.textContent = '';
+    discountMsg.className = 'discount-msg';
+    computeAndRender();
+  }
+ 
+  discountBtn.addEventListener('click', function(){
+    if(appliedDiscount){ removeDiscount(); } else { applyDiscount(); }
+  });
+ 
+  discountInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      if(!appliedDiscount){ applyDiscount(); }
+    }
+  });
+ 
   submitBtn.addEventListener('click', function(){
     let firstInvalid = null;
     let allValid = true;
-
+ 
     requiredGroups.forEach(function(g){
       const val = g.getValue();
       const fieldEl = document.getElementById(g.fieldId);
@@ -913,7 +1078,7 @@
         fieldEl.classList.remove('invalid');
       }
     });
-
+ 
     // Field 02 has two independent conditions: paddle count, and side (only when count = 1)
     const paddlesFieldEl = document.getElementById('field-paddles');
     const paddlesCountError = document.getElementById('paddlesCountError');
@@ -921,21 +1086,21 @@
     const countVal = getPaddlesValue();
     const sideVal = getPaddleSideValue();
     let paddlesOk = true;
-
+ 
     if(!countVal){
       paddlesCountError.style.display = 'flex';
       paddlesOk = false;
     } else {
       paddlesCountError.style.display = 'none';
     }
-
+ 
     if(sideVal === null){
       paddlesSideError.style.display = 'flex';
       paddlesOk = false;
     } else {
       paddlesSideError.style.display = 'none';
     }
-
+ 
     if(!paddlesOk){
       paddlesFieldEl.classList.add('invalid');
       allValid = false;
@@ -943,20 +1108,20 @@
     } else {
       paddlesFieldEl.classList.remove('invalid');
     }
-
+ 
     if(!allValid){
       confirmBox.classList.add('hidden');
       firstInvalid.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'center' });
       return;
     }
-
+ 
     const code = 'SO-' + Math.random().toString(36).slice(2,8).toUpperCase();
     orderCodeEl.textContent = code;
     confirmBox.classList.remove('hidden');
     confirmBox.dataset.code = code;
     sendOrderToSheet(code);
   });
-
+ 
   function buildOrderText(code){
     const lines = [
       'ใบสรุปคำสั่งซื้อ (BOM) — ' + code,
@@ -968,24 +1133,36 @@
       lines.push(it.name + ' — ' + priceLabel);
     });
     lines.push('------------------------------');
+    if(appliedDiscount){
+      lines.push('ราคารวมก่อนลด: ' + currency(lastSubtotal));
+      lines.push('ส่วนลด (' + appliedDiscount.code + ' -' + appliedDiscount.percent + '%): -' + currency(lastDiscountAmount));
+    }
     lines.push('ยอดรวมทั้งหมด: ' + currency(lastTotal));
     return lines.join('\n');
   }
-
+ 
   function sendOrderToSheet(code){
     const statusEl = document.getElementById('syncStatus');
     if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
       if(statusEl){
-        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)';
+        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)'; //ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)
         statusEl.className = 'confirm-sync-status warn';
       }
       return;
     }
     if(statusEl){
-      statusEl.textContent = 'กำลังบันทึกลง Google Sheets...';
+      statusEl.textContent = 'กำลังส่งข้อมูลการสั่งซื้อ..'; // กำลังบันทึกลง Google Sheets...
       statusEl.className = 'confirm-sync-status pending';
     }
-    const payload = { orderCode: code, summary: buildOrderText(code), total: lastTotal };
+    const payload = {
+      orderCode: code,
+      summary: buildOrderText(code),
+      subtotal: lastSubtotal,
+      discountCode: appliedDiscount ? appliedDiscount.code : '',
+      discountPercent: appliedDiscount ? appliedDiscount.percent : 0,
+      discountAmount: lastDiscountAmount,
+      total: lastTotal
+    };
     fetch(ORDER_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -994,18 +1171,18 @@
       .then(function(res){ return res.json(); })
       .then(function(){
         if(statusEl){
-          statusEl.textContent = '✓ บันทึกลง Google Sheets แล้ว';
+          statusEl.textContent = '✓ ส่งคำสั่งซื้อแล้ว :)';
           statusEl.className = 'confirm-sync-status ok';
         }
       })
       .catch(function(){
         if(statusEl){
-          statusEl.textContent = '⚠ บันทึกอัตโนมัติไม่สำเร็จ กรุณากดคัดลอกแล้วส่งเอง';
+          statusEl.textContent = '⚠ ส่งคำสั่งซื้อไม่สำเร็จ กรุณาติดต่อ @discord mosudesu1';
           statusEl.className = 'confirm-sync-status fail';
         }
       });
   }
-
+ 
   copyBtn.addEventListener('click', function(){
     const code = confirmBox.dataset.code || '';
     const text = buildOrderText(code);
@@ -1019,7 +1196,7 @@
       fallbackCopy(text, done);
     }
   });
-
+ 
   function fallbackCopy(text, done){
     try{
       const ta = document.createElement('textarea');
@@ -1035,14 +1212,16 @@
       done(false);
     }
   }
-
+ 
   document.getElementById('mobilePill').addEventListener('click', function(){
     document.getElementById('summaryCol').scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'start' });
   });
-
+ 
   computeAndRender();
 })();
 </script>
-
+ 
 </body>
 </html>
+ 
+
