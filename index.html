@@ -41,7 +41,7 @@
   .page{
     max-width:1180px;
     margin:0 auto;
-    padding:56px 24px 100px;
+    padding:56px 24px 140px;
   }
 
   /* ---------- Hero ---------- */
@@ -111,7 +111,6 @@
     border-bottom:1px solid var(--line);
   }
   fieldset.field:last-of-type{ border-bottom:none; padding-bottom:6px; }
-  fieldset.field.hidden{ display:none; }
 
   .field-legend{
     display:flex;
@@ -368,44 +367,6 @@
     .mobile-pill-label{ font-family:var(--sans); font-weight:600; font-size:12.5px; opacity:0.75; }
   }
 
-  /* ---------- Contact footer ---------- */
-  .contact-bar{
-    max-width:1180px;
-    margin:64px auto 0;
-    padding:26px 24px 0;
-    border-top:1px solid var(--line);
-  }
-  .contact-inner{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .contact-label{
-    font-size:13px;
-    color:var(--silk-dim);
-    line-height:1.6;
-  }
-  .contact-tag{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-family:var(--mono);
-    font-size:13.5px;
-    padding:9px 14px;
-    border:1px solid var(--copper-dim);
-    border-radius:8px;
-    background:var(--panel);
-    color:var(--silk);
-  }
-  .contact-tag strong{ color:var(--copper-bright); font-weight:600; }
-  .contact-dot{
-    width:6px; height:6px; border-radius:50%;
-    background:var(--copper-bright);
-    flex:0 0 auto;
-  }
-
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
   }
@@ -499,58 +460,59 @@
         <legend class="field-legend">
           <span class="field-badge">03</span>
           <span class="field-title-wrap">
-            <span class="field-eyebrow">Component 03 · Trigger Module (เลือกเพิ่มได้)</span>
-            <span class="field-title">Clicky Trigger / Clicky Bumper</span>
+            <span class="field-eyebrow">Component 03 · Trigger Module</span>
+            <span class="field-title">Clicky Trigger / Clicky Bumper<span class="req">*</span></span>
           </span>
         </legend>
         <div class="options">
           <label class="option">
-            <input type="checkbox" id="clickyTrigger" data-label="Clicky Trigger" data-price="350">
+            <input type="radio" name="triggerBumper" value="none" data-price="0">
             <span class="option-text">
-              <span class="option-title">Clicky Trigger</span>
-              <span class="option-sub">L2/R2 คลิกหนึบ สั่งลั่นไว</span>
+              <span class="option-title">ไม่เพิ่ม ( ดั้งเดิมจะเป็นปุ่มจากโรงงาน ) </span>
+              <span class="option-sub">ไม่เปลี่ยนปุ่ม L1/R1,L2/R2</span>
             </span>
-            <span class="option-price">+฿350</span>
+            <span class="option-price included">รวมแล้ว</span>
           </label>
           <label class="option">
-            <input type="checkbox" id="clickyBumper" data-label="Clicky Bumper" data-price="350">
+            <input type="radio" name="triggerBumper" value="clicky" data-price="550">
             <span class="option-text">
-              <span class="option-title">Clicky Bumper</span>
-              <span class="option-sub">L1/R1 คลิกหนึบ เสียงชัด</span>
+              <span class="option-title">Trigger/Bumper Clicky</span>
+              <span class="option-sub">L1/R1,L2/R2 คลิ้กกี้ เสียงชัด</span>
             </span>
-            <span class="option-price">+฿350</span>
+            <span class="option-price">+฿550</span>
           </label>
         </div>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Clicky Trigger/Bumper</p>
       </fieldset>
 
-      <!-- 04 D-pad / Action Clicky — appears only once Trigger/Bumper is ticked -->
-      <fieldset class="field hidden" id="field-face">
+      <!-- 04 D-pad / Full Face buttons -->
+      <fieldset class="field" id="field-face">
         <legend class="field-legend">
           <span class="field-badge">04</span>
           <span class="field-title-wrap">
-            <span class="field-eyebrow">Component 04 · Face Buttons (เลือกเพิ่มได้)</span>
-            <span class="field-title">D-pad Clicky Button / Action Clicky Button</span>
+            <span class="field-eyebrow">Component 04 · Face Buttons</span>
+            <span class="field-title">D-pad Clicky Button / Full Face Clicky Button<span class="req">*</span></span>
           </span>
         </legend>
         <div class="options">
           <label class="option">
-            <input type="checkbox" id="dpadClicky" data-label="D-pad Clicky Button" data-price="350">
+            <input type="radio" name="faceButtons" value="dpad" data-price="350">
             <span class="option-text">
-              <span class="option-title">D-pad Clicky Button</span>
-              <span class="option-sub">ปุ่มทิศทางคลิกหนึบ</span>
+              <span class="option-title">ไม่เพิ่ม ( ดั้งเดิมจะเป็นปุ่มจากโรงงาน ) </span>
+              <span class="option-sub">ปุ่มทิศทางจากโรงงาน</span>
             </span>
-            <span class="option-price">+฿350</span>
+            <span class="option-price">+฿0</span>
           </label>
           <label class="option">
-            <input type="checkbox" id="actionClicky" data-label="Action Clicky Button" data-price="350">
+            <input type="radio" name="faceButtons" value="fullface" data-price="600">
             <span class="option-text">
-              <span class="option-title">Action Clicky Button</span>
-              <span class="option-sub">ปุ่ม △ ○ ✕ ☐ คลิกหนึบ</span>
+              <span class="option-title">Full Face Clicky Button</span>
+              <span class="option-sub">ปุ่ม △ ○ ✕ ☐ , D-PAD คลิ้กกีทั้งชุด</span>
             </span>
-            <span class="option-price">+฿350</span>
+            <span class="option-price">+฿600</span>
           </label>
         </div>
-        <p class="field-note">※ตัวเลือกนี้จะปรากฏเมื่อติ๊กเลือก Clicky Trigger หรือ Clicky Bumper ด้านบน</p>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก D-pad หรือ Full Face Clicky Button</p>
       </fieldset>
 
       <!-- 05 Analog L -->
@@ -683,13 +645,6 @@
 
 </div>
 
-<footer class="contact-bar">
-  <div class="contact-inner">
-    <span class="contact-label">มีคำถามเพิ่มเติม หรือพร้อมส่งรายละเอียดสั่งซื้อ ทักมาได้เลย</span>
-    <span class="contact-tag"><span class="contact-dot" aria-hidden="true"></span>Discord: <strong>@mosudesu1</strong></span>
-  </div>
-</footer>
-
 <button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
   <span class="mobile-pill-label">รวม</span>
   <span id="mobilePillTotal">฿0</span>
@@ -703,9 +658,17 @@
       hyperstrike:{ label:'Hyperstrike 8K',price:2500 }
     },
     paddles: {
-      none: { label:'ปุ่มหลัง: ไม่มี', price:0 },
-      one:  { label:'ปุ่มหลัง: 1 ปุ่ม', price:300 },
-      two:  { label:'ปุ่มหลัง: 2 ปุ่ม', price:500 }
+      none: { label:'ไม่มี', price:0 },
+      one:  { label:'1 ปุ่ม', price:300 },
+      two:  { label:'2 ปุ่ม', price:500 }
+    },
+    triggerBumper: {
+      none:   { label:'ไม่เพิ่ม Trigger/Bumper Clicky', price:0 },
+      clicky: { label:'Trigger/Bumper Clicky',          price:550 }
+    },
+    faceButtons: {
+      dpad:     { label:'D-pad Clicky Button',      price:350 },
+      fullface: { label:'Full Face Clicky Button',  price:600 }
     },
     analogL: {
       alps:    { label:'ALPS (Analog ซ้าย)',    price:0 },
@@ -718,18 +681,18 @@
       js13pro: { label:'JS13PRO (Analog ขวา)', price:250 }
     },
     ps4shell: {
-      withController: { label:'กรอบ PS4: ส่งจอยมาให้ทำ (มีคอนโทรลเลอร์ PS4 เอง)', price:0 },
-      noController:   { label:'กรอบ PS4: ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)',     price:400 }
+      withController: { label:'ส่งจอยมาให้ทำ (มีคอนโทรลเลอร์ PS4 เอง)', price:0 },
+      noController:   { label:'ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)',     price:400 }
     }
   };
 
-  const checkboxIds = ['clickyTrigger','clickyBumper','dpadClicky','actionClicky'];
-
   const requiredGroups = [
-    { name:'pcb',      fieldId:'field-pcb',      label:'บอร์ด PCB' },
-    { name:'paddles',  fieldId:'field-paddles',  label:'ปุ่มหลัง' },
-    { name:'analogL',  fieldId:'field-analogL',  label:'Analog ซ้าย' },
-    { name:'analogR',  fieldId:'field-analogR',  label:'Analog ขวา' },
+    { name:'pcb',     fieldId:'field-pcb',     label:'บอร์ด PCB' },
+    { name:'paddles', fieldId:'field-paddles', label:'ปุ่มหลัง' },
+    { name:'triggerBumper', fieldId:'field-trigger', label:'Clicky Trigger/Bumper' },
+    { name:'faceButtons', fieldId:'field-face', label:'D-pad / Full Face Clicky Button' },
+    { name:'analogL', fieldId:'field-analogL', label:'Analog ซ้าย' },
+    { name:'analogR', fieldId:'field-analogR', label:'Analog ขวา' },
     { name:'ps4shell', fieldId:'field-ps4shell', label:'กรอบคอนโทรลเลอร์ PS4' }
   ];
 
@@ -741,7 +704,6 @@
   const confirmBox = document.getElementById('confirmBox');
   const orderCodeEl = document.getElementById('orderCode');
   const copyBtn = document.getElementById('copyBtn');
-  const fieldFace = document.getElementById('field-face');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let lastItems = [];
@@ -766,52 +728,49 @@
            '<span class="bom-price">' + priceLabel + '</span></div>';
   }
 
-  /* ---- conditional visibility ---- */
-  function updateFaceVisibility(){
-    const triggerOn = document.getElementById('clickyTrigger').checked || document.getElementById('clickyBumper').checked;
-
-    if(triggerOn){
-      fieldFace.classList.remove('hidden');
-    } else {
-      document.getElementById('dpadClicky').checked = false;
-      document.getElementById('actionClicky').checked = false;
-      fieldFace.classList.add('hidden');
-    }
-  }
-
-  /* ---- BOM computation ---- */
   function computeAndRender(){
     const items = [];
     let total = 0;
 
-    const pcbVal = getSelected('pcb');
-    if(pcbVal){ const d = priceData.pcb[pcbVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
-    else items.push({ name:null, price:null });
-
-    const paddlesVal = getSelected('paddles');
-    if(paddlesVal){ const d = priceData.paddles[paddlesVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
-    else items.push({ name:null, price:null });
-
-    checkboxIds.forEach(function(id){
-      const el = document.getElementById(id);
-      if(el && el.checked && !el.closest('.field').classList.contains('hidden')){
-        const price = Number(el.dataset.price);
-        items.push({ name: el.dataset.label, price: price });
-        total += price;
+    ['pcb','paddles'].forEach(function(group){
+      const val = getSelected(group);
+      if(val){
+        const d = priceData[group][val];
+        items.push({ name:d.label, price:d.price });
+        total += d.price;
+      } else {
+        items.push({ name:null, price:null });
       }
     });
 
-    const analogLVal = getSelected('analogL');
-    if(analogLVal){ const d = priceData.analogL[analogLVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
-    else items.push({ name:null, price:null });
+    const triggerVal = getSelected('triggerBumper');
+    if(triggerVal){
+      const d = priceData.triggerBumper[triggerVal];
+      items.push({ name:d.label, price:d.price });
+      total += d.price;
+    } else {
+      items.push({ name:null, price:null });
+    }
 
-    const analogRVal = getSelected('analogR');
-    if(analogRVal){ const d = priceData.analogR[analogRVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
-    else items.push({ name:null, price:null });
+    const faceVal = getSelected('faceButtons');
+    if(faceVal){
+      const d = priceData.faceButtons[faceVal];
+      items.push({ name:d.label, price:d.price });
+      total += d.price;
+    } else {
+      items.push({ name:null, price:null });
+    }
 
-    const ps4Val = getSelected('ps4shell');
-    if(ps4Val){ const d = priceData.ps4shell[ps4Val]; items.push({ name:d.label, price:d.price }); total += d.price; }
-    else items.push({ name:null, price:null });
+    ['analogL','analogR','ps4shell'].forEach(function(group){
+      const val = getSelected(group);
+      if(val){
+        const d = priceData[group][val];
+        items.push({ name:d.label, price:d.price });
+        total += d.price;
+      } else {
+        items.push({ name:null, price:null });
+      }
+    });
 
     lastItems = items;
     lastTotal = total;
@@ -829,22 +788,14 @@
   form.querySelectorAll('input').forEach(function(el){
     el.addEventListener('change', computeAndRender);
   });
-  document.getElementById('clickyTrigger').addEventListener('change', function(){ updateFaceVisibility(); computeAndRender(); });
-  document.getElementById('clickyBumper').addEventListener('change', function(){ updateFaceVisibility(); computeAndRender(); });
 
   submitBtn.addEventListener('click', function(){
     let firstInvalid = null;
     let allValid = true;
 
     requiredGroups.forEach(function(g){
-      const fieldEl = document.getElementById(g.fieldId);
-
-      if(fieldEl.classList.contains('hidden')){
-        fieldEl.classList.remove('invalid');
-        return;
-      }
-
       const val = getSelected(g.name);
+      const fieldEl = document.getElementById(g.fieldId);
       if(!val){
         fieldEl.classList.add('invalid');
         allValid = false;
@@ -915,7 +866,6 @@
     document.getElementById('summaryCol').scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'start' });
   });
 
-  updateFaceVisibility();
   computeAndRender();
 })();
 </script>
