@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0E1712;
+    --panel:#16241C;
+    --panel-2:#1D2E23;
+    --line:#2A3D2E;
+    --copper:#C97A3D;
+    --copper-dim:#6E5136;
+    --copper-text:#F0A868;
+    --copper-bright:#F3B87C;
+    --silk:#ECE7D9;
+    --silk-dim:#93A497;
+    --required:#F0644E;
+    --ok:#7FD3A2;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    --sans:'IBM Plex Sans Thai','IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--silk);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(201,122,61,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  a{ color:var(--copper-text); }
+
+  .page{
+    max-width:1180px;
+    margin:0 auto;
+    padding:56px 24px 100px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    max-width:720px;
+    margin-bottom:44px;
+    position:relative;
+    padding-left:18px;
+    border-left:2px solid var(--copper-dim);
+  }
+  .hero-eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    color:var(--copper-text);
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(26px,4vw,36px);
+    line-height:1.25;
+    margin:0 0 12px;
+    font-weight:700;
+    color:var(--silk);
+  }
+  .hero p{
+    margin:0;
+    font-size:15px;
+    line-height:1.7;
+    color:var(--silk-dim);
+    max-width:560px;
+  }
+  .legend-help{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--silk-dim);
+    margin:20px 0 0;
+  }
+  .legend-help .req{ margin-left:0; margin-right:4px; }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: 1fr 360px;
+    gap:48px;
+    align-items:start;
+  }
+  @media (max-width:900px){
+    .layout{ grid-template-columns: 1fr; }
+    .summary-col{ position:static; }
+  }
+
+  .form-col{
+    border-left:1px solid var(--line);
+    padding-left:24px;
+  }
+  @media (max-width:560px){
+    .form-col{ padding-left:16px; }
+  }
+
+  /* ---------- Field / fieldset ---------- */
+  fieldset.field{
+    border:none;
+    margin:0;
+    padding:30px 0;
+    border-bottom:1px solid var(--line);
+  }
+  fieldset.field:last-of-type{ border-bottom:none; padding-bottom:6px; }
+  fieldset.field.hidden{ display:none; }
+
+  .field-legend{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    width:100%;
+    margin:0 0 16px;
+    padding:0;
+  }
+  .field-badge{
+    flex:0 0 auto;
+    width:36px;
+    height:36px;
+    border:1px solid var(--copper-dim);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--mono);
+    font-size:14px;
+    font-weight:600;
+    color:var(--copper-text);
+    background:var(--panel);
+  }
+  .field.invalid .field-badge{
+    border-color:var(--required);
+    color:var(--required);
+  }
+  .field-title-wrap{ display:flex; flex-direction:column; gap:6px; padding-top:2px; }
+  .field-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--silk-dim);
+  }
+  .field-title{
+    font-size:17px;
+    font-weight:600;
+    color:var(--silk);
+  }
+  .req{ color:var(--required); margin-left:3px; }
+
+  .options{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:10px;
+  }
+
+  .option{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--panel);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .option:hover{ border-color:var(--copper-dim); }
+  .option.selected{
+    border-color:var(--copper);
+    background:var(--panel-2);
+    box-shadow: inset 0 0 0 1px var(--copper);
+  }
+  .option:focus-within{
+    outline:2px solid var(--copper-bright);
+    outline-offset:2px;
+  }
+  .option input{
+    accent-color:var(--copper);
+    width:17px;
+    height:17px;
+    flex:0 0 auto;
+  }
+  .option-text{ display:flex; flex-direction:column; gap:3px; flex:1; min-width:0; }
+  .option-title{ font-size:14.5px; font-weight:600; color:var(--silk); }
+  .option-sub{ font-size:12px; color:var(--silk-dim); line-height:1.4; }
+  .option-price{
+    font-family:var(--mono);
+    font-size:13px;
+    font-weight:600;
+    color:var(--copper-text);
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
+  .option-price.included{ color:var(--silk-dim); font-weight:500; font-size:11.5px; }
+
+  .field-note{
+    margin:16px 0 0;
+    font-size:12.5px;
+    line-height:1.7;
+    color:var(--silk-dim);
+  }
+
+  .error-msg{
+    display:none;
+    align-items:center;
+    gap:6px;
+    margin:12px 0 0;
+    color:var(--required);
+    font-size:13px;
+  }
+  .field.invalid .error-msg{ display:flex; }
+
+  /* ---------- BOM / summary panel ---------- */
+  .summary-col{ position:sticky; top:32px; }
+
+  .bom-panel{
+    position:relative;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:28px 22px 24px;
+    margin-top:12px;
+  }
+  .bom-panel::before{
+    content:"";
+    position:absolute;
+    top:-9px; left:0; right:0; height:9px;
+    background:
+      linear-gradient(135deg, var(--panel-2) 50%, transparent 50%),
+      linear-gradient(45deg, var(--panel-2) 50%, transparent 50%);
+    background-size:14px 18px;
+    background-position:left top;
+    background-repeat:repeat-x;
+  }
+
+  .bom-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.12em;
+    color:var(--copper-text);
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:6px;
+  }
+  .bom-title{
+    font-size:18px;
+    font-weight:700;
+    margin:0 0 20px;
+    color:var(--silk);
+  }
+
+  .bom-list{ display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
+  .bom-row{
+    display:flex;
+    align-items:flex-end;
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--silk);
+    gap:6px;
+  }
+  .bom-row.muted{ color:var(--silk-dim); }
+  .bom-name{ flex:0 1 auto; }
+  .bom-dots{
+    flex:1 1 auto;
+    border-bottom:1px dotted var(--line);
+    height:1px;
+    margin-bottom:4px;
+    min-width:8px;
+  }
+  .bom-price{ flex:0 0 auto; font-weight:600; }
+
+  .bom-total-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+    margin-bottom:20px;
+  }
+  .bom-total-row span:first-child{ font-size:13px; color:var(--silk-dim); }
+  .bom-total-value{
+    font-family:var(--mono);
+    font-size:24px;
+    font-weight:700;
+    color:var(--copper-bright);
+  }
+
+  .submit-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:var(--copper-bright);
+    color:#1A1006;
+    font-family:var(--sans);
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:filter .15s ease, transform .05s ease;
+  }
+  .submit-btn:hover{ filter:brightness(1.08); }
+  .submit-btn:active{ transform:scale(0.99); }
+  .submit-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:3px; }
+
+  .confirm-box{
+    margin-top:16px;
+    padding:16px;
+    border:1px solid var(--ok);
+    border-radius:8px;
+    background:rgba(127,211,162,0.08);
+  }
+  .confirm-box.hidden{ display:none; }
+  .confirm-title{ margin:0 0 8px; font-weight:700; color:var(--ok); font-size:14px; }
+  .confirm-code{
+    margin:0 0 14px;
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--silk-dim);
+  }
+  .confirm-code span{ color:var(--silk); font-weight:600; }
+  .copy-btn{
+    width:100%;
+    padding:10px;
+    border:1px solid var(--ok);
+    border-radius:6px;
+    background:transparent;
+    color:var(--ok);
+    font-family:var(--sans);
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .copy-btn:hover{ background:rgba(127,211,162,0.12); }
+
+  /* ---------- Mobile total pill ---------- */
+  .mobile-pill{
+    display:none;
+  }
+  @media (max-width:900px){
+    .mobile-pill{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      z-index:60;
+      background:var(--copper-bright);
+      color:#1A1006;
+      border:none;
+      border-radius:999px;
+      padding:12px 18px;
+      font-family:var(--mono);
+      font-weight:700;
+      font-size:14px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.4);
+      cursor:pointer;
+    }
+    .mobile-pill-label{ font-family:var(--sans); font-weight:600; font-size:12.5px; opacity:0.75; }
+  }
+
+  /* ---------- Contact footer ---------- */
+  .contact-bar{
+    max-width:1180px;
+    margin:64px auto 0;
+    padding:26px 24px 0;
+    border-top:1px solid var(--line);
+  }
+  .contact-inner{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .contact-label{
+    font-size:13px;
+    color:var(--silk-dim);
+    line-height:1.6;
+  }
+  .contact-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--mono);
+    font-size:13.5px;
+    padding:9px 14px;
+    border:1px solid var(--copper-dim);
+    border-radius:8px;
+    background:var(--panel);
+    color:var(--silk);
+  }
+  .contact-tag strong{ color:var(--copper-bright); font-weight:600; }
+  .contact-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--copper-bright);
+    flex:0 0 auto;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
+    <h1>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</h1>
+    <p>เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
+    <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
+  </header>
+
+  <div class="layout">
+    <form class="form-col" id="orderForm">
+
+      <!-- 01 PCB -->
+      <fieldset class="field" id="field-pcb">
+        <legend class="field-legend">
+          <span class="field-badge">01</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 01 · Main Board</span>
+            <span class="field-title">บอร์ด PCB<span class="req">*</span></span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="pcb" value="suiovoi" data-price="2000">
+            <span class="option-text">
+              <span class="option-title">SuiOvOi 8K</span>
+              <span class="option-sub">บอร์ดมาตรฐาน โพลลิ่งเรตสูง</span>
+            </span>
+            <span class="option-price">+฿2,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="pcb" value="hyperstrike" data-price="2500">
+            <span class="option-text">
+              <span class="option-title">Hyperstrike 8K</span>
+              <span class="option-sub">บอร์ดสเปกสูง ตอบสนองไว</span>
+            </span>
+            <span class="option-price">+฿2,500</span>
+          </label>
+        </div>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกบอร์ด PCB</p>
+      </fieldset>
+
+      <!-- 02 Paddles -->
+      <fieldset class="field" id="field-paddles">
+        <legend class="field-legend">
+          <span class="field-badge">02</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 02 · Rear Paddles</span>
+            <span class="field-title">ปุ่มหลัง<span class="req">*</span></span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="paddles" value="none" data-price="0">
+            <span class="option-text">
+              <span class="option-title">ไม่มี</span>
+              <span class="option-sub">ฝาหลังมาตรฐาน</span>
+            </span>
+            <span class="option-price included">รวมแล้ว</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="paddles" value="one" data-price="300">
+            <span class="option-text">
+              <span class="option-title">1 ปุ่ม</span>
+              <span class="option-sub">เพิ่มปุ่มหลัง 1 ตำแหน่ง</span>
+            </span>
+            <span class="option-price">+฿300</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="paddles" value="two" data-price="500">
+            <span class="option-text">
+              <span class="option-title">2 ปุ่ม</span>
+              <span class="option-sub">เพิ่มปุ่มหลัง 2 ตำแหน่ง</span>
+            </span>
+            <span class="option-price">+฿500</span>
+          </label>
+        </div>
+        <p class="field-note">※ฝาหลังของคอนโทรลเลอร์ที่ส่งมาจะถูกเปลี่ยนตามจำนวนปุ่มที่เลือก โดยไม่ขึ้นกับสภาพเดิมก่อนส่ง</p>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกจำนวนปุ่มหลัง</p>
+      </fieldset>
+
+      <!-- 03 Trigger / Bumper -->
+      <fieldset class="field" id="field-trigger">
+        <legend class="field-legend">
+          <span class="field-badge">03</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 03 · Trigger Module (เลือกเพิ่มได้)</span>
+            <span class="field-title">Clicky Trigger / Clicky Bumper</span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="checkbox" id="clickyTrigger" data-label="Clicky Trigger" data-price="350">
+            <span class="option-text">
+              <span class="option-title">Clicky Trigger</span>
+              <span class="option-sub">L2/R2 คลิกหนึบ สั่งลั่นไว</span>
+            </span>
+            <span class="option-price">+฿350</span>
+          </label>
+          <label class="option">
+            <input type="checkbox" id="clickyBumper" data-label="Clicky Bumper" data-price="350">
+            <span class="option-text">
+              <span class="option-title">Clicky Bumper</span>
+              <span class="option-sub">L1/R1 คลิกหนึบ เสียงชัด</span>
+            </span>
+            <span class="option-price">+฿350</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- 04 D-pad / Action Clicky — appears only once Trigger/Bumper is ticked -->
+      <fieldset class="field hidden" id="field-face">
+        <legend class="field-legend">
+          <span class="field-badge">04</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 04 · Face Buttons (เลือกเพิ่มได้)</span>
+            <span class="field-title">D-pad Clicky Button / Action Clicky Button</span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="checkbox" id="dpadClicky" data-label="D-pad Clicky Button" data-price="350">
+            <span class="option-text">
+              <span class="option-title">D-pad Clicky Button</span>
+              <span class="option-sub">ปุ่มทิศทางคลิกหนึบ</span>
+            </span>
+            <span class="option-price">+฿350</span>
+          </label>
+          <label class="option">
+            <input type="checkbox" id="actionClicky" data-label="Action Clicky Button" data-price="350">
+            <span class="option-text">
+              <span class="option-title">Action Clicky Button</span>
+              <span class="option-sub">ปุ่ม △ ○ ✕ ☐ คลิกหนึบ</span>
+            </span>
+            <span class="option-price">+฿350</span>
+          </label>
+        </div>
+        <p class="field-note">※ตัวเลือกนี้จะปรากฏเมื่อติ๊กเลือก Clicky Trigger หรือ Clicky Bumper ด้านบน</p>
+      </fieldset>
+
+      <!-- 05 Analog L -->
+      <fieldset class="field" id="field-analogL">
+        <legend class="field-legend">
+          <span class="field-badge">05</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 05 · Left Stick</span>
+            <span class="field-title">Analog ซ้าย<span class="req">*</span></span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="analogL" value="alps" data-price="0">
+            <span class="option-text">
+              <span class="option-title">ALPS</span>
+              <span class="option-sub">มาตรฐานโรงงาน</span>
+            </span>
+            <span class="option-price included">รวมแล้ว</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="analogL" value="ds13max" data-price="200">
+            <span class="option-text">
+              <span class="option-title">DS13MAX</span>
+              <span class="option-sub">อัปเกรดความแม่นยำระดับกลาง</span>
+            </span>
+            <span class="option-price">+฿200</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="analogL" value="js13pro" data-price="250">
+            <span class="option-text">
+              <span class="option-title">JS13PRO</span>
+              <span class="option-sub">สเปกสูงสุด ลดปัญหา Stick Drift</span>
+            </span>
+            <span class="option-price">+฿250</span>
+          </label>
+        </div>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Analog ซ้าย</p>
+      </fieldset>
+
+      <!-- 06 Analog R -->
+      <fieldset class="field" id="field-analogR">
+        <legend class="field-legend">
+          <span class="field-badge">06</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 06 · Right Stick</span>
+            <span class="field-title">Analog ขวา<span class="req">*</span></span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="analogR" value="alps" data-price="0">
+            <span class="option-text">
+              <span class="option-title">ALPS</span>
+              <span class="option-sub">มาตรฐานโรงงาน</span>
+            </span>
+            <span class="option-price included">รวมแล้ว</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="analogR" value="ds13max" data-price="200">
+            <span class="option-text">
+              <span class="option-title">DS13MAX</span>
+              <span class="option-sub">อัปเกรดความแม่นยำระดับกลาง</span>
+            </span>
+            <span class="option-price">+฿200</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="analogR" value="js13pro" data-price="250">
+            <span class="option-text">
+              <span class="option-title">JS13PRO</span>
+              <span class="option-sub">สเปกสูงสุด ลดปัญหา Stick Drift</span>
+            </span>
+            <span class="option-price">+฿250</span>
+          </label>
+        </div>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Analog ขวา</p>
+      </fieldset>
+
+      <!-- 07 PS4 Shell -->
+      <fieldset class="field" id="field-ps4shell">
+        <legend class="field-legend">
+          <span class="field-badge">07</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Component 07 · PS4 Shell</span>
+            <span class="field-title">กรอบคอนโทรลเลอร์ PS4<span class="req">*</span></span>
+          </span>
+        </legend>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="ps4shell" value="withController" data-price="0">
+            <span class="option-text">
+              <span class="option-title">ส่งจอยมาให้ทำ</span>
+              <span class="option-sub">มีคอนโทรลเลอร์ PS4 อยู่แล้ว ส่งเข้ามาประกอบ</span>
+            </span>
+            <span class="option-price included">รวมแล้ว</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="ps4shell" value="noController" data-price="400">
+            <span class="option-text">
+              <span class="option-title">ไม่มีจอย PS4</span>
+              <span class="option-sub">ทางร้านจัดหากรอบ/ตัวเครื่องให้</span>
+            </span>
+            <span class="option-price">+฿400</span>
+          </label>
+        </div>
+        <p class="field-note">※หากเลือก "ส่งจอยมาให้ทำ" กรุณาแนบคอนโทรลเลอร์ PS4 มาพร้อมพัสดุที่จัดส่ง</p>
+        <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกตัวเลือกกรอบคอนโทรลเลอร์ PS4</p>
+      </fieldset>
+
+    </form>
+
+    <aside class="summary-col" id="summaryCol">
+      <div class="bom-panel">
+        <span class="bom-eyebrow">Bill of Materials</span>
+        <h2 class="bom-title">สรุปรายการสั่งซื้อ</h2>
+        <div class="bom-list" id="bomList"></div>
+        <div class="bom-total-row">
+          <span>ยอดรวมทั้งหมด</span>
+          <span class="bom-total-value" id="bomTotal">฿0</span>
+        </div>
+        <button type="button" class="submit-btn" id="submitBtn">ยืนยันคำสั่งซื้อ</button>
+        <div class="confirm-box hidden" id="confirmBox">
+          <p class="confirm-title">✓ รับคำสั่งซื้อแล้ว</p>
+          <p class="confirm-code">เลขที่คำสั่งซื้อ: <span id="orderCode"></span></p>
+          <button type="button" class="copy-btn" id="copyBtn">คัดลอกสรุปคำสั่งซื้อ</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+<footer class="contact-bar">
+  <div class="contact-inner">
+    <span class="contact-label">มีคำถามเพิ่มเติม หรือพร้อมส่งรายละเอียดสั่งซื้อ ทักมาได้เลย</span>
+    <span class="contact-tag"><span class="contact-dot" aria-hidden="true"></span>Discord: <strong>@mosudesu1</strong></span>
+  </div>
+</footer>
+
+<button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
+  <span class="mobile-pill-label">รวม</span>
+  <span id="mobilePillTotal">฿0</span>
+</button>
+
+<script>
+(function(){
+  const priceData = {
+    pcb: {
+      suiovoi:    { label:'SuiOvOi 8K',    price:2000 },
+      hyperstrike:{ label:'Hyperstrike 8K',price:2500 }
+    },
+    paddles: {
+      none: { label:'ปุ่มหลัง: ไม่มี', price:0 },
+      one:  { label:'ปุ่มหลัง: 1 ปุ่ม', price:300 },
+      two:  { label:'ปุ่มหลัง: 2 ปุ่ม', price:500 }
+    },
+    analogL: {
+      alps:    { label:'ALPS (Analog ซ้าย)',    price:0 },
+      ds13max: { label:'DS13MAX (Analog ซ้าย)', price:200 },
+      js13pro: { label:'JS13PRO (Analog ซ้าย)', price:250 }
+    },
+    analogR: {
+      alps:    { label:'ALPS (Analog ขวา)',    price:0 },
+      ds13max: { label:'DS13MAX (Analog ขวา)', price:200 },
+      js13pro: { label:'JS13PRO (Analog ขวา)', price:250 }
+    },
+    ps4shell: {
+      withController: { label:'กรอบ PS4: ส่งจอยมาให้ทำ (มีคอนโทรลเลอร์ PS4 เอง)', price:0 },
+      noController:   { label:'กรอบ PS4: ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)',     price:400 }
+    }
+  };
+
+  const checkboxIds = ['clickyTrigger','clickyBumper','dpadClicky','actionClicky'];
+
+  const requiredGroups = [
+    { name:'pcb',      fieldId:'field-pcb',      label:'บอร์ด PCB' },
+    { name:'paddles',  fieldId:'field-paddles',  label:'ปุ่มหลัง' },
+    { name:'analogL',  fieldId:'field-analogL',  label:'Analog ซ้าย' },
+    { name:'analogR',  fieldId:'field-analogR',  label:'Analog ขวา' },
+    { name:'ps4shell', fieldId:'field-ps4shell', label:'กรอบคอนโทรลเลอร์ PS4' }
+  ];
+
+  const form = document.getElementById('orderForm');
+  const bomList = document.getElementById('bomList');
+  const bomTotalEl = document.getElementById('bomTotal');
+  const mobilePillTotal = document.getElementById('mobilePillTotal');
+  const submitBtn = document.getElementById('submitBtn');
+  const confirmBox = document.getElementById('confirmBox');
+  const orderCodeEl = document.getElementById('orderCode');
+  const copyBtn = document.getElementById('copyBtn');
+  const fieldFace = document.getElementById('field-face');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let lastItems = [];
+  let lastTotal = 0;
+
+  function getSelected(name){
+    const el = form.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+
+  function currency(n){
+    return '฿' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function rowHtml(name, price){
+    if(name === null){
+      return '<div class="bom-row muted"><span class="bom-name">— ยังไม่ได้เลือก —</span></div>';
+    }
+    const priceLabel = price === 0 ? 'รวมแล้ว' : currency(price);
+    return '<div class="bom-row"><span class="bom-name">' + name + '</span>' +
+           '<span class="bom-dots"></span>' +
+           '<span class="bom-price">' + priceLabel + '</span></div>';
+  }
+
+  /* ---- conditional visibility ---- */
+  function updateFaceVisibility(){
+    const triggerOn = document.getElementById('clickyTrigger').checked || document.getElementById('clickyBumper').checked;
+
+    if(triggerOn){
+      fieldFace.classList.remove('hidden');
+    } else {
+      document.getElementById('dpadClicky').checked = false;
+      document.getElementById('actionClicky').checked = false;
+      fieldFace.classList.add('hidden');
+    }
+  }
+
+  /* ---- BOM computation ---- */
+  function computeAndRender(){
+    const items = [];
+    let total = 0;
+
+    const pcbVal = getSelected('pcb');
+    if(pcbVal){ const d = priceData.pcb[pcbVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
+    else items.push({ name:null, price:null });
+
+    const paddlesVal = getSelected('paddles');
+    if(paddlesVal){ const d = priceData.paddles[paddlesVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
+    else items.push({ name:null, price:null });
+
+    checkboxIds.forEach(function(id){
+      const el = document.getElementById(id);
+      if(el && el.checked && !el.closest('.field').classList.contains('hidden')){
+        const price = Number(el.dataset.price);
+        items.push({ name: el.dataset.label, price: price });
+        total += price;
+      }
+    });
+
+    const analogLVal = getSelected('analogL');
+    if(analogLVal){ const d = priceData.analogL[analogLVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
+    else items.push({ name:null, price:null });
+
+    const analogRVal = getSelected('analogR');
+    if(analogRVal){ const d = priceData.analogR[analogRVal]; items.push({ name:d.label, price:d.price }); total += d.price; }
+    else items.push({ name:null, price:null });
+
+    const ps4Val = getSelected('ps4shell');
+    if(ps4Val){ const d = priceData.ps4shell[ps4Val]; items.push({ name:d.label, price:d.price }); total += d.price; }
+    else items.push({ name:null, price:null });
+
+    lastItems = items;
+    lastTotal = total;
+
+    bomList.innerHTML = items.map(function(it){ return rowHtml(it.name, it.price); }).join('');
+    bomTotalEl.textContent = currency(total);
+    mobilePillTotal.textContent = currency(total);
+
+    document.querySelectorAll('.option').forEach(function(opt){
+      const input = opt.querySelector('input');
+      opt.classList.toggle('selected', !!(input && input.checked));
+    });
+  }
+
+  form.querySelectorAll('input').forEach(function(el){
+    el.addEventListener('change', computeAndRender);
+  });
+  document.getElementById('clickyTrigger').addEventListener('change', function(){ updateFaceVisibility(); computeAndRender(); });
+  document.getElementById('clickyBumper').addEventListener('change', function(){ updateFaceVisibility(); computeAndRender(); });
+
+  submitBtn.addEventListener('click', function(){
+    let firstInvalid = null;
+    let allValid = true;
+
+    requiredGroups.forEach(function(g){
+      const fieldEl = document.getElementById(g.fieldId);
+
+      if(fieldEl.classList.contains('hidden')){
+        fieldEl.classList.remove('invalid');
+        return;
+      }
+
+      const val = getSelected(g.name);
+      if(!val){
+        fieldEl.classList.add('invalid');
+        allValid = false;
+        if(!firstInvalid) firstInvalid = fieldEl;
+      } else {
+        fieldEl.classList.remove('invalid');
+      }
+    });
+
+    if(!allValid){
+      confirmBox.classList.add('hidden');
+      firstInvalid.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'center' });
+      return;
+    }
+
+    const code = 'SO-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    orderCodeEl.textContent = code;
+    confirmBox.classList.remove('hidden');
+    confirmBox.dataset.code = code;
+  });
+
+  function buildOrderText(code){
+    const lines = [
+      'ใบสรุปคำสั่งซื้อ (BOM) — ' + code,
+      '------------------------------'
+    ];
+    lastItems.forEach(function(it){
+      if(it.name === null) return;
+      const priceLabel = it.price === 0 ? 'รวมแล้ว' : currency(it.price);
+      lines.push(it.name + ' — ' + priceLabel);
+    });
+    lines.push('------------------------------');
+    lines.push('ยอดรวมทั้งหมด: ' + currency(lastTotal));
+    return lines.join('\n');
+  }
+
+  copyBtn.addEventListener('click', function(){
+    const code = confirmBox.dataset.code || '';
+    const text = buildOrderText(code);
+    const done = function(ok){
+      copyBtn.textContent = ok ? 'คัดลอกแล้ว ✓' : 'คัดลอกไม่สำเร็จ ลองใหม่';
+      setTimeout(function(){ copyBtn.textContent = 'คัดลอกสรุปคำสั่งซื้อ'; }, 1800);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }).catch(function(){ fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  });
+
+  function fallbackCopy(text, done){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done(true);
+    } catch(e){
+      done(false);
+    }
+  }
+
+  document.getElementById('mobilePill').addEventListener('click', function(){
+    document.getElementById('summaryCol').scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'start' });
+  });
+
+  updateFaceVisibility();
+  computeAndRender();
+})();
+</script>
+
+</body>
+</html>
