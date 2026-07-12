@@ -6,6 +6,7 @@
 <title>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
     --bg:#0E1712;
@@ -23,7 +24,7 @@
     --mono:'IBM Plex Mono', ui-monospace, monospace;
     --sans:'IBM Plex Sans Thai','IBM Plex Sans', system-ui, sans-serif;
   }
- 
+
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
   body{
@@ -35,15 +36,15 @@
       radial-gradient(circle at 1px 1px, rgba(201,122,61,0.07) 1px, transparent 1px);
     background-size: 28px 28px;
   }
- 
+
   a{ color:var(--copper-text); }
- 
+
   .page{
     max-width:1180px;
     margin:0 auto;
     padding:56px 24px 140px;
   }
- 
+
   /* ---------- Hero ---------- */
   .hero{
     max-width:720px;
@@ -82,7 +83,7 @@
     margin:20px 0 0;
   }
   .legend-help .req{ margin-left:0; margin-right:4px; }
- 
+
   /* ---------- Layout ---------- */
   .layout{
     display:grid;
@@ -94,7 +95,7 @@
     .layout{ grid-template-columns: 1fr; }
     .summary-col{ position:static; }
   }
- 
+
   .form-col{
     border-left:1px solid var(--line);
     padding-left:24px;
@@ -102,7 +103,7 @@
   @media (max-width:560px){
     .form-col{ padding-left:16px; }
   }
- 
+
   /* ---------- Field / fieldset ---------- */
   fieldset.field{
     border:none;
@@ -111,7 +112,7 @@
     border-bottom:1px solid var(--line);
   }
   fieldset.field:last-of-type{ border-bottom:none; padding-bottom:6px; }
- 
+
   .field-legend{
     display:flex;
     align-items:flex-start;
@@ -153,13 +154,13 @@
     color:var(--silk);
   }
   .req{ color:var(--required); margin-left:3px; }
- 
+
   .options{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
     gap:10px;
   }
- 
+
   .option{
     display:flex;
     align-items:center;
@@ -199,14 +200,14 @@
     flex:0 0 auto;
   }
   .option-price.included{ color:var(--silk-dim); font-weight:500; font-size:11.5px; }
- 
+
   .field-note{
     margin:16px 0 0;
     font-size:12.5px;
     line-height:1.7;
     color:var(--silk-dim);
   }
- 
+
   /* ---------- Toggle + dropdown reveal ---------- */
   .toggle-row{ margin-bottom:0; }
   .dropdown-frame{
@@ -255,7 +256,7 @@
     outline-offset:2px;
   }
   .select-input option{ background:var(--panel); color:var(--silk); }
- 
+
   .error-msg{
     display:none;
     align-items:center;
@@ -265,10 +266,10 @@
     font-size:13px;
   }
   .field.invalid .error-msg{ display:flex; }
- 
+
   /* ---------- BOM / summary panel ---------- */
   .summary-col{ position:sticky; top:32px; }
- 
+
   .bom-panel{
     position:relative;
     background:var(--panel-2);
@@ -288,7 +289,7 @@
     background-position:left top;
     background-repeat:repeat-x;
   }
- 
+
   .bom-eyebrow{
     font-family:var(--mono);
     font-size:11px;
@@ -304,7 +305,7 @@
     margin:0 0 20px;
     color:var(--silk);
   }
- 
+
   .bom-list{ display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
   .bom-row{
     display:flex;
@@ -324,7 +325,7 @@
     min-width:8px;
   }
   .bom-price{ flex:0 0 auto; font-weight:600; }
- 
+
   .bom-total-row{
     display:flex;
     justify-content:space-between;
@@ -340,7 +341,7 @@
     font-weight:700;
     color:var(--copper-bright);
   }
- 
+
   /* ---------- Discount code ---------- */
   .discount-block{ margin:2px 0 18px; }
   .discount-row{ display:flex; gap:8px; }
@@ -364,6 +365,42 @@
     border-color:var(--copper-dim);
   }
   .discount-input:disabled{ opacity:0.65; cursor:not-allowed; }
+
+  /* ---------- Contact / shipping text fields ---------- */
+  .text-field{ margin-bottom:18px; }
+  .text-field:last-child{ margin-bottom:0; }
+  .text-input{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--panel);
+    color:var(--silk);
+    font-family:var(--sans);
+    font-size:14.5px;
+  }
+  .text-input::placeholder{ color:var(--silk-dim); }
+  .text-input:focus-visible{
+    outline:2px solid var(--copper-bright);
+    outline-offset:2px;
+    border-color:var(--copper-dim);
+  }
+  .textarea-input{ resize:vertical; min-height:74px; line-height:1.6; }
+
+  .price-warning{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin:0 0 14px;
+    padding:10px 12px;
+    border:1px solid var(--copper-dim);
+    border-radius:8px;
+    background:var(--panel-2);
+    color:var(--copper-text);
+    font-size:12px;
+    line-height:1.6;
+  }
+  .price-warning[hidden]{ display:none; }
   .discount-btn{
     flex:0 0 auto;
     padding:11px 16px;
@@ -390,7 +427,7 @@
   }
   .discount-msg.ok{ color:var(--ok); }
   .discount-msg.fail{ color:var(--required); }
- 
+
   .bom-subtotal-row, .bom-discount-row{
     display:flex;
     justify-content:space-between;
@@ -402,7 +439,7 @@
   }
   .bom-discount-row{ color:var(--ok); }
   .bom-subtotal-row.hidden, .bom-discount-row.hidden{ display:none; }
- 
+
   .submit-btn{
     width:100%;
     padding:14px;
@@ -419,7 +456,7 @@
   .submit-btn:hover{ filter:brightness(1.08); }
   .submit-btn:active{ transform:scale(0.99); }
   .submit-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:3px; }
- 
+
   .confirm-box{
     margin-top:16px;
     padding:16px;
@@ -444,6 +481,7 @@
   .confirm-sync-status.pending{ color:var(--silk-dim); }
   .confirm-sync-status.ok{ color:var(--ok); }
   .confirm-sync-status.warn{ color:var(--silk-dim); }
+  .confirm-sync-status.partial{ color:var(--copper-text); }
   .confirm-sync-status.fail{ color:var(--required); }
   .copy-btn{
     width:100%;
@@ -459,7 +497,127 @@
     transition:background .15s ease;
   }
   .copy-btn:hover{ background:rgba(127,211,162,0.12); }
- 
+
+  /* ---------- Payment (PromptPay QR + slip) ---------- */
+  .payment-section{
+    margin:16px 0;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+  }
+  .payment-title{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--copper-text);
+    margin:0 0 12px;
+  }
+  .qr-card{
+    background:#FFFFFF;
+    border-radius:10px;
+    padding:14px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:120px;
+  }
+  .promptpay-badge{
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    gap:6px;
+    width:fit-content;
+    margin:0 auto 10px;
+    padding:5px 12px;
+    border:1px solid #1B3A6B;
+    border-radius:6px;
+    background:#FFFFFF;
+  }
+  .promptpay-badge-th{
+    font-family:var(--sans);
+    font-size:10.5px;
+    font-weight:600;
+    color:#1B3A6B;
+  }
+  .promptpay-badge-en{
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:700;
+    font-style:italic;
+    color:#1B3A6B;
+  }
+  .qr-amount{
+    text-align:center;
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--silk-dim);
+    margin:10px 0 14px;
+  }
+  .qr-amount span{ color:var(--copper-bright); font-weight:700; font-size:16px; }
+  .qr-note{
+    font-size:12px;
+    line-height:1.65;
+    color:var(--silk-dim);
+    margin:0 0 16px;
+  }
+  .slip-block{ margin-bottom:14px; }
+  .slip-input{
+    width:100%;
+    font-family:var(--sans);
+    font-size:12px;
+    color:var(--silk-dim);
+  }
+  .slip-input::file-selector-button{
+    padding:9px 14px;
+    margin-right:10px;
+    border:1px solid var(--copper-dim);
+    border-radius:8px;
+    background:var(--panel);
+    color:var(--copper-text);
+    font-family:var(--sans);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .slip-input::file-selector-button:hover{ border-color:var(--copper); background:var(--panel-2); }
+  .slip-input:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:2px; }
+  .slip-preview{
+    display:none;
+    margin-top:10px;
+    max-width:150px;
+    max-height:150px;
+    border-radius:8px;
+    border:1px solid var(--line);
+  }
+  .slip-preview.visible{ display:block; }
+  .pay-confirm-btn{
+    width:100%;
+    padding:12px;
+    border:1px solid var(--ok);
+    border-radius:8px;
+    background:transparent;
+    color:var(--ok);
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .pay-confirm-btn:hover{ background:rgba(127,211,162,0.12); }
+  .pay-confirm-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:2px; }
+  .pay-confirm-btn:disabled{ opacity:0.55; cursor:not-allowed; }
+  .payment-status{
+    margin:10px 0 0;
+    font-family:var(--mono);
+    font-size:11.5px;
+    min-height:14px;
+  }
+  .payment-status.pending{ color:var(--silk-dim); }
+  .payment-status.ok{ color:var(--ok); }
+  .payment-status.warn{ color:var(--silk-dim); }
+  .payment-status.fail{ color:var(--required); }
+
   /* ---------- Mobile total pill ---------- */
   .mobile-pill{
     display:none;
@@ -486,26 +644,26 @@
     }
     .mobile-pill-label{ font-family:var(--sans); font-weight:600; font-size:12.5px; opacity:0.75; }
   }
- 
+
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
   }
 </style>
 </head>
 <body>
- 
+
 <div class="page">
- 
+
   <header class="hero">
     <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
     <h1>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</h1>
     <p>เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
     <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
   </header>
- 
+
   <div class="layout">
     <form class="form-col" id="orderForm">
- 
+
       <!-- 01 PCB -->
       <fieldset class="field" id="field-pcb">
         <legend class="field-legend">
@@ -517,7 +675,7 @@
         </legend>
         <div class="options">
           <label class="option">
-            <input type="radio" name="pcb" value="suiovoi" data-price="2000">
+            <input type="radio" name="pcb" value="suiovoi">
             <span class="option-text">
               <span class="option-title">SuiOvOi 8K</span>
               <span class="option-sub">บอร์ดมาตรฐาน โพลลิ่งเรตสูง</span>
@@ -525,7 +683,7 @@
             <span class="option-price">+฿2,000</span>
           </label>
           <label class="option">
-            <input type="radio" name="pcb" value="hyperstrike" data-price="2500">
+            <input type="radio" name="pcb" value="hyperstrike">
             <span class="option-text">
               <span class="option-title">Hyperstrike 8K</span>
               <span class="option-sub">บอร์ดสเปกสูง ตอบสนองไว</span>
@@ -535,7 +693,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกบอร์ด PCB</p>
       </fieldset>
- 
+
       <!-- 02 Paddles -->
       <fieldset class="field" id="field-paddles">
         <legend class="field-legend">
@@ -545,7 +703,7 @@
             <span class="field-title">ปุ่มหลัง<span class="req">*</span></span>
           </span>
         </legend>
- 
+
         <label class="option toggle-row">
           <input type="checkbox" id="paddlesToggle">
           <span class="option-text">
@@ -553,7 +711,7 @@
             <span class="option-sub">ไม่ติ๊ก = ไม่เพิ่มปุ่มหลัง (ฝาหลังมาตรฐาน)</span>
           </span>
         </label>
- 
+
         <div class="dropdown-frame" id="paddlesFrame" hidden>
           <label class="dropdown-label" for="paddlesSelect">เลือกจำนวนปุ่มหลัง</label>
           <select class="select-input" id="paddlesSelect">
@@ -561,7 +719,7 @@
             <option value="one">1 ปุ่ม — +฿300</option>
             <option value="two">2 ปุ่ม — +฿500</option>
           </select>
- 
+
           <div class="dropdown-frame nested" id="paddleSideFrame" hidden>
             <label class="dropdown-label" for="paddleSideSelect">เลือกด้านที่ต้องการติดตั้ง (1 ปุ่ม)</label>
             <select class="select-input" id="paddleSideSelect">
@@ -572,11 +730,11 @@
             <p class="error-msg" id="paddlesSideError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกด้านที่ต้องการติดตั้งปุ่มหลัง</p>
           </div>
         </div>
- 
+
         <p class="field-note">※ฝาหลังของคอนโทรลเลอร์ที่ส่งมาจะถูกเปลี่ยนตามจำนวนปุ่มที่เลือก โดยไม่ขึ้นกับสภาพเดิมก่อนส่ง</p>
         <p class="error-msg" id="paddlesCountError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกจำนวนปุ่มหลัง</p>
       </fieldset>
- 
+
       <!-- 03 Trigger / Bumper -->
       <fieldset class="field" id="field-trigger">
         <legend class="field-legend">
@@ -588,7 +746,7 @@
         </legend>
         <div class="options">
           <label class="option">
-            <input type="radio" name="triggerBumper" value="none" data-price="0">
+            <input type="radio" name="triggerBumper" value="none">
             <span class="option-text">
               <span class="option-title">ไม่เพิ่ม ( ดั้งเดิมจะเป็นปุ่มจากโรงงาน ) </span>
               <span class="option-sub">ไม่เปลี่ยนปุ่ม L1/R1,L2/R2</span>
@@ -596,7 +754,7 @@
             <span class="option-price included">รวมแล้ว</span>
           </label>
           <label class="option">
-            <input type="radio" name="triggerBumper" value="clicky" data-price="550">
+            <input type="radio" name="triggerBumper" value="clicky">
             <span class="option-text">
               <span class="option-title">Trigger/Bumper Clicky</span>
               <span class="option-sub">L1/R1,L2/R2 คลิ้กกี้ เสียงชัด</span>
@@ -606,7 +764,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Clicky Trigger/Bumper</p>
       </fieldset>
- 
+
       <!-- 04 D-pad / Full Face buttons -->
       <fieldset class="field" id="field-face">
         <legend class="field-legend">
@@ -618,7 +776,7 @@
         </legend>
         <div class="options">
           <label class="option">
-            <input type="radio" name="faceButtons" value="dpad" data-price="350">
+            <input type="radio" name="faceButtons" value="dpad">
             <span class="option-text">
               <span class="option-title">ไม่เพิ่ม ( ดั้งเดิมจะเป็นปุ่มจากโรงงาน ) </span>
               <span class="option-sub">ปุ่มทิศทางจากโรงงาน</span>
@@ -626,7 +784,7 @@
             <span class="option-price">+฿0</span>
           </label>
           <label class="option">
-            <input type="radio" name="faceButtons" value="fullface" data-price="600">
+            <input type="radio" name="faceButtons" value="fullface">
             <span class="option-text">
               <span class="option-title">Full Face Clicky Button</span>
               <span class="option-sub">ปุ่ม △ ○ ✕ ☐ , D-PAD คลิ้กกีทั้งชุด</span>
@@ -636,7 +794,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก D-pad หรือ Full Face Clicky Button</p>
       </fieldset>
- 
+
       <!-- 05 Analog L -->
       <fieldset class="field" id="field-analogL">
         <legend class="field-legend">
@@ -648,7 +806,7 @@
         </legend>
         <div class="options">
           <label class="option">
-            <input type="radio" name="analogL" value="alps" data-price="0">
+            <input type="radio" name="analogL" value="alps">
             <span class="option-text">
               <span class="option-title">ALPS</span>
               <span class="option-sub">มาตรฐานโรงงาน</span>
@@ -656,7 +814,7 @@
             <span class="option-price included">รวมแล้ว</span>
           </label>
           <label class="option">
-            <input type="radio" name="analogL" value="ds13max" data-price="200">
+            <input type="radio" name="analogL" value="ds13max">
             <span class="option-text">
               <span class="option-title">DS13MAX</span>
               <span class="option-sub">อัปเกรดความแม่นยำระดับกลาง</span>
@@ -664,7 +822,7 @@
             <span class="option-price">+฿200</span>
           </label>
           <label class="option">
-            <input type="radio" name="analogL" value="js13pro" data-price="250">
+            <input type="radio" name="analogL" value="js13pro">
             <span class="option-text">
               <span class="option-title">JS13PRO</span>
               <span class="option-sub">สเปกสูงสุด ลดปัญหา Stick Drift</span>
@@ -674,7 +832,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Analog ซ้าย</p>
       </fieldset>
- 
+
       <!-- 06 Analog R -->
       <fieldset class="field" id="field-analogR">
         <legend class="field-legend">
@@ -686,7 +844,7 @@
         </legend>
         <div class="options">
           <label class="option">
-            <input type="radio" name="analogR" value="alps" data-price="0">
+            <input type="radio" name="analogR" value="alps">
             <span class="option-text">
               <span class="option-title">ALPS</span>
               <span class="option-sub">มาตรฐานโรงงาน</span>
@@ -694,7 +852,7 @@
             <span class="option-price included">รวมแล้ว</span>
           </label>
           <label class="option">
-            <input type="radio" name="analogR" value="ds13max" data-price="200">
+            <input type="radio" name="analogR" value="ds13max">
             <span class="option-text">
               <span class="option-title">DS13MAX</span>
               <span class="option-sub">อัปเกรดความแม่นยำระดับกลาง</span>
@@ -702,7 +860,7 @@
             <span class="option-price">+฿200</span>
           </label>
           <label class="option">
-            <input type="radio" name="analogR" value="js13pro" data-price="250">
+            <input type="radio" name="analogR" value="js13pro">
             <span class="option-text">
               <span class="option-title">JS13PRO</span>
               <span class="option-sub">สเปกสูงสุด ลดปัญหา Stick Drift</span>
@@ -712,7 +870,7 @@
         </div>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือก Analog ขวา</p>
       </fieldset>
- 
+
       <!-- 07 PS4 Shell -->
       <fieldset class="field" id="field-ps4shell">
         <legend class="field-legend">
@@ -724,7 +882,7 @@
         </legend>
         <div class="options">
           <label class="option">
-            <input type="radio" name="ps4shell" value="withController" data-price="0">
+            <input type="radio" name="ps4shell" value="withController">
             <span class="option-text">
               <span class="option-title">ส่งจอยมาให้ทำ</span>
               <span class="option-sub">มีคอนโทรลเลอร์ PS4 อยู่แล้ว ส่งเข้ามาประกอบ</span>
@@ -732,7 +890,7 @@
             <span class="option-price included">รวมแล้ว</span>
           </label>
           <label class="option">
-            <input type="radio" name="ps4shell" value="noController" data-price="400">
+            <input type="radio" name="ps4shell" value="noController">
             <span class="option-text">
               <span class="option-title">ไม่มีจอย PS4</span>
               <span class="option-sub">ทางร้านจัดหากรอบ/ตัวเครื่องให้</span>
@@ -743,15 +901,40 @@
         <p class="field-note">※หากเลือก "ส่งจอยมาให้ทำ" กรุณาแนบคอนโทรลเลอร์ PS4 มาพร้อมพัสดุที่จัดส่ง</p>
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกตัวเลือกกรอบคอนโทรลเลอร์ PS4</p>
       </fieldset>
- 
+
+      <fieldset class="field" id="field-contact">
+        <legend class="field-legend">
+          <span class="field-badge">08</span>
+          <span class="field-title-wrap">
+            <span class="field-eyebrow">Contact &amp; Shipping</span>
+            <span class="field-title">อีเมล &amp; ที่อยู่จัดส่ง<span class="req">*</span></span>
+          </span>
+        </legend>
+
+        <div class="text-field">
+          <label class="dropdown-label" for="customerEmail">อีเมล</label>
+          <input type="email" class="text-input" id="customerEmail" placeholder="you@example.com" autocomplete="email">
+          <p class="error-msg" role="alert" id="emailError"><span aria-hidden="true">⚠</span> กรุณากรอกอีเมลให้ถูกต้อง</p>
+        </div>
+
+        <div class="text-field">
+          <label class="dropdown-label" for="customerAddress">ที่อยู่จัดส่ง</label>
+          <textarea class="text-input textarea-input" id="customerAddress" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์" autocomplete="street-address"></textarea>
+          <p class="error-msg" role="alert" id="addressError"><span aria-hidden="true">⚠</span> กรุณากรอกที่อยู่จัดส่ง</p>
+        </div>
+
+        <p class="field-note">ใช้สำหรับติดต่อกลับและจัดส่งพัสดุเท่านั้น</p>
+      </fieldset>
+
     </form>
- 
+
     <aside class="summary-col" id="summaryCol">
       <div class="bom-panel">
         <span class="bom-eyebrow">Bill of Materials</span>
         <h2 class="bom-title">สรุปรายการสั่งซื้อ</h2>
+        <p class="price-warning" id="priceWarning" hidden><span aria-hidden="true">⚠</span> เชื่อมต่อฐานข้อมูลราคาล่าสุดไม่ได้ ราคาที่แสดงอาจไม่ใช่ราคาปัจจุบัน (ระบบจะตรวจสอบราคาจริงอีกครั้งตอนยืนยันคำสั่งซื้อ)</p>
         <div class="bom-list" id="bomList"></div>
- 
+
         <div class="discount-block">
           <label class="dropdown-label" for="discountInput">โค้ดส่วนลด (ถ้ามี)</label>
           <div class="discount-row">
@@ -760,7 +943,7 @@
           </div>
           <p class="discount-msg" id="discountMsg"></p>
         </div>
- 
+
         <div class="bom-subtotal-row hidden" id="subtotalRow">
           <span>ราคารวมก่อนลด</span>
           <span id="subtotalValue">฿0</span>
@@ -769,7 +952,7 @@
           <span id="discountAppliedLabel">ส่วนลด</span>
           <span id="discountAppliedValue">-฿0</span>
         </div>
- 
+
         <div class="bom-total-row">
           <span>ยอดรวมทั้งหมด</span>
           <span class="bom-total-value" id="bomTotal">฿0</span>
@@ -779,37 +962,61 @@
           <p class="confirm-title">✓ รับคำสั่งซื้อแล้ว</p>
           <p class="confirm-code">เลขที่คำสั่งซื้อ: <span id="orderCode"></span></p>
           <p class="confirm-sync-status" id="syncStatus"></p>
+
+          <div class="payment-section" id="paymentSection" hidden>
+            <p class="payment-title">ชำระเงินผ่านพร้อมเพย์</p>
+            <div class="promptpay-badge"><span class="promptpay-badge-th">พร้อมเพย์</span><span class="promptpay-badge-en">PromptPay</span></div>
+            <div class="qr-card" id="qrCard"></div>
+            <p class="qr-amount">ยอดที่ต้องชำระ <span id="qrAmount">฿0</span></p>
+            <p class="qr-note">สแกน QR ด้วยแอปธนาคารเพื่อชำระเงิน จากนั้น<strong>แนบสลิปโอนเงิน</strong>ก่อน จึงจะกดปุ่ม "ฉันโอนเงินแล้ว" เพื่อแจ้งร้านค้าได้</p>
+
+            <div class="slip-block">
+              <label class="dropdown-label" for="slipInput">แนบสลิปโอนเงิน (บังคับ)</label>
+              <input type="file" class="slip-input" id="slipInput" accept="image/*">
+              <img class="slip-preview" id="slipPreview" alt="ตัวอย่างสลิปที่แนบ">
+            </div>
+
+            <button type="button" class="pay-confirm-btn" id="payConfirmBtn" disabled>ฉันโอนเงินแล้ว</button>
+            <p class="payment-status" id="paymentStatus"></p>
+          </div>
+
           <button type="button" class="copy-btn" id="copyBtn">คัดลอกสรุปคำสั่งซื้อ</button>
         </div>
       </div>
     </aside>
   </div>
- 
+
 </div>
- 
+
 <button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
   <span class="mobile-pill-label">รวม</span>
   <span id="mobilePillTotal">฿0</span>
 </button>
- 
+
 <script>
 (function(){
   // ==== ตั้งค่าตรงนี้ ====
   // วางลิงก์ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่ได้จากขั้นตอน Deploy
   // ถ้ายังไม่ใส่ ระบบจะยังใช้งานได้ปกติ แค่จะไม่ส่งข้อมูลเข้า Google Sheets อัตโนมัติ
   const ORDER_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDK0CNLKnR4byEFwDmwwZy3BvQUOoCa_1m_0Z3_fZMgwwWsrUiOjpvxM-Dsnej6TEF/exec';
- 
-  // รายชื่อโค้ดส่วนลด: 'โค้ด' (พิมพ์ใหญ่ทั้งหมด) : เปอร์เซ็นต์ส่วนลด
-  // เพิ่ม/ลบ/แก้ไขโค้ดได้ตรงนี้ — ตรวจสอบฝั่ง browser เท่านั้น ไม่ได้ผูกกับฐานข้อมูลจริง
-  // (ลูกค้าที่เปิดดู source code ของหน้านี้จะเห็นโค้ดทั้งหมดได้)
-  const DISCOUNT_CODES = 
-  {
+
+  // รายการสำรอง — ใช้เฉพาะตอนที่ยังไม่ได้ใส่ ORDER_WEBHOOK_URL ด้านบน (เช่น ทดสอบหน้าเว็บเฉยๆ)
+  // เมื่อเชื่อมต่อ Google Sheets แล้ว โค้ดส่วนลดจริงทั้งหมดจะถูกอ่านจากแท็บ "Discounts"
+  // ในสเปรดชีตเท่านั้น แก้ไข/ปิดโค้ดได้จากในชีตโดยตรง ไม่ต้องแก้โค้ดตรงนี้อีก
+  const FALLBACK_DISCOUNT_CODES = {
     'WELCOME10': 10,
-    'XZERHUMYAI10': 10
+    'VIP15': 15
   };
+
+  // เลขพร้อมเพย์ของร้าน: ดึงมาจาก QR จริงที่ร้านอัปโหลดให้ (เลข e-Wallet ID 15 หลักจากธนาคาร)
+  // ถ้าจะเปลี่ยนบัญชีทีหลัง ใส่แทนได้เลย: เบอร์โทร 10 หลัก / เลขบัตร ปชช.-ผู้เสียภาษี 13 หลัก / เลข e-Wallet ID 15 หลัก
+  const PROMPTPAY_ID = '004999230347410';
   // =======================
- 
-  const priceData = {
+
+  // ตารางราคาสำรอง — ใช้ชั่วคราวเฉพาะตอนดึงราคาจากชีต "Prices" ไม่สำเร็จ (เช่น เน็ตหลุด/Apps Script ล่ม)
+  // ราคาจริงที่ใช้งานปกติทั้งหมดมาจากชีต "Prices" ผ่าน action=getPrices เท่านั้น แก้ราคาได้จากชีตโดยตรง
+  // ไม่ต้องแก้ตรงนี้อีก (อันนี้เก็บไว้เป็นตาข่ายนิรภัยให้หน้าเว็บยังใช้งานได้แม้ดึงชีตไม่สำเร็จ)
+  const FALLBACK_PRICE_DATA = {
     pcb: {
       suiovoi:    { label:'SuiOvOi 8K',    price:2000 },
       hyperstrike:{ label:'Hyperstrike 8K',price:2500 }
@@ -842,7 +1049,11 @@
       noController:   { label:'ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)',     price:400 }
     }
   };
- 
+
+  // priceData คือตัวที่ระบบใช้จริงตอนคำนวณ — เริ่มต้นด้วยราคาสำรองไปก่อน แล้ว loadPrices() จะสลับมาใช้
+  // ราคาจริงจากชีตทันทีที่ดึงสำเร็จ (ดูฟังก์ชัน loadPrices ด้านล่าง)
+  let priceData = FALLBACK_PRICE_DATA;
+
   const requiredGroups = [
     { name:'pcb',     fieldId:'field-pcb',     label:'บอร์ด PCB',     getValue:function(){ return getSelected('pcb'); } },
     { name:'triggerBumper', fieldId:'field-trigger', label:'Clicky Trigger/Bumper', getValue:function(){ return getSelected('triggerBumper'); } },
@@ -851,7 +1062,7 @@
     { name:'analogR', fieldId:'field-analogR', label:'Analog ขวา', getValue:function(){ return getSelected('analogR'); } },
     { name:'ps4shell', fieldId:'field-ps4shell', label:'กรอบคอนโทรลเลอร์ PS4', getValue:function(){ return getSelected('ps4shell'); } }
   ];
- 
+
   const form = document.getElementById('orderForm');
   const bomList = document.getElementById('bomList');
   const bomTotalEl = document.getElementById('bomTotal');
@@ -863,42 +1074,54 @@
   const discountInput = document.getElementById('discountInput');
   const discountBtn = document.getElementById('discountBtn');
   const discountMsg = document.getElementById('discountMsg');
+  const customerEmail = document.getElementById('customerEmail');
+  const customerAddress = document.getElementById('customerAddress');
+  const emailError = document.getElementById('emailError');
+  const addressError = document.getElementById('addressError');
   const subtotalRow = document.getElementById('subtotalRow');
   const subtotalValueEl = document.getElementById('subtotalValue');
   const discountAppliedRow = document.getElementById('discountAppliedRow');
   const discountAppliedLabel = document.getElementById('discountAppliedLabel');
   const discountAppliedValue = document.getElementById('discountAppliedValue');
+  const paymentSection = document.getElementById('paymentSection');
+  const qrCard = document.getElementById('qrCard');
+  const qrAmountEl = document.getElementById('qrAmount');
+  const slipInput = document.getElementById('slipInput');
+  const slipPreview = document.getElementById('slipPreview');
+  const payConfirmBtn = document.getElementById('payConfirmBtn');
+  const paymentStatus = document.getElementById('paymentStatus');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- 
+
   let lastItems = [];
   let lastTotal = 0;
   let lastSubtotal = 0;
   let lastDiscountAmount = 0;
   let appliedDiscount = null; // { code, percent } เมื่อใช้โค้ดส่วนลดสำเร็จ
- 
+  let slipData = null; // { base64, mimeType, fileName } เมื่อลูกค้าแนบสลิปแล้ว
+
   function getSelected(name){
     const el = form.querySelector('input[name="' + name + '"]:checked');
     return el ? el.value : null;
   }
- 
+
   function getPaddlesValue(){
     const toggle = document.getElementById('paddlesToggle');
     if(!toggle || !toggle.checked) return 'none';
     const sel = document.getElementById('paddlesSelect');
     return sel && sel.value ? sel.value : null;
   }
- 
+
   function getPaddleSideValue(){
     const sel = document.getElementById('paddlesSelect');
     if(!sel || sel.value !== 'one') return 'na';
     const sideSel = document.getElementById('paddleSideSelect');
     return sideSel && sideSel.value ? sideSel.value : null;
   }
- 
+
   function currency(n){
     return '฿' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
- 
+
   function rowHtml(name, price){
     if(name === null){
       return '<div class="bom-row muted"><span class="bom-name">— ยังไม่ได้เลือก —</span></div>';
@@ -908,11 +1131,11 @@
            '<span class="bom-dots"></span>' +
            '<span class="bom-price">' + priceLabel + '</span></div>';
   }
- 
+
   function computeAndRender(){
     const items = [];
     let total = 0;
- 
+
     const pcbVal = getSelected('pcb');
     if(pcbVal){
       const d = priceData.pcb[pcbVal];
@@ -921,7 +1144,7 @@
     } else {
       items.push({ name:null, price:null });
     }
- 
+
     const paddlesVal = getPaddlesValue();
     if(paddlesVal){
       const d = priceData.paddles[paddlesVal];
@@ -937,7 +1160,7 @@
     } else {
       items.push({ name:null, price:null });
     }
- 
+
     const triggerVal = getSelected('triggerBumper');
     if(triggerVal){
       const d = priceData.triggerBumper[triggerVal];
@@ -946,7 +1169,7 @@
     } else {
       items.push({ name:null, price:null });
     }
- 
+
     const faceVal = getSelected('faceButtons');
     if(faceVal){
       const d = priceData.faceButtons[faceVal];
@@ -955,7 +1178,7 @@
     } else {
       items.push({ name:null, price:null });
     }
- 
+
     ['analogL','analogR','ps4shell'].forEach(function(group){
       const val = getSelected(group);
       if(val){
@@ -966,19 +1189,19 @@
         items.push({ name:null, price:null });
       }
     });
- 
+
     lastItems = items;
     lastSubtotal = total;
- 
+
     let discountAmount = 0;
     if(appliedDiscount){
       discountAmount = Math.round(total * appliedDiscount.percent / 100);
     }
     lastDiscountAmount = discountAmount;
     lastTotal = total - discountAmount;
- 
+
     bomList.innerHTML = items.map(function(it){ return rowHtml(it.name, it.price); }).join('');
- 
+
     if(appliedDiscount){
       subtotalRow.classList.remove('hidden');
       subtotalValueEl.textContent = currency(lastSubtotal);
@@ -989,26 +1212,26 @@
       subtotalRow.classList.add('hidden');
       discountAppliedRow.classList.add('hidden');
     }
- 
+
     bomTotalEl.textContent = currency(lastTotal);
     mobilePillTotal.textContent = currency(lastTotal);
- 
+
     document.querySelectorAll('.option').forEach(function(opt){
       const input = opt.querySelector('input');
       opt.classList.toggle('selected', !!(input && input.checked));
     });
   }
- 
+
   form.querySelectorAll('input, select').forEach(function(el){
     el.addEventListener('change', computeAndRender);
   });
- 
+
   const paddlesToggle = document.getElementById('paddlesToggle');
   const paddlesFrame = document.getElementById('paddlesFrame');
   paddlesToggle.addEventListener('change', function(){
     paddlesFrame.hidden = !paddlesToggle.checked;
   });
- 
+
   const paddlesSelect = document.getElementById('paddlesSelect');
   const paddleSideFrame = document.getElementById('paddleSideFrame');
   const paddleSideSelect = document.getElementById('paddleSideSelect');
@@ -1017,7 +1240,18 @@
     paddleSideFrame.hidden = !showSide;
     if(!showSide){ paddleSideSelect.value = ''; }
   });
- 
+
+  function checkDiscountCode(code){
+    if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
+      // ยังไม่ได้เชื่อมต่อ Google Sheets — ใช้รายการสำรองในเครื่องแทน (ทดสอบเฉยๆ ไม่ใช่ของจริง)
+      const percent = FALLBACK_DISCOUNT_CODES[code];
+      return Promise.resolve(percent ? { valid:true, percent:percent } : { valid:false });
+    }
+    return fetch(ORDER_WEBHOOK_URL + '?action=checkDiscount&code=' + encodeURIComponent(code))
+      .then(function(res){ return res.json(); })
+      .catch(function(){ return { valid:false, error:true }; });
+  }
+
   function applyDiscount(){
     const raw = discountInput.value.trim().toUpperCase();
     if(!raw){
@@ -1025,22 +1259,40 @@
       discountMsg.className = 'discount-msg fail';
       return;
     }
-    const percent = DISCOUNT_CODES[raw];
-    if(!percent){
-      discountMsg.textContent = 'โค้ดนี้ไม่ถูกต้องหรือหมดอายุแล้ว';
-      discountMsg.className = 'discount-msg fail';
-      return;
-    }
-    appliedDiscount = { code: raw, percent: percent };
-    discountInput.value = raw;
-    discountInput.disabled = true;
-    discountBtn.textContent = 'ยกเลิกโค้ด';
-    discountBtn.classList.add('applied');
-    discountMsg.textContent = '✓ ใช้โค้ด ' + raw + ' ส่วนลด ' + percent + '% แล้ว';
-    discountMsg.className = 'discount-msg ok';
-    computeAndRender();
+
+    discountBtn.disabled = true;
+    discountBtn.textContent = 'กำลังตรวจสอบ...';
+    discountMsg.textContent = 'กำลังตรวจสอบโค้ดกับ Google Sheets...';
+    discountMsg.className = 'discount-msg';
+
+    checkDiscountCode(raw).then(function(res){
+      discountBtn.disabled = false;
+
+      if(res && res.error){
+        discountBtn.textContent = 'ใช้โค้ด';
+        discountMsg.textContent = 'ตรวจสอบโค้ดไม่สำเร็จ กรุณาลองใหม่';
+        discountMsg.className = 'discount-msg fail';
+        return;
+      }
+
+      if(!res || !res.valid){
+        discountBtn.textContent = 'ใช้โค้ด';
+        discountMsg.textContent = 'โค้ดนี้ไม่ถูกต้องหรือหมดอายุแล้ว';
+        discountMsg.className = 'discount-msg fail';
+        return;
+      }
+
+      appliedDiscount = { code: raw, percent: res.percent };
+      discountInput.value = raw;
+      discountInput.disabled = true;
+      discountBtn.textContent = 'ยกเลิกโค้ด';
+      discountBtn.classList.add('applied');
+      discountMsg.textContent = '✓ ใช้โค้ด ' + raw + ' ส่วนลด ' + res.percent + '% แล้ว';
+      discountMsg.className = 'discount-msg ok';
+      computeAndRender();
+    });
   }
- 
+
   function removeDiscount(){
     appliedDiscount = null;
     discountInput.value = '';
@@ -1051,22 +1303,22 @@
     discountMsg.className = 'discount-msg';
     computeAndRender();
   }
- 
+
   discountBtn.addEventListener('click', function(){
     if(appliedDiscount){ removeDiscount(); } else { applyDiscount(); }
   });
- 
+
   discountInput.addEventListener('keydown', function(e){
     if(e.key === 'Enter'){
       e.preventDefault();
       if(!appliedDiscount){ applyDiscount(); }
     }
   });
- 
+
   submitBtn.addEventListener('click', function(){
     let firstInvalid = null;
     let allValid = true;
- 
+
     requiredGroups.forEach(function(g){
       const val = g.getValue();
       const fieldEl = document.getElementById(g.fieldId);
@@ -1078,7 +1330,7 @@
         fieldEl.classList.remove('invalid');
       }
     });
- 
+
     // Field 02 has two independent conditions: paddle count, and side (only when count = 1)
     const paddlesFieldEl = document.getElementById('field-paddles');
     const paddlesCountError = document.getElementById('paddlesCountError');
@@ -1086,21 +1338,21 @@
     const countVal = getPaddlesValue();
     const sideVal = getPaddleSideValue();
     let paddlesOk = true;
- 
+
     if(!countVal){
       paddlesCountError.style.display = 'flex';
       paddlesOk = false;
     } else {
       paddlesCountError.style.display = 'none';
     }
- 
+
     if(sideVal === null){
       paddlesSideError.style.display = 'flex';
       paddlesOk = false;
     } else {
       paddlesSideError.style.display = 'none';
     }
- 
+
     if(!paddlesOk){
       paddlesFieldEl.classList.add('invalid');
       allValid = false;
@@ -1108,20 +1360,51 @@
     } else {
       paddlesFieldEl.classList.remove('invalid');
     }
- 
+
+    // ตรวจอีเมล/ที่อยู่จัดส่ง
+    const contactFieldEl = document.getElementById('field-contact');
+    const emailVal = customerEmail.value.trim();
+    const addressVal = customerAddress.value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+    const addressOk = addressVal.length > 0;
+    let contactOk = true;
+
+    if(!emailOk){
+      emailError.style.display = 'flex';
+      contactOk = false;
+    } else {
+      emailError.style.display = 'none';
+    }
+
+    if(!addressOk){
+      addressError.style.display = 'flex';
+      contactOk = false;
+    } else {
+      addressError.style.display = 'none';
+    }
+
+    if(!contactOk){
+      contactFieldEl.classList.add('invalid');
+      allValid = false;
+      if(!firstInvalid) firstInvalid = contactFieldEl;
+    } else {
+      contactFieldEl.classList.remove('invalid');
+    }
+
     if(!allValid){
       confirmBox.classList.add('hidden');
       firstInvalid.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'center' });
       return;
     }
- 
+
     const code = 'SO-' + Math.random().toString(36).slice(2,8).toUpperCase();
     orderCodeEl.textContent = code;
     confirmBox.classList.remove('hidden');
     confirmBox.dataset.code = code;
+    resetPaymentSection();
     sendOrderToSheet(code);
   });
- 
+
   function buildOrderText(code){
     const lines = [
       'ใบสรุปคำสั่งซื้อ (BOM) — ' + code,
@@ -1138,20 +1421,204 @@
       lines.push('ส่วนลด (' + appliedDiscount.code + ' -' + appliedDiscount.percent + '%): -' + currency(lastDiscountAmount));
     }
     lines.push('ยอดรวมทั้งหมด: ' + currency(lastTotal));
+    lines.push('------------------------------');
+    lines.push('อีเมล: ' + customerEmail.value.trim());
+    lines.push('ที่อยู่จัดส่ง: ' + customerAddress.value.trim());
     return lines.join('\n');
   }
- 
+
+  // ========== PromptPay QR (มาตรฐาน EMV QR Code — สร้างในเบราว์เซอร์ ไม่ต้องพึ่ง API ภายนอก) ==========
+  function crc16(str){
+    let crc = 0xFFFF;
+    for(let i = 0; i < str.length; i++){
+      crc ^= (str.charCodeAt(i) << 8);
+      for(let j = 0; j < 8; j++){
+        crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+      }
+    }
+    return crc.toString(16).toUpperCase().padStart(4, '0');
+  }
+
+  function tlv(id, value){
+    return id + value.length.toString().padStart(2, '0') + value;
+  }
+
+  // แปลงเลขพร้อมเพย์ที่กรอกไว้ (เบอร์โทร 10 หลัก หรือเลขบัตร ปชช./ผู้เสียภาษี 13 หลัก) เป็นฟอร์แมตของ EMV QR
+  function formatPromptPayTarget(rawId){
+    const digits = (rawId || '').toString().replace(/[^0-9]/g, '');
+    if(digits.length === 15){ return { tag:'03', value: digits }; }       // เลข e-Wallet ID / เลขบัญชีร้านค้าจากธนาคาร
+    if(digits.length === 13){ return { tag:'02', value: digits }; }
+    if(digits.length === 10 && digits.charAt(0) === '0'){ return { tag:'01', value:'0066' + digits.substring(1) }; }
+    if(digits.length === 9){ return { tag:'01', value:'0066' + digits }; }
+    return null;
+  }
+
+  function buildPromptPayPayload(rawId, amount){
+    const target = formatPromptPayTarget(rawId);
+    if(!target) return null;
+
+    const merchantInfo = tlv('00','A000000677010111') + tlv(target.tag, target.value);
+
+    let payload =
+      tlv('00','01') +
+      tlv('01', amount ? '12' : '11') +
+      tlv('29', merchantInfo) +
+      tlv('53','764');
+
+    if(amount){ payload += tlv('54', amount.toFixed(2)); }
+    payload += tlv('58','TH');
+    payload += '6304';
+    return payload + crc16(payload);
+  }
+
+  function showPaymentSection(code, amount){
+    if(!paymentSection || !qrCard) return;
+
+    const payload = buildPromptPayPayload(PROMPTPAY_ID, amount);
+    qrCard.innerHTML = '';
+
+    if(!payload){
+      qrCard.innerHTML = '<p style="color:#B23A2A;font-family:var(--sans);font-size:12.5px;margin:0;padding:6px;text-align:center;">ร้านยังไม่ได้ตั้งค่าเลขพร้อมเพย์ กรุณาติดต่อร้านเพื่อชำระเงินโดยตรง</p>';
+      paymentSection.hidden = false;
+      return;
+    }
+
+    new QRCode(qrCard, { text: payload, width:200, height:200, correctLevel: QRCode.CorrectLevel.M });
+    qrAmountEl.textContent = currency(Math.round(amount));
+    paymentSection.hidden = false;
+  }
+
+  function resetPaymentSection(){
+    slipData = null;
+    if(slipInput){ slipInput.value = ''; slipInput.disabled = false; }
+    if(slipPreview){ slipPreview.classList.remove('visible'); slipPreview.src = ''; }
+    if(payConfirmBtn){ payConfirmBtn.disabled = true; payConfirmBtn.textContent = 'ฉันโอนเงินแล้ว'; }
+    if(paymentStatus){ paymentStatus.textContent = ''; paymentStatus.className = 'payment-status'; }
+    if(paymentSection){ paymentSection.hidden = true; }
+  }
+
+  // ย่อ/บีบอัดรูปสลิปในเครื่องลูกค้าก่อนส่ง เพื่อให้อัปโหลดไวและไม่โดนจำกัดขนาดของ Apps Script
+  function compressImage(file, maxDim, quality){
+    return new Promise(function(resolve, reject){
+      const reader = new FileReader();
+      reader.onerror = function(){ reject(new Error('อ่านไฟล์ไม่สำเร็จ')); };
+      reader.onload = function(){
+        const img = new Image();
+        img.onerror = function(){ reject(new Error('เปิดรูปภาพไม่สำเร็จ')); };
+        img.onload = function(){
+          let w = img.width, h = img.height;
+          if(w > maxDim || h > maxDim){
+            if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if(slipInput){
+    slipInput.addEventListener('change', function(){
+      const file = slipInput.files && slipInput.files[0];
+      slipData = null;
+      slipPreview.classList.remove('visible');
+      payConfirmBtn.disabled = true;
+      if(!file) return;
+
+      paymentStatus.textContent = 'กำลังเตรียมไฟล์สลิป...';
+      paymentStatus.className = 'payment-status pending';
+
+      compressImage(file, 1400, 0.82).then(function(dataUrl){
+        slipData = {
+          base64: dataUrl.split(',')[1],
+          mimeType: 'image/jpeg',
+          fileName: (file.name || 'slip').replace(/\.[^.]+$/, '') + '.jpg'
+        };
+        slipPreview.src = dataUrl;
+        slipPreview.classList.add('visible');
+        payConfirmBtn.disabled = false;
+        paymentStatus.textContent = '';
+        paymentStatus.className = 'payment-status';
+      }).catch(function(){
+        paymentStatus.textContent = '⚠ แนบไฟล์สลิปไม่สำเร็จ กรุณาลองใหม่';
+        paymentStatus.className = 'payment-status fail';
+      });
+    });
+  }
+
+  if(payConfirmBtn){
+    payConfirmBtn.addEventListener('click', function(){
+      const code = confirmBox.dataset.code || '';
+
+      if(!slipData){
+        paymentStatus.textContent = 'กรุณาแนบสลิปโอนเงินก่อนกดยืนยัน';
+        paymentStatus.className = 'payment-status fail';
+        return;
+      }
+
+      if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
+        paymentStatus.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets จึงแจ้งชำระเงินอัตโนมัติไม่ได้ กรุณาแคปหน้าจอนี้ส่งร้านโดยตรง';
+        paymentStatus.className = 'payment-status warn';
+        return;
+      }
+
+      payConfirmBtn.disabled = true;
+      payConfirmBtn.textContent = 'กำลังส่งข้อมูล...';
+      paymentStatus.textContent = 'กำลังแจ้งการชำระเงิน...';
+      paymentStatus.className = 'payment-status pending';
+
+      const payload = { action: 'confirmPayment', orderCode: code };
+      if(slipData){
+        payload.slipBase64 = slipData.base64;
+        payload.slipMimeType = slipData.mimeType;
+        payload.slipFileName = slipData.fileName;
+      }
+
+      fetch(ORDER_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+        .then(function(res){ return res.json(); })
+        .then(function(result){
+          if(!result || result.result === 'error'){
+            payConfirmBtn.disabled = false;
+            payConfirmBtn.textContent = 'ฉันโอนเงินแล้ว';
+            paymentStatus.textContent = '⚠ แจ้งชำระเงินไม่สำเร็จ: ' + (result && result.message ? result.message : 'ไม่ทราบสาเหตุ') + ' — กรุณาติดต่อ @discord mosudesu1';
+            paymentStatus.className = 'payment-status fail';
+            return;
+          }
+          payConfirmBtn.textContent = '✓ แจ้งชำระเงินแล้ว';
+          paymentStatus.textContent = '✓ ร้านได้รับแจ้งการชำระเงินแล้ว รอตรวจสอบยอด';
+          paymentStatus.className = 'payment-status ok';
+          slipInput.disabled = true;
+        })
+        .catch(function(){
+          payConfirmBtn.disabled = false;
+          payConfirmBtn.textContent = 'ฉันโอนเงินแล้ว';
+          paymentStatus.textContent = '⚠ แจ้งชำระเงินไม่สำเร็จ กรุณาลองใหม่ หรือติดต่อ @discord mosudesu1';
+          paymentStatus.className = 'payment-status fail';
+        });
+    });
+  }
+
   function sendOrderToSheet(code){
     const statusEl = document.getElementById('syncStatus');
     if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
       if(statusEl){
-        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)'; //ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)
+        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)';
         statusEl.className = 'confirm-sync-status warn';
       }
+      showPaymentSection(code, lastTotal);
       return;
     }
     if(statusEl){
-      statusEl.textContent = 'กำลังส่งข้อมูลการสั่งซื้อ..'; // กำลังบันทึกลง Google Sheets...
+      statusEl.textContent = 'กำลังบันทึกลง Google Sheets...';
       statusEl.className = 'confirm-sync-status pending';
     }
     const payload = {
@@ -1161,7 +1628,10 @@
       discountCode: appliedDiscount ? appliedDiscount.code : '',
       discountPercent: appliedDiscount ? appliedDiscount.percent : 0,
       discountAmount: lastDiscountAmount,
-      total: lastTotal
+      total: lastTotal,
+      customerEmail: customerEmail.value.trim(),
+      customerAddress: customerAddress.value.trim(),
+      selections: getCurrentSelections()
     };
     fetch(ORDER_WEBHOOK_URL, {
       method: 'POST',
@@ -1169,11 +1639,34 @@
       body: JSON.stringify(payload)
     })
       .then(function(res){ return res.json(); })
-      .then(function(){
-        if(statusEl){
-          statusEl.textContent = '✓ ส่งคำสั่งซื้อแล้ว :)';
-          statusEl.className = 'confirm-sync-status ok';
+      .then(function(result){
+        if(!statusEl) return;
+
+        if(!result || result.result === 'error'){
+          statusEl.textContent = '⚠ ส่งคำสั่งซื้อไม่สำเร็จ กรุณาติดต่อ @discord mosudesu1';
+          statusEl.className = 'confirm-sync-status fail';
+          return;
         }
+
+        // ใช้ยอดที่เซิร์ฟเวอร์คำนวณยืนยันกลับมา (result.total) เป็นยอดสำหรับ QR เสมอ เพื่อกันกรณีโค้ดส่วนลด
+        // ถูกปฏิเสธฝั่งเซิร์ฟเวอร์แล้วยอดหน้าเว็บกับยอดจริงไม่ตรงกัน
+        const confirmedTotal = (typeof result.total === 'number') ? result.total : lastTotal;
+
+        if(appliedDiscount && result.discountApplied === false){
+          const rejectedCode = appliedDiscount.code;
+          const reason = result.discountReason || 'ไม่ทราบสาเหตุ';
+          removeDiscount();
+          discountMsg.textContent = 'โค้ด "' + rejectedCode + '" ใช้ไม่ได้แล้ว (' + reason + ') — ระบบบันทึกยอดเต็มราคาไว้แล้ว';
+          discountMsg.className = 'discount-msg fail';
+          statusEl.textContent = '✓ บันทึกคำสั่งซื้อแล้ว แต่โค้ดส่วนลด "' + rejectedCode + '" ใช้ไม่ได้แล้ว (' + reason + ') ยอดที่ต้องชำระคือราคาเต็ม กรุณาตรวจสอบยอดก่อนโอน';
+          statusEl.className = 'confirm-sync-status partial';
+          showPaymentSection(code, confirmedTotal);
+          return;
+        }
+
+        statusEl.textContent = '✓ ส่งคำสั่งซื้อแล้ว :)';
+        statusEl.className = 'confirm-sync-status ok';
+        showPaymentSection(code, confirmedTotal);
       })
       .catch(function(){
         if(statusEl){
@@ -1182,7 +1675,7 @@
         }
       });
   }
- 
+
   copyBtn.addEventListener('click', function(){
     const code = confirmBox.dataset.code || '';
     const text = buildOrderText(code);
@@ -1196,7 +1689,7 @@
       fallbackCopy(text, done);
     }
   });
- 
+
   function fallbackCopy(text, done){
     try{
       const ta = document.createElement('textarea');
@@ -1212,16 +1705,102 @@
       done(false);
     }
   }
- 
+
   document.getElementById('mobilePill').addEventListener('click', function(){
     document.getElementById('summaryCol').scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block:'start' });
   });
- 
-  computeAndRender();
+
+  // ========== ราคา: ดึงจากชีต "Prices" ตอนโหลดหน้าเว็บ (single source of truth) ==========
+  function currencyDelta(price){
+    return price === 0 ? 'รวมแล้ว' : '+' + currency(price);
+  }
+
+  // อัปเดตทั้งชื่อตัวเลือก (option-title) และป้ายราคา (badge "+฿xxx") ของทุกกลุ่ม รวมถึงตัวเลือกใน
+  // dropdown ปุ่มหลัง ให้ตรงกับ priceData ปัจจุบันเสมอ (ทั้งคอลัมน์ "ชื่อที่แสดง" และ "ราคา (บาท)"
+  // จากชีต Prices) — แก้ชื่อ/ราคาในชีตแล้วรีเฟรชหน้าเว็บ ก็เปลี่ยนตามทันที ไม่ต้องแก้ข้อความในไฟล์
+  // HTML เองอีกต่อไป (หมายเหตุ: ใช้ได้กับ "รหัสตัวเลือก" ที่มี input อยู่แล้วในหน้าเว็บเท่านั้น ถ้าเพิ่ม
+  // ตัวเลือกใหม่ทั้งแถวในชีต ยังต้องมาเพิ่ม input ในไฟล์ HTML เองอยู่ดี เพราะโครงสร้างฟอร์มเป็นแบบตายตัว)
+  function applyPriceDataToDom(){
+    ['pcb','triggerBumper','faceButtons','analogL','analogR','ps4shell'].forEach(function(group){
+      const groupData = priceData[group];
+      if(!groupData) return;
+      Object.keys(groupData).forEach(function(key){
+        const input = form.querySelector('input[name="' + group + '"][value="' + key + '"]');
+        if(!input) return;
+        const optionEl = input.closest('.option');
+        if(!optionEl) return;
+        const titleEl = optionEl.querySelector('.option-title');
+        const badge = optionEl.querySelector('.option-price');
+        const price = groupData[key].price;
+        const label = (groupData[key].label || '').toString().trim();
+
+        // อัปเดตชื่อเฉพาะตอนชีตมีค่า "ชื่อที่แสดง" จริงๆ — ถ้าเว้นว่างไว้ในชีต จะคงข้อความเดิม
+        // ในไฟล์ HTML ไว้ก่อน กันชื่อตัวเลือกหายไปเฉยๆ เพราะลืมกรอกในชีต
+        if(titleEl && label) titleEl.textContent = label;
+
+        if(badge){
+          badge.textContent = currencyDelta(price);
+          badge.classList.toggle('included', price === 0);
+        }
+      });
+    });
+
+    const paddlesSelect = document.getElementById('paddlesSelect');
+    if(paddlesSelect && priceData.paddles){
+      Array.prototype.forEach.call(paddlesSelect.options, function(opt){
+        const d = priceData.paddles[opt.value];
+        if(!d) return;
+        opt.textContent = d.label + ' — ' + currencyDelta(d.price);
+      });
+    }
+  }
+
+  // รวมตัวเลือกปัจจุบันของลูกค้าเป็นก้อนเดียว ส่งไปให้เซิร์ฟเวอร์ตรวจสอบราคาซ้ำตอนยืนยันคำสั่งซื้อ
+  function getCurrentSelections(){
+    return {
+      pcb: getSelected('pcb'),
+      paddles: getPaddlesValue(),
+      triggerBumper: getSelected('triggerBumper'),
+      faceButtons: getSelected('faceButtons'),
+      analogL: getSelected('analogL'),
+      analogR: getSelected('analogR'),
+      ps4shell: getSelected('ps4shell')
+    };
+  }
+
+  function loadPrices(){
+    const priceWarningEl = document.getElementById('priceWarning');
+
+    if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
+      // ไม่ได้เชื่อมต่อ Google Sheets เลย ใช้ราคาสำรองในไฟล์นี้ไปก่อน
+      applyPriceDataToDom();
+      computeAndRender();
+      return;
+    }
+
+    fetch(ORDER_WEBHOOK_URL + '?action=getPrices')
+      .then(function(res){ return res.json(); })
+      .then(function(result){
+        if(result && result.result === 'success' && result.prices && Object.keys(result.prices).length > 0){
+          priceData = result.prices;
+          if(priceWarningEl) priceWarningEl.hidden = true;
+        } else if(priceWarningEl){
+          priceWarningEl.hidden = false;
+        }
+      })
+      .catch(function(){
+        if(priceWarningEl) priceWarningEl.hidden = false;
+      })
+      .finally(function(){
+        applyPriceDataToDom();
+        computeAndRender();
+      });
+  }
+
+  computeAndRender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
+  loadPrices();
 })();
 </script>
- 
+
 </body>
 </html>
- 
-
