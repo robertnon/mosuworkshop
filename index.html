@@ -200,7 +200,34 @@
   }
   .preset-name{ font-size:14.5px; font-weight:700; color:var(--silk); }
   .preset-desc{ font-size:12px; color:var(--silk-dim); line-height:1.5; }
-  .preset-price{ font-family:var(--mono); font-size:12.5px; color:var(--copper-text); font-weight:600; margin-top:2px; }
+  .preset-price{ font-family:var(--mono); font-size:12.5px; color:var(--copper-text); font-weight:600; margin-top:2px; display:flex; align-items:center; min-height:16px; }
+
+  /* Loading skeleton — โชว์ระหว่างรอยืนยันราคากับชีต Prices จริง (ดู pricesSettled ใน JS) */
+  .skeleton-bar{
+    display:inline-block;
+    width:92px;
+    height:11px;
+    border-radius:5px;
+    background:linear-gradient(90deg, var(--panel-2) 25%, var(--line) 37%, var(--panel-2) 63%);
+    background-size:300px 100%;
+    animation:skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+  @keyframes skeleton-shimmer{
+    0%{ background-position:-150px 0; }
+    100%{ background-position:150px 0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .skeleton-bar{ animation:none; opacity:.6; }
+  }
+  .sr-only{
+    position:absolute;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
   .preset-card.preset-reset{ border-style:dashed; }
   .preset-card.preset-reset .preset-name{ color:var(--silk-dim); }
 
@@ -1319,6 +1346,9 @@
     { order:3, key:'apex',     icon:'⚡', name:'Apex / FPS Pro',   desc:'สเปกสูงสุด ปุ่มหลัง 2 ปุ่ม + TMR Stick + Full Face Clicky', pcb:'hyperstrike', paddles:'two',  paddleSide:'',      triggerFace:'full',   stickModule:'tmr',  ps4shell:'withController' }
   ];
   let PRESETS_LIST = FALLBACK_PRESETS;
+  // pricesSettled: false = ยังไม่ได้ยืนยันราคากับชีตจริง (แสดง skeleton บนการ์ด preset แทนตัวเลข)
+  // true = loadPrices() เสร็จแล้ว (ไม่ว่าสำเร็จหรือดึงไม่ได้แล้ว fallback ไปก็ตาม) ราคาที่โชว์ "นิ่ง" แล้ว
+  let pricesSettled = false;
 
   function getPresetByKey(key){
     return PRESETS_LIST.find(function(p){ return p.key === key; });
@@ -1432,6 +1462,13 @@
     PRESETS_LIST.forEach(function(p){
       const el = document.querySelector('[data-preset-price="' + p.key + '"]');
       if(!el) return;
+      if(!pricesSettled){
+        // ยังไม่ได้ยืนยันราคากับชีตจริง — โชว์แถบ shimmer แทนตัวเลข กันโชว์ราคาที่อาจจะยังไม่นิ่ง
+        el.classList.add('is-loading');
+        el.innerHTML = '<span class="skeleton-bar" aria-hidden="true"></span><span class="sr-only">กำลังตรวจสอบราคาล่าสุด</span>';
+        return;
+      }
+      el.classList.remove('is-loading');
       el.textContent = 'ประมาณ ' + currency(computePresetTotal(p));
     });
   }
@@ -1452,7 +1489,7 @@
       btn.innerHTML =
         '<span class="preset-name">' + (p.icon ? escapeHtml(p.icon) + ' ' : '') + escapeHtml(p.name || p.key) + '</span>' +
         '<span class="preset-desc">' + escapeHtml(p.desc || '') + '</span>' +
-        '<span class="preset-price" data-preset-price="' + escapeHtml(p.key) + '">กำลังคำนวณราคา...</span>';
+        '<span class="preset-price is-loading" data-preset-price="' + escapeHtml(p.key) + '"><span class="skeleton-bar" aria-hidden="true"></span><span class="sr-only">กำลังตรวจสอบราคาล่าสุด</span></span>';
       btn.addEventListener('click', function(){ applyPreset(p.key); });
       if(resetBtn){ grid.insertBefore(btn, resetBtn); } else { grid.appendChild(btn); }
     });
@@ -2112,6 +2149,7 @@
 
     if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
       // ไม่ได้เชื่อมต่อ Google Sheets เลย ใช้ราคาสำรองในไฟล์นี้ไปก่อน
+      pricesSettled = true;
       applyPriceDataToDom();
       computeAndRender();
       return;
@@ -2131,6 +2169,7 @@
         if(priceWarningEl) priceWarningEl.hidden = false;
       })
       .finally(function(){
+        pricesSettled = true;
         applyPriceDataToDom();
         computeAndRender();
       });
