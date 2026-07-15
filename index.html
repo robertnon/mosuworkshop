@@ -84,6 +84,87 @@
   }
   .legend-help .req{ margin-left:0; margin-right:4px; }
 
+  /* ---------- Mode select (หน้าแรก เลือก Custom Build / เปลี่ยนอนาล็อกอย่างเดียว) ---------- */
+  .mode-select{
+    max-width:760px;
+    margin:0 auto;
+    padding:40px 0 20px;
+    text-align:center;
+  }
+  .mode-select-title{
+    font-size:clamp(24px,4vw,32px);
+    color:var(--silk);
+    margin:14px 0 8px;
+    font-weight:700;
+  }
+  .mode-select-sub{
+    color:var(--silk-dim);
+    font-size:14.5px;
+    margin:0 0 32px;
+  }
+  .mode-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:18px;
+    text-align:left;
+  }
+  .mode-card{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:26px 22px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    cursor:pointer;
+    font-family:var(--sans);
+    transition:border-color .15s ease, transform .15s ease, background .15s ease;
+  }
+  .mode-card:hover{
+    border-color:var(--copper);
+    background:var(--panel-2);
+    transform:translateY(-2px);
+  }
+  .mode-card:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:3px; }
+  .mode-card-icon{ font-size:30px; line-height:1; }
+  .mode-card-name{ font-size:18px; font-weight:700; color:var(--silk); }
+  .mode-card-desc{ font-size:13px; line-height:1.65; color:var(--silk-dim); }
+  .mode-card-cta{
+    margin-top:6px;
+    font-family:var(--mono);
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--copper-text);
+  }
+
+  /* ---------- แถบสลับโหมด (โผล่บนสุดของฟอร์มจริง หลังเลือกโหมดแล้ว) ---------- */
+  .mode-switch-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 16px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin-bottom:24px;
+    font-family:var(--mono);
+    font-size:12.5px;
+  }
+  .mode-switch-label{ color:var(--silk-dim); }
+  .mode-switch-label strong{ color:var(--copper-text); }
+  .mode-switch-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--silk);
+    border-radius:7px;
+    padding:6px 12px;
+    font-family:var(--mono);
+    font-size:12px;
+    cursor:pointer;
+  }
+  .mode-switch-btn:hover{ border-color:var(--copper); color:var(--copper-text); }
+
   /* ---------- Layout ---------- */
   .layout{
     display:grid;
@@ -526,7 +607,7 @@
   .discount-btn:hover{ border-color:var(--copper); background:var(--panel-2); }
   .discount-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:2px; }
   .discount-btn.applied{ border-color:var(--ok); color:var(--ok); }
-  .discount-btn.applied:hover{ background:rgba(127,211,162,0.12); }
+  .discount-btn.applied:hover{ background:rgba(110,231,201,0.12); }
   .discount-msg{
     margin:8px 0 0;
     font-family:var(--mono);
@@ -554,7 +635,7 @@
     border:none;
     border-radius:8px;
     background:var(--copper-bright);
-    color:#1A1006;
+    color:#12180C;
     font-family:var(--sans);
     font-size:15px;
     font-weight:600;
@@ -570,7 +651,7 @@
     padding:16px;
     border:1px solid var(--ok);
     border-radius:8px;
-    background:rgba(127,211,162,0.08);
+    background:rgba(110,231,201,0.08);
   }
   .confirm-box.hidden{ display:none; }
   .confirm-title{ margin:0 0 8px; font-weight:700; color:var(--ok); font-size:14px; }
@@ -604,7 +685,7 @@
     cursor:pointer;
     transition:background .15s ease;
   }
-  .copy-btn:hover{ background:rgba(127,211,162,0.12); }
+  .copy-btn:hover{ background:rgba(110,231,201,0.12); }
 
   /* ---------- Payment (PromptPay QR + slip) ---------- */
   .payment-section{
@@ -712,7 +793,7 @@
     cursor:pointer;
     transition:background .15s ease;
   }
-  .pay-confirm-btn:hover{ background:rgba(127,211,162,0.12); }
+  .pay-confirm-btn:hover{ background:rgba(110,231,201,0.12); }
   .pay-confirm-btn:focus-visible{ outline:2px solid var(--copper-bright); outline-offset:2px; }
   .pay-confirm-btn:disabled{ opacity:0.55; cursor:not-allowed; }
   .payment-status{
@@ -741,7 +822,7 @@
       right:20px;
       z-index:60;
       background:var(--copper-bright);
-      color:#1A1006;
+      color:#12180C;
       border:none;
       border-radius:999px;
       padding:12px 18px;
@@ -763,15 +844,53 @@
 
 <div class="page">
 
-  <header class="hero">
+  <!-- ===== หน้าแรก: เลือกโหมดก่อนเข้าฟอร์ม ===== -->
+  <div class="mode-select" id="modeSelectScreen">
     <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
-    <h1>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</h1>
-    <p>เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
-    <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
-  </header>
+    <h1 class="mode-select-title">เลือกบริการที่ต้องการ</h1>
+    <p class="mode-select-sub">เลือกโหมดที่ตรงกับสิ่งที่ต้องการ แล้วค่อยกรอกรายละเอียดในขั้นตอนถัดไป</p>
 
-  <div class="layout">
-    <form class="form-col" id="orderForm">
+    <div class="mode-grid">
+      <button type="button" class="mode-card" data-mode="custom">
+        <span class="mode-card-icon">🎮</span>
+        <span class="mode-card-name">Custom Build</span>
+        <span class="mode-card-desc">คัสตอมคอนโทรลเลอร์เต็มรูปแบบ — เลือกบอร์ด PCB, ปุ่มหลัง, Trigger/Face Buttons, อนาล็อกสติ๊ก และกรอบ PS4 ได้ตามต้องการ</span>
+        <span class="mode-card-cta">เริ่ม Custom Build →</span>
+      </button>
+
+      <button type="button" class="mode-card" data-mode="analogOnly">
+        <span class="mode-card-icon">🕹️</span>
+        <span class="mode-card-name">เปลี่ยนอนาล็อกอย่างเดียว</span>
+        <span class="mode-card-desc">ไม่ต้องคัสตอมทั้งตัว แค่เปลี่ยนก้านอนาล็อก (ALPS / HE / TMR) เลือกได้ทั้งข้างเดียวหรือทั้งคู่</span>
+        <span class="mode-card-cta">เริ่มเปลี่ยนอนาล็อก →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== ฟอร์มจริง: ซ่อนไว้ก่อนจนกว่าจะเลือกโหมด ===== -->
+  <div id="mainApp" hidden>
+
+    <div class="mode-switch-bar">
+      <span class="mode-switch-label">โหมด: <strong id="modeSwitchLabel">—</strong></span>
+      <button type="button" class="mode-switch-btn" id="modeSwitchBtn">เปลี่ยนโหมด</button>
+    </div>
+
+    <header class="hero" id="heroCustom">
+      <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
+      <h1>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</h1>
+      <p>เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
+      <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
+    </header>
+
+    <header class="hero" id="heroAnalog" hidden>
+      <span class="hero-eyebrow">Controller Mod · Analog Swap</span>
+      <h1>แบบฟอร์มเปลี่ยนอนาล็อกอย่างเดียว</h1>
+      <p>เลือกชนิดอนาล็อกและจำนวนก้านที่ต้องการเปลี่ยน ระบบจะคำนวณราคารวม (อะไหล่ + ค่าแรง) ให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
+      <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
+    </header>
+
+    <div class="layout">
+      <form class="form-col" id="orderForm">
 
       <!-- Honeypot กันบอท: ช่องนี้ต้องว่างเสมอสำหรับคนจริง ซ่อนด้วย CSS (ไม่ใช้ display:none เพราะบอทบางตัว
            เช็ค computed style แล้วข้ามช่องที่ display:none แต่ยังกรอกช่องที่แค่ขยับออกจออยู่) ห้ามลบ/แก้ id
@@ -780,6 +899,9 @@
         <label for="hpWebsite">เว็บไซต์ของคุณ</label>
         <input type="text" id="hpWebsite" name="hpWebsite" tabindex="-1" autocomplete="off">
       </div>
+
+      <!-- ===== โหมด Custom Build: ครอบฟิลด์ 00-05 ทั้งหมดไว้ในนี้ สลับซ่อน/โชว์ตามโหมดที่เลือก ===== -->
+      <div id="customBuildFields">
 
       <!-- 00 Preset builds -->
       <fieldset class="field" id="field-preset">
@@ -968,9 +1090,93 @@
         <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกตัวเลือกกรอบคอนโทรลเลอร์ PS4</p>
       </fieldset>
 
+      </div><!-- /customBuildFields -->
+
+      <!-- ===== โหมด เปลี่ยนอนาล็อกอย่างเดียว: ซ่อนไว้ก่อน โชว์เมื่อเลือกโหมดนี้จากหน้า mode-select ===== -->
+      <div id="analogOnlyFields" hidden>
+
+        <fieldset class="field" id="field-analogType">
+          <legend class="field-legend">
+            <span class="field-badge">01</span>
+            <span class="field-title-wrap">
+              <span class="field-eyebrow">Analog Swap · Stick Module</span>
+              <span class="field-title">เลือกชนิดอนาล็อกที่ต้องการเปลี่ยน<span class="req">*</span></span>
+            </span>
+          </legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="analogType" value="alps">
+              <span class="option-text">
+                <span class="option-title">ALPS</span>
+                <span class="option-sub">มาตรฐาน ทนทาน คุ้มราคา</span>
+              </span>
+              <span class="option-price">+฿200/ก้าน</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="analogType" value="he">
+              <span class="option-text">
+                <span class="option-title">HE (Hall Effect)</span>
+                <span class="option-sub">เซนเซอร์แม่เหล็ก ไม่มีดริฟท์ระยะยาว</span>
+              </span>
+              <span class="option-price">+฿300/ก้าน</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="analogType" value="tmr">
+              <span class="option-text">
+                <span class="option-title">TMR</span>
+                <span class="option-sub">รุ่นท็อป แม่นยำสูงสุด ตอบสนองไวสุด</span>
+              </span>
+              <span class="option-price">+฿400/ก้าน</span>
+            </label>
+          </div>
+          <p class="field-note">ราคาต่อก้าน รวมอะไหล่ + ค่าแรงแล้ว ระบบจะคูณให้อัตโนมัติตามจำนวนก้านที่เลือกด้านล่าง</p>
+          <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกชนิดอนาล็อก</p>
+        </fieldset>
+
+        <fieldset class="field" id="field-analogQuantity">
+          <legend class="field-legend">
+            <span class="field-badge">02</span>
+            <span class="field-title-wrap">
+              <span class="field-eyebrow">Analog Swap · Quantity</span>
+              <span class="field-title">จำนวนก้านที่ต้องการเปลี่ยน<span class="req">*</span></span>
+            </span>
+          </legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="analogQuantity" value="1">
+              <span class="option-text">
+                <span class="option-title">1 ก้าน</span>
+                <span class="option-sub">เปลี่ยนข้างเดียว (เลือกด้านด้านล่าง)</span>
+              </span>
+            </label>
+            <label class="option">
+              <input type="radio" name="analogQuantity" value="2">
+              <span class="option-text">
+                <span class="option-title">2 ก้าน (คู่ L+R)</span>
+                <span class="option-sub">เปลี่ยนทั้งสองข้าง</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="dropdown-frame" id="analogSideFrame" hidden>
+            <label class="dropdown-label" for="analogSideSelect">เลือกด้านที่ต้องการเปลี่ยน</label>
+            <select class="select-input" id="analogSideSelect">
+              <option value="" disabled selected>เลือกด้าน...</option>
+              <option value="left">ด้านซ้าย (L)</option>
+              <option value="right">ด้านขวา (R)</option>
+            </select>
+            <p class="error-msg" id="analogSideError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกด้านที่ต้องการเปลี่ยน</p>
+          </div>
+
+          <p class="error-msg" id="analogQuantityError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกจำนวนก้านที่ต้องการเปลี่ยน</p>
+        </fieldset>
+
+        <p class="field-note" style="margin:-4px 0 4px;">※กรุณาส่งคอนโทรลเลอร์ทั้งตัวมาให้ร้าน เนื่องจากต้องถอดประกอบเพื่อเปลี่ยนอนาล็อก</p>
+      </div><!-- /analogOnlyFields -->
+
       <fieldset class="field" id="field-contact">
         <legend class="field-legend">
-          <span class="field-badge">06</span>
+          <span class="field-badge" id="contactBadge">06</span>
           <span class="field-title-wrap">
             <span class="field-eyebrow">Contact &amp; Shipping</span>
             <span class="field-title">อีเมล &amp; ที่อยู่จัดส่ง<span class="req">*</span></span>
@@ -1059,12 +1265,14 @@
     </aside>
   </div>
 
-</div>
+  <button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
+    <span class="mobile-pill-label">รวม</span>
+    <span id="mobilePillTotal">฿0</span>
+  </button>
 
-<button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
-  <span class="mobile-pill-label">รวม</span>
-  <span id="mobilePillTotal">฿0</span>
-</button>
+  </div><!-- /mainApp -->
+
+</div>
 
 <script>
 (function(){
@@ -1172,6 +1380,17 @@
   let appliedDiscount = null; // { code, percent } เมื่อใช้โค้ดส่วนลดสำเร็จ
   let slipData = null; // { base64, mimeType, fileName } เมื่อลูกค้าแนบสลิปแล้ว
 
+  // currentMode: null (ยังไม่เลือกโหมด — อยู่หน้า mode-select) | 'custom' (Custom Build) | 'analogOnly' (เปลี่ยนอนาล็อกอย่างเดียว)
+  let currentMode = null;
+
+  // ราคาสำรองของบริการ "เปลี่ยนอนาล็อกอย่างเดียว" ใช้ตอนดึงจากชีต AnalogService ไม่ได้ (โครงสร้างเดียวกับ FALLBACK_PRICE_DATA)
+  const FALLBACK_ANALOG_PRICE_DATA = {
+    alps: { label:'ALPS', partPrice:100, laborPrice:100, stock:null },
+    he:   { label:'HE',   partPrice:200, laborPrice:100, stock:null },
+    tmr:  { label:'TMR',  partPrice:300, laborPrice:100, stock:null }
+  };
+  let analogPriceData = FALLBACK_ANALOG_PRICE_DATA;
+
   function getSelected(name){
     const el = form.querySelector('input[name="' + name + '"]:checked');
     return el ? el.value : null;
@@ -1222,6 +1441,8 @@
   }
 
   function computeAndRender(){
+    if(currentMode === 'analogOnly') return; // ฟังก์ชันนี้เฉพาะโหมด Custom Build เท่านั้น ดู computeAndRenderAnalog() สำหรับโหมดเปลี่ยนอนาล็อก
+
     const items = [];
     let total = 0;
 
@@ -1310,8 +1531,94 @@
     });
   }
 
+  // อ่านตัวเลือกปัจจุบันของโหมด "เปลี่ยนอนาล็อกอย่างเดียว" (ชนิด/จำนวนก้าน/ด้านที่ติดตั้งถ้าเลือก 1 ก้าน)
+  function getAnalogSelections(){
+    const typeInput = form.querySelector('input[name="analogType"]:checked');
+    const qtyInput = form.querySelector('input[name="analogQuantity"]:checked');
+    const sideSel = document.getElementById('analogSideSelect');
+    const quantity = qtyInput ? Number(qtyInput.value) : null;
+    return {
+      analogType: typeInput ? typeInput.value : null,
+      quantity: quantity,
+      side: (quantity === 1 && sideSel && sideSel.value) ? sideSel.value : null
+    };
+  }
+
+  // เวอร์ชันเรนเดอร์สรุปราคาของโหมด "เปลี่ยนอนาล็อกอย่างเดียว" — ใช้ตัวแปร/element ชุดเดียวกับ computeAndRender()
+  // (lastItems/lastSubtotal/lastTotal/bomList ฯลฯ) เพื่อให้ buildOrderText()/sendOrderToSheet()/ระบบส่วนลด
+  // ทำงานร่วมกันได้เลยโดยไม่ต้องแก้อะไรเพิ่ม
+  function computeAndRenderAnalog(){
+    if(currentMode !== 'analogOnly') return;
+
+    const items = [];
+    let total = 0;
+
+    const sel = getAnalogSelections();
+    if(sel.analogType && sel.quantity){
+      const d = analogPriceData[sel.analogType];
+      const unitPrice = d ? (d.partPrice + d.laborPrice) : 0;
+      const qty = sel.quantity;
+      const label = (d ? d.label : sel.analogType) + ' × ' + qty + ' ก้าน (อะไหล่ + ค่าแรง)';
+      const price = unitPrice * qty;
+      items.push({ name:label, price:price });
+      total += price;
+
+      if(qty === 1){
+        if(sel.side){
+          const sideLabel = sel.side === 'left' ? 'ด้านซ้าย (L)' : 'ด้านขวา (R)';
+          items.push({ name:'ติดตั้งด้าน: ' + sideLabel, price:0 });
+        } else {
+          items.push({ name:null, price:null });
+        }
+      }
+    } else {
+      items.push({ name:null, price:null });
+    }
+
+    lastItems = items;
+    lastSubtotal = total;
+
+    let discountAmount = 0;
+    if(appliedDiscount){
+      discountAmount = Math.round(total * appliedDiscount.percent / 100);
+    }
+    lastDiscountAmount = discountAmount;
+    lastTotal = total - discountAmount;
+
+    bomList.innerHTML = items.map(function(it){ return rowHtml(it.name, it.price); }).join('');
+
+    if(appliedDiscount){
+      subtotalRow.classList.remove('hidden');
+      subtotalValueEl.textContent = currency(lastSubtotal);
+      discountAppliedRow.classList.remove('hidden');
+      discountAppliedLabel.textContent = 'ส่วนลด (' + appliedDiscount.code + ' -' + appliedDiscount.percent + '%)';
+      discountAppliedValue.textContent = '-' + currency(discountAmount);
+    } else {
+      subtotalRow.classList.add('hidden');
+      discountAppliedRow.classList.add('hidden');
+    }
+
+    bomTotalEl.textContent = currency(lastTotal);
+    mobilePillTotal.textContent = currency(lastTotal);
+
+    document.querySelectorAll('#analogOnlyFields .option').forEach(function(opt){
+      const input = opt.querySelector('input');
+      opt.classList.toggle('selected', !!(input && input.checked));
+    });
+  }
+
+  // ตัวกลางเรียกฟังก์ชันเรนเดอร์ที่ถูกต้องตามโหมดปัจจุบัน — จุดที่เคยเรียก computeAndRender() ตรงๆ
+  // (เปลี่ยนตัวเลือก, กด preset, ใช้โค้ดส่วนลด, โหลดราคาเสร็จ ฯลฯ) เปลี่ยนมาเรียกอันนี้แทนทั้งหมดแล้ว
+  function rerender(){
+    if(currentMode === 'analogOnly'){
+      computeAndRenderAnalog();
+    } else {
+      computeAndRender();
+    }
+  }
+
   form.querySelectorAll('input, select').forEach(function(el){
-    el.addEventListener('change', computeAndRender);
+    el.addEventListener('change', function(){ rerender(); });
   });
 
   const paddlesSelect = document.getElementById('paddlesSelect');
@@ -1334,6 +1641,109 @@
   }
   triggerFaceSelect.addEventListener('change', updateTriggerFaceNotes);
   updateTriggerFaceNotes();
+
+  // ==== โหมด "เปลี่ยนอนาล็อกอย่างเดียว" — จำนวนก้าน (1/2) คุมการโชว์ dropdown เลือกด้าน ====
+  const analogSideFrame = document.getElementById('analogSideFrame');
+  const analogSideSelect = document.getElementById('analogSideSelect');
+  form.querySelectorAll('input[name="analogQuantity"]').forEach(function(input){
+    input.addEventListener('change', function(){
+      const showSide = input.value === '1' && input.checked;
+      analogSideFrame.hidden = !showSide;
+      if(!showSide){ analogSideSelect.value = ''; }
+    });
+  });
+
+  // ==== ระบบเลือก/สลับโหมด (หน้าแรก: Custom Build / เปลี่ยนอนาล็อกอย่างเดียว) ====
+  const modeSelectScreen = document.getElementById('modeSelectScreen');
+  const mainApp = document.getElementById('mainApp');
+  const heroCustom = document.getElementById('heroCustom');
+  const heroAnalog = document.getElementById('heroAnalog');
+  const customBuildFields = document.getElementById('customBuildFields');
+  const analogOnlyFields = document.getElementById('analogOnlyFields');
+  const modeSwitchLabel = document.getElementById('modeSwitchLabel');
+  const modeSwitchBtn = document.getElementById('modeSwitchBtn');
+  const contactBadge = document.getElementById('contactBadge');
+  let analogPricesLoaded = false; // โหลดครั้งแรกตอนเข้าโหมดนี้ครั้งแรกเท่านั้น (lazy load กันยิง request ที่ไม่จำเป็นตอนอยู่โหมด custom)
+
+  function enterMode(mode){
+    currentMode = mode;
+    modeSelectScreen.hidden = true;
+    mainApp.hidden = false;
+
+    if(mode === 'analogOnly'){
+      heroCustom.hidden = true;
+      heroAnalog.hidden = false;
+      customBuildFields.hidden = true;
+      analogOnlyFields.hidden = false;
+      modeSwitchLabel.textContent = 'เปลี่ยนอนาล็อกอย่างเดียว';
+      if(contactBadge) contactBadge.textContent = '03';
+      if(!analogPricesLoaded){
+        analogPricesLoaded = true;
+        loadAnalogPrices();
+      }
+    } else {
+      heroCustom.hidden = false;
+      heroAnalog.hidden = true;
+      customBuildFields.hidden = false;
+      analogOnlyFields.hidden = true;
+      modeSwitchLabel.textContent = 'Custom Build';
+      if(contactBadge) contactBadge.textContent = '06';
+    }
+
+    rerender();
+    window.scrollTo({ top:0, behavior: reducedMotion ? 'auto' : 'smooth' });
+  }
+
+  document.querySelectorAll('.mode-card').forEach(function(card){
+    card.addEventListener('click', function(){ enterMode(card.dataset.mode); });
+  });
+
+  modeSwitchBtn.addEventListener('click', function(){
+    if(!confirm('เปลี่ยนโหมดจะล้างตัวเลือกที่กรอกไว้ในฟอร์มปัจจุบัน ต้องการดำเนินการต่อหรือไม่?')) return;
+    currentMode = null;
+    mainApp.hidden = true;
+    modeSelectScreen.hidden = false;
+    window.scrollTo({ top:0, behavior: reducedMotion ? 'auto' : 'smooth' });
+  });
+
+  // ราคาบริการ "เปลี่ยนอนาล็อกอย่างเดียว" — sync ราคา/สต๊อกจากชีต AnalogService เข้ากับ radio ที่มีอยู่แล้วในหน้าเว็บ
+  function applyAnalogPriceDataToDom(){
+    ['alps', 'he', 'tmr'].forEach(function(code){
+      const d = analogPriceData[code];
+      const input = form.querySelector('input[name="analogType"][value="' + code + '"]');
+      if(!input || !d) return;
+      const optionEl = input.closest('.option');
+      if(!optionEl) return;
+      const badge = optionEl.querySelector('.option-price');
+      const unitPrice = (Number(d.partPrice) || 0) + (Number(d.laborPrice) || 0);
+      const soldOut = (d.stock === 0);
+
+      if(badge){
+        badge.textContent = soldOut ? 'สินค้าหมด' : ('+' + currency(unitPrice) + '/ก้าน');
+        badge.classList.toggle('soldout', soldOut);
+      }
+      input.disabled = soldOut;
+      optionEl.classList.toggle('soldout', soldOut);
+      if(soldOut && input.checked){ input.checked = false; }
+    });
+    rerender();
+  }
+
+  function loadAnalogPrices(){
+    if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
+      applyAnalogPriceDataToDom(); // ใช้ FALLBACK_ANALOG_PRICE_DATA ต่อไป
+      return;
+    }
+    fetch(ORDER_WEBHOOK_URL + '?action=getAnalogPrices')
+      .then(function(res){ return res.json(); })
+      .then(function(result){
+        if(result && result.result === 'success' && result.analogPrices && Object.keys(result.analogPrices).length > 0){
+          analogPriceData = result.analogPrices;
+        }
+      })
+      .catch(function(){ /* ดึงไม่ได้ ใช้ FALLBACK_ANALOG_PRICE_DATA ต่อไปเงียบๆ */ })
+      .finally(function(){ applyAnalogPriceDataToDom(); });
+  }
 
   // ==== แพ็กเกจสำเร็จรูป (Preset Builds) — ดึงจากชีต "Presets" ผ่าน doGet?action=getPresets ====
   // ตัวเลือกในนี้อ้างอิงตาม value ของแต่ละ field เดิมทั้งหมด ไม่ได้ผูกราคาตายตัว
@@ -1387,7 +1797,7 @@
     paddleSideSelect.value = '';
     triggerFaceSelect.value = '';
     updateTriggerFaceNotes();
-    computeAndRender();
+    rerender();
   }
 
   function applyPreset(key){
@@ -1428,7 +1838,7 @@
       paddleSideSelect.value = '';
     }
 
-    computeAndRender();
+    rerender();
     flashPresetButton(key);
   }
 
@@ -1569,7 +1979,7 @@
       discountBtn.classList.add('applied');
       discountMsg.textContent = '✓ ใช้โค้ด ' + raw + ' ส่วนลด ' + res.percent + '% แล้ว';
       discountMsg.className = 'discount-msg ok';
-      computeAndRender();
+      rerender();
     });
   }
 
@@ -1581,7 +1991,7 @@
     discountBtn.classList.remove('applied');
     discountMsg.textContent = '';
     discountMsg.className = 'discount-msg';
-    computeAndRender();
+    rerender();
   }
 
   discountBtn.addEventListener('click', function(){
@@ -1599,49 +2009,91 @@
     let firstInvalid = null;
     let allValid = true;
 
-    requiredGroups.forEach(function(g){
-      const val = g.getValue();
-      const fieldEl = document.getElementById(g.fieldId);
-      if(!val){
-        fieldEl.classList.add('invalid');
+    if(currentMode === 'analogOnly'){
+      // ช่อง 01 — ชนิดอนาล็อก
+      const typeFieldEl = document.getElementById('field-analogType');
+      const typeVal = form.querySelector('input[name="analogType"]:checked');
+      if(!typeVal){
+        typeFieldEl.classList.add('invalid');
         allValid = false;
-        if(!firstInvalid) firstInvalid = fieldEl;
+        if(!firstInvalid) firstInvalid = typeFieldEl;
       } else {
-        fieldEl.classList.remove('invalid');
+        typeFieldEl.classList.remove('invalid');
       }
-    });
 
-    // Field 02 has two independent conditions: paddle count, and side (only when count = 1)
-    const paddlesFieldEl = document.getElementById('field-paddles');
-    const paddlesCountError = document.getElementById('paddlesCountError');
-    const paddlesSideError = document.getElementById('paddlesSideError');
-    const countVal = getPaddlesValue();
-    const sideVal = getPaddleSideValue();
-    let paddlesOk = true;
+      // ช่อง 02 — จำนวนก้าน (+ ด้านที่ต้องการเปลี่ยน ถ้าเลือก 1 ก้าน)
+      const qtyFieldEl = document.getElementById('field-analogQuantity');
+      const analogQuantityError = document.getElementById('analogQuantityError');
+      const analogSideError = document.getElementById('analogSideError');
+      const analogSel = getAnalogSelections();
+      let qtyOk = true;
 
-    if(!countVal){
-      paddlesCountError.style.display = 'flex';
-      paddlesOk = false;
+      if(!analogSel.quantity){
+        analogQuantityError.style.display = 'flex';
+        qtyOk = false;
+      } else {
+        analogQuantityError.style.display = 'none';
+      }
+
+      if(analogSel.quantity === 1 && !analogSel.side){
+        analogSideError.style.display = 'flex';
+        qtyOk = false;
+      } else {
+        analogSideError.style.display = 'none';
+      }
+
+      if(!qtyOk){
+        qtyFieldEl.classList.add('invalid');
+        allValid = false;
+        if(!firstInvalid) firstInvalid = qtyFieldEl;
+      } else {
+        qtyFieldEl.classList.remove('invalid');
+      }
     } else {
-      paddlesCountError.style.display = 'none';
+      requiredGroups.forEach(function(g){
+        const val = g.getValue();
+        const fieldEl = document.getElementById(g.fieldId);
+        if(!val){
+          fieldEl.classList.add('invalid');
+          allValid = false;
+          if(!firstInvalid) firstInvalid = fieldEl;
+        } else {
+          fieldEl.classList.remove('invalid');
+        }
+      });
+
+      // Field 02 has two independent conditions: paddle count, and side (only when count = 1)
+      const paddlesFieldEl = document.getElementById('field-paddles');
+      const paddlesCountError = document.getElementById('paddlesCountError');
+      const paddlesSideError = document.getElementById('paddlesSideError');
+      const countVal = getPaddlesValue();
+      const sideVal = getPaddleSideValue();
+      let paddlesOk = true;
+
+      if(!countVal){
+        paddlesCountError.style.display = 'flex';
+        paddlesOk = false;
+      } else {
+        paddlesCountError.style.display = 'none';
+      }
+
+      if(sideVal === null){
+        paddlesSideError.style.display = 'flex';
+        paddlesOk = false;
+      } else {
+        paddlesSideError.style.display = 'none';
+      }
+
+      if(!paddlesOk){
+        paddlesFieldEl.classList.add('invalid');
+        allValid = false;
+        if(!firstInvalid) firstInvalid = paddlesFieldEl;
+      } else {
+        paddlesFieldEl.classList.remove('invalid');
+      }
     }
 
-    if(sideVal === null){
-      paddlesSideError.style.display = 'flex';
-      paddlesOk = false;
-    } else {
-      paddlesSideError.style.display = 'none';
-    }
-
-    if(!paddlesOk){
-      paddlesFieldEl.classList.add('invalid');
-      allValid = false;
-      if(!firstInvalid) firstInvalid = paddlesFieldEl;
-    } else {
-      paddlesFieldEl.classList.remove('invalid');
-    }
-
-    // ตรวจอีเมล/ที่อยู่จัดส่ง
+    // ตรวจอีเมล/ที่อยู่จัดส่ง (ใช้ร่วมกันทั้งสองโหมด)
     const contactFieldEl = document.getElementById('field-contact');
     const emailVal = customerEmail.value.trim();
     const addressVal = customerAddress.value.trim();
@@ -1686,8 +2138,9 @@
   });
 
   function buildOrderText(code){
+    const modeLabel = currentMode === 'analogOnly' ? ' [เปลี่ยนอนาล็อกอย่างเดียว]' : ' [Custom Build]';
     const lines = [
-      'ใบสรุปคำสั่งซื้อ (BOM) — ' + code,
+      'ใบสรุปคำสั่งซื้อ (BOM) — ' + code + modeLabel,
       '------------------------------'
     ];
     lastItems.forEach(function(it){
@@ -1931,6 +2384,7 @@
     }
     const payload = {
       orderCode: code,
+      orderType: currentMode === 'analogOnly' ? 'analogOnly' : 'custom',
       summary: buildOrderText(code),
       subtotal: lastSubtotal,
       discountCode: appliedDiscount ? appliedDiscount.code : '',
@@ -2130,9 +2584,12 @@
   }
 
   // รวมตัวเลือกปัจจุบันของลูกค้าเป็นก้อนเดียว ส่งไปให้เซิร์ฟเวอร์ตรวจสอบราคาซ้ำตอนยืนยันคำสั่งซื้อ
-  // triggerBumper/faceButtons แปลงกลับจากค่าของ dropdown ที่รวมช่อง 03 ไว้ เพื่อให้ตรงกับคีย์ในชีต Prices เดิม
-  // (ฝั่งเซิร์ฟเวอร์/ชีต Prices ไม่ต้องแก้อะไรเลย เพราะยังส่งค่าด้วยคีย์เดิมทุกประการ)
+  // แยกรูปแบบ selections ตามโหมด: 'analogOnly' ส่ง {analogType, quantity, side} ตรงๆ ตามที่ backend ตรวจสอบ
+  // ส่วนโหมด custom (ค่าเริ่มต้น) ยังคงส่งคีย์เดิมทุกประการ (triggerBumper/faceButtons แปลงกลับจาก dropdown ที่รวมช่อง 03 ไว้)
   function getCurrentSelections(){
+    if(currentMode === 'analogOnly'){
+      return getAnalogSelections();
+    }
     const tfVal = getTriggerFaceValue();
     return {
       pcb: getSelected('pcb'),
@@ -2151,7 +2608,7 @@
       // ไม่ได้เชื่อมต่อ Google Sheets เลย ใช้ราคาสำรองในไฟล์นี้ไปก่อน
       pricesSettled = true;
       applyPriceDataToDom();
-      computeAndRender();
+      rerender();
       return;
     }
 
@@ -2171,11 +2628,11 @@
       .finally(function(){
         pricesSettled = true;
         applyPriceDataToDom();
-        computeAndRender();
+        rerender();
       });
   }
 
-  computeAndRender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
+  rerender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
   loadPrices();
   loadPresets();
 })();
