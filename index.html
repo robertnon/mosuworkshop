@@ -136,6 +136,17 @@
     font-weight:700;
     color:var(--copper-text);
   }
+  .mode-card.disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+    filter:grayscale(0.5);
+  }
+  .mode-card.disabled:hover{
+    border-color:var(--line);
+    background:var(--panel);
+    transform:none;
+  }
+  .mode-card-cta.soldout{ color:var(--required); }
 
   /* ---------- แถบสลับโหมด (โผล่บนสุดของฟอร์มจริง หลังเลือกโหมดแล้ว) ---------- */
   .mode-switch-bar{
@@ -846,23 +857,23 @@
 
   <!-- ===== หน้าแรก: เลือกโหมดก่อนเข้าฟอร์ม ===== -->
   <div class="mode-select" id="modeSelectScreen">
-    <span class="hero-eyebrow">Controller Mod By Mosu · Built By Pro For Pros</span>
+    <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
     <h1 class="mode-select-title">เลือกบริการที่ต้องการ</h1>
     <p class="mode-select-sub">เลือกโหมดที่ตรงกับสิ่งที่ต้องการ แล้วค่อยกรอกรายละเอียดในขั้นตอนถัดไป</p>
 
     <div class="mode-grid">
-      <button type="button" class="mode-card" data-mode="custom">
+      <button type="button" class="mode-card" data-mode="custom" id="modeCardCustom">
         <span class="mode-card-icon">🎮</span>
         <span class="mode-card-name">Custom Build</span>
         <span class="mode-card-desc">คัสตอมคอนโทรลเลอร์เต็มรูปแบบ — เลือกบอร์ด PCB, ปุ่มหลัง, Trigger/Face Buttons, อนาล็อกสติ๊ก และกรอบ PS4 ได้ตามต้องการ</span>
-        <span class="mode-card-cta">เริ่ม Custom Build →</span>
+        <span class="mode-card-cta" id="modeCardCustomCta">เริ่ม Custom Build →</span>
       </button>
 
-      <button type="button" class="mode-card" data-mode="analogOnly">
+      <button type="button" class="mode-card" data-mode="analogOnly" id="modeCardAnalog">
         <span class="mode-card-icon">🕹️</span>
         <span class="mode-card-name">เปลี่ยนอนาล็อกอย่างเดียว</span>
         <span class="mode-card-desc">ไม่ต้องคัสตอมทั้งตัว แค่เปลี่ยนก้านอนาล็อก (ALPS / HE / TMR) เลือกได้ทั้งข้างเดียวหรือทั้งคู่</span>
-        <span class="mode-card-cta">เริ่มเปลี่ยนอนาล็อก →</span>
+        <span class="mode-card-cta" id="modeCardAnalogCta">เริ่มเปลี่ยนอนาล็อก →</span>
       </button>
     </div>
   </div>
@@ -1665,7 +1676,14 @@
   const contactBadge = document.getElementById('contactBadge');
   let analogPricesLoaded = false; // โหลดครั้งแรกตอนเข้าโหมดนี้ครั้งแรกเท่านั้น (lazy load กันยิง request ที่ไม่จำเป็นตอนอยู่โหมด custom)
 
+  // modeSettings: เปิดรับออเดอร์ทั้งสองโหมดไว้ก่อนเป็นค่าเริ่มต้น (กันหน้าเว็บพังถ้าดึงชีต Settings ไม่ได้)
+  // จะถูกแทนที่ด้วยค่าจริงจากชีตตอนเรียก loadSettings() ด้านล่าง
+  let modeSettings = { customBuildEnabled: true, analogOnlyEnabled: false };
+
   function enterMode(mode){
+    if(mode === 'custom' && modeSettings.customBuildEnabled === false) return;
+    if(mode === 'analogOnly' && modeSettings.analogOnlyEnabled === false) return;
+
     currentMode = mode;
     modeSelectScreen.hidden = true;
     mainApp.hidden = false;
@@ -1705,6 +1723,45 @@
     modeSelectScreen.hidden = false;
     window.scrollTo({ top:0, behavior: reducedMotion ? 'auto' : 'smooth' });
   });
+
+  // ปิด/เปิดการ์ดโหมดบนหน้าแรกตามค่าที่ดึงมาจากชีต Settings — ร้านปิดโหมดไหนไว้ การ์ดนั้นจะกดเข้าไม่ได้
+  // และขึ้นข้อความ "ปิดรับชั่วคราว" แทนแทนที่จะเป็นปุ่มลูกศรปกติ
+  function applySettingsToDom()
+  {
+    const customCard = document.getElementById('modeCardCustom');
+    const customCta = document.getElementById('modeCardCustomCta');
+    const analogCard = document.getElementById('modeCardAnalog');
+    const analogCta = document.getElementById('modeCardAnalogCta');
+
+    if(customCard && customCta){
+      const enabled = modeSettings.customBuildEnabled !== false;
+      customCard.classList.toggle('disabled', !enabled);
+      customCta.textContent = enabled ? 'เริ่ม Custom Build →' : 'ปิดรับชั่วคราว';
+      customCta.classList.toggle('soldout', !enabled);
+    }
+    if(analogCard && analogCta){
+      const enabled = modeSettings.analogOnlyEnabled !== false;
+      analogCard.classList.toggle('disabled', !enabled);
+      analogCta.textContent = enabled ? 'เริ่มเปลี่ยนอนาล็อก →' : 'ปิดรับชั่วคราว';
+      analogCta.classList.toggle('soldout', !enabled);
+    }
+  }
+
+  function loadSettings(){
+    if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
+      applySettingsToDom(); // ใช้ค่าเริ่มต้น (เปิดทั้งคู่) ต่อไป
+      return;
+    }
+    fetch(ORDER_WEBHOOK_URL + '?action=getSettings')
+      .then(function(res){ return res.json(); })
+      .then(function(result){
+        if(result && result.result === 'success' && result.settings){
+          modeSettings = Object.assign({ customBuildEnabled: true, analogOnlyEnabled: true }, result.settings);
+        }
+      })
+      .catch(function(){ /* ดึงไม่ได้ ใช้ค่าเริ่มต้น (เปิดทั้งคู่) ต่อไปเงียบๆ */ })
+      .finally(function(){ applySettingsToDom(); });
+  }
 
   // ราคาบริการ "เปลี่ยนอนาล็อกอย่างเดียว" — sync ราคา/สต๊อกจากชีต AnalogService เข้ากับ radio ที่มีอยู่แล้วในหน้าเว็บ
   function applyAnalogPriceDataToDom(){
@@ -1952,7 +2009,7 @@
 
     discountBtn.disabled = true;
     discountBtn.textContent = 'กำลังตรวจสอบ...';
-    discountMsg.textContent = 'กำลังตรวจสอบโค้ด....'; //กำลังตรวจสอบโค้ดกับ Google Sheets...
+    discountMsg.textContent = 'กำลังตรวจสอบโค้ดกับ Google Sheets...';
     discountMsg.className = 'discount-msg';
 
     checkDiscountCode(raw).then(function(res){
@@ -2379,7 +2436,7 @@
       return;
     }
     if(statusEl){
-      statusEl.textContent = 'กำลังส่งข้อมูลการสั่งซื้อ..'; // กำลังบันทึกลง Google Sheet
+      statusEl.textContent = 'กำลังบันทึกลง Google Sheets...';
       statusEl.className = 'confirm-sync-status pending';
     }
     const payload = {
@@ -2419,6 +2476,12 @@
           if(result && result.code === 'invalid_request'){
             // ติดระบบกันสแปม/บอท (เช่น กรอกฟอร์มเร็วเกินไป หรือกดยืนยันซ้ำถี่ๆ) — ให้ลองใหม่ได้ตามปกติ
             statusEl.textContent = '⚠ ' + (result.message || 'คำขอไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง');
+            statusEl.className = 'confirm-sync-status fail';
+            return;
+          }
+          if(result && result.code === 'mode_disabled'){
+            // ร้านเพิ่งปิดรับโหมดนี้ระหว่างที่ลูกค้ากำลังกรอกฟอร์มอยู่พอดี (เคสหายากมาก แต่กันไว้)
+            statusEl.textContent = '⚠ ' + (result.message || 'ร้านปิดรับออเดอร์โหมดนี้ชั่วคราว');
             statusEl.className = 'confirm-sync-status fail';
             return;
           }
@@ -2635,6 +2698,7 @@
   rerender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
   loadPrices();
   loadPresets();
+  loadSettings();
 })();
 </script>
 
