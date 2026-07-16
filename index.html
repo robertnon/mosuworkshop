@@ -1952,7 +1952,7 @@
 
     discountBtn.disabled = true;
     discountBtn.textContent = 'กำลังตรวจสอบ...';
-    discountMsg.textContent = 'กำลังตรวจสอบโค้ดกับ Google Sheets...';
+    discountMsg.textContent = 'กำลังตรวจสอบโค้ด....'; //กำลังตรวจสอบโค้ดกับ Google Sheets...
     discountMsg.className = 'discount-msg';
 
     checkDiscountCode(raw).then(function(res){
@@ -2379,7 +2379,7 @@
       return;
     }
     if(statusEl){
-      statusEl.textContent = 'กำลังใช้ Code ส่วนลด...'; // code google sheet
+      statusEl.textContent = 'กำลังส่งข้อมูลการสั่งซื้อ..'; // กำลังบันทึกลง Google Sheet
       statusEl.className = 'confirm-sync-status pending';
     }
     const payload = {
