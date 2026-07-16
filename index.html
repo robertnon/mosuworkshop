@@ -857,7 +857,7 @@
 
   <!-- ===== หน้าแรก: เลือกโหมดก่อนเข้าฟอร์ม ===== -->
   <div class="mode-select" id="modeSelectScreen">
-    <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
+    <span class="hero-eyebrow">Controller Mod By Mosu · Built For Pros by Pro</span>
     <h1 class="mode-select-title">เลือกบริการที่ต้องการ</h1>
     <p class="mode-select-sub">เลือกโหมดที่ตรงกับสิ่งที่ต้องการ แล้วค่อยกรอกรายละเอียดในขั้นตอนถัดไป</p>
 
@@ -887,7 +887,7 @@
     </div>
 
     <header class="hero" id="heroCustom">
-      <span class="hero-eyebrow">Controller Mod · Build Sheet</span>
+      <span class="hero-eyebrow">Controller Mod By Mosu · Built For Pros by Pro</span>
       <h1>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</h1>
       <p>เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)</p>
       <p class="legend-help"><span class="req">*</span>ต้องเลือก &nbsp;·&nbsp; ข้อที่ไม่มีเครื่องหมาย * เลือกเพิ่มได้ตามต้องการ</p>
@@ -2009,7 +2009,7 @@
 
     discountBtn.disabled = true;
     discountBtn.textContent = 'กำลังตรวจสอบ...';
-    discountMsg.textContent = 'กำลังตรวจสอบโค้ดกับ Google Sheets...';
+    discountMsg.textContent = 'กำลังตรวจสอบโค้ดกับ ระบบ'; // กำลังตรวจสอบโค้ดกับ Google Sheets...
     discountMsg.className = 'discount-msg';
 
     checkDiscountCode(raw).then(function(res){
@@ -2354,7 +2354,7 @@
       }
 
       if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
-        paymentStatus.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets จึงแจ้งชำระเงินอัตโนมัติไม่ได้ กรุณาแคปหน้าจอนี้ส่งร้านโดยตรง';
+        paymentStatus.textContent = 'ยังไม่ได้เชื่อมต่อ ระบบ จึงแจ้งชำระเงินอัตโนมัติไม่ได้ กรุณาแคปหน้าจอนี้ส่งร้านโดยตรง (discord: mosudesu1)'; //  ยังไม่ได้เชื่อมต่อ Google Sheets จึงแจ้งชำระเงินอัตโนมัติไม่ได้ กรุณาแคปหน้าจอนี้ส่งร้านโดยตรง
         paymentStatus.className = 'payment-status warn';
         return;
       }
@@ -2429,14 +2429,14 @@
     const statusEl = document.getElementById('syncStatus');
     if(!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0){
       if(statusEl){
-        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)';
+        statusEl.textContent = 'ยังไม่ได้เชื่อมต่อกับระบบ ( System Warning )'; // ยังไม่ได้เชื่อมต่อ Google Sheets (ใส่ลิงก์ Web App ในโค้ด)
         statusEl.className = 'confirm-sync-status warn';
       }
       showPaymentSection(code, lastTotal);
       return;
     }
     if(statusEl){
-      statusEl.textContent = 'กำลังบันทึกลง Google Sheets...';
+      statusEl.textContent = 'กำลังใช้ Code....'; //ำลังบันทึกลง Google Sheets...'
       statusEl.className = 'confirm-sync-status pending';
     }
     const payload = {
