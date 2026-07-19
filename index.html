@@ -11,10 +11,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
-      --bg: #0D0F0A;
-      --panel: #171C14;
-      --panel-2: #1F251A;
-      --line: #2E3627;
+      --bg: #090A07;
+      --panel: #141812;
+      --panel-2: #1C2218;
+      --line: #293123;
       --copper: #C6FF00;
       --copper-dim: #5C6E1A;
       --copper-text: #D4FF4D;
@@ -37,14 +37,39 @@
       padding: 0;
     }
 
+    @keyframes gridMove {
+      0% { background-position: center center, 0 0; }
+      100% { background-position: center center, 28px 28px; }
+    }
+
     body {
-      background: var(--bg);
+      background-color: var(--bg);
       color: var(--silk);
       font-family: var(--sans);
       -webkit-font-smoothing: antialiased;
       background-image:
-        radial-gradient(circle at 1px 1px, rgba(201, 122, 61, 0.07) 1px, transparent 1px);
+        radial-gradient(circle at 1px 1px, rgba(198, 255, 0, 0.12) 2px, transparent 2px);
       background-size: 28px 28px;
+      background-position: center center;
+      animation: gridMove 25s linear infinite;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 120vw;
+      height: 120vh;
+      background-color: var(--copper);
+      opacity: 0.025;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      filter: blur(100px);
+      z-index: -1;
+      transition: background-color 0.5s ease, opacity 0.5s ease;
     }
 
     a {
@@ -1324,6 +1349,389 @@
       --silk-dim: #66705F;
       --required: #D62246;
       --ok: #178A73;
+      
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(123, 166, 0, 0.08) 2px, transparent 2px);
+      background-size: 28px 28px;
+      background-position: center center;
+      animation: gridMove 25s linear infinite;
+    }
+    body.light-theme .preview-stage {
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: inset 0 0 20px rgba(123, 166, 0, 0.05), 0 4px 20px rgba(123, 166, 0, 0.08);
+    }
+
+    /* ---------- Gold Theme (Luxury Gold) Overrides ---------- */
+    @keyframes goldGridMove {
+      0% {
+        background-position: center center, 0 0;
+      }
+      100% {
+        background-position: center center, 28px 28px;
+      }
+    }
+    body.gold-theme {
+      --bg: #0E0C06;            /* Rich dark charcoal-gold background */
+      --panel: #1D1810;         /* Deep warm gold-tinted panel */
+      --panel-2: #272115;       /* Slightly lighter gold-tinted panel */
+      --line: #403623;          /* Sophisticated antique gold border */
+      --copper: #D4AF37;        /* Metallic Luxury Gold */
+      --copper-dim: #8C701B;    /* Muted gold */
+      --copper-text: #FFD700;   /* Bright Gold text */
+      --copper-bright: #FFE875; /* Radiant bright Gold highlights */
+      --silk: #FAF6ED;          /* Premium soft ivory text */
+      --silk-dim: #BEB4A2;      /* Elegant warm-gray text */
+      --required: #FF4D6D;      /* Warning color */
+      --ok: #E6C229;            /* Success color matching gold */
+      
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.14) 2px, transparent 2px);
+      background-size: 28px 28px;
+      background-position: center center;
+      animation: gridMove 25s linear infinite;
+    }
+    body.gold-theme .preview-stage {
+      background: rgba(20, 17, 10, 0.7);
+      border-color: var(--line);
+      box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.05), 0 4px 20px rgba(212, 175, 55, 0.1);
+      z-index: 1;
+    }
+
+    /* ---------- Glassmorphism & Animations ---------- */
+    .bom-panel, .preset-card, .option, .step-tracker {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease, background 0.3s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .option:hover, .preset-card:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .option.selected, .preset-card.active {
+      transform: translateY(-2px);
+      box-shadow: 0 0 14px rgba(198, 255, 0, 0.15);
+    }
+    body.gold-theme .option.selected, body.gold-theme .preset-card.active {
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.15);
+    }
+
+    /* ---------- Tooltips ---------- */
+    .info-tip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--line);
+      color: var(--silk-dim);
+      font-size: 10px;
+      font-family: var(--mono);
+      cursor: pointer;
+      margin-left: 6px;
+      position: relative;
+      user-select: none;
+      transition: background 0.15s ease, color 0.15s ease;
+      vertical-align: middle;
+    }
+    .info-tip:hover {
+      background: var(--copper);
+      color: #12180C;
+    }
+    .info-tip::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 135%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      color: var(--silk);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      line-height: 1.5;
+      width: 200px;
+      white-space: normal;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 99;
+      font-family: var(--sans);
+      text-align: left;
+      font-weight: normal;
+    }
+    .info-tip:hover::after,
+    .info-tip:focus-visible::after,
+    .info-tip.active::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    /* ---------- Step Progress Tracker ---------- */
+    .step-tracker {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .step-progress-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      position: relative;
+    }
+    .step-progress-grid::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--line);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+    .step-progress-grid::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 2px;
+      width: var(--progress-percent, 0%);
+      background: var(--copper);
+      z-index: 1;
+      transform: translateY(-50%);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+    }
+    .step-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 1.5px solid var(--line);
+      color: var(--silk-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      position: relative;
+      z-index: 2;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .step-dot.active {
+      border-color: var(--copper);
+      color: var(--copper-text);
+      box-shadow: 0 0 8px rgba(198, 255, 0, 0.2);
+    }
+    body.gold-theme .step-dot.active {
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+    }
+    .step-dot.completed {
+      background: var(--copper-dim);
+      border-color: var(--copper);
+      color: #12180C;
+    }
+    .step-dot::after {
+      content: attr(title);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%, 6px);
+      font-size: 9px;
+      font-family: var(--sans);
+      color: var(--silk-dim);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .step-dot:hover::after {
+      opacity: 1;
+    }
+
+    /* ---------- Dynamic Component Preview ---------- */
+    .preview-panel {
+      margin-bottom: 12px;
+      padding: 16px !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-panel::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 180px;
+      height: 180px;
+      background-color: var(--copper);
+      opacity: 0.15;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+      filter: blur(40px);
+      transition: background-color 0.5s ease, opacity 0.5s ease;
+    }
+    .preview-stage {
+      width: 100%;
+      height: 120px;
+      background: rgba(23, 28, 20, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: inset 0 0 20px rgba(198, 255, 0, 0.05), 0 4px 20px rgba(198, 255, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+      z-index: 1;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+    .preview-placeholder {
+      color: var(--silk-dim);
+      font-size: 12.5px;
+      font-family: var(--sans);
+    }
+    .preview-img {
+      max-height: 80%;
+      max-width: 42%;
+      object-fit: contain;
+      transition: all 0.3s ease;
+      animation: previewFadeIn 0.3s ease;
+    }
+    .preview-img.pcb-preview {
+      margin-right: 12px;
+    }
+    .preview-img.paddles-preview {
+      margin-left: 12px;
+    }
+    @keyframes previewFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .preview-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .preview-badge {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--copper-text);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--sans);
+    }
+
+    /* ---------- Custom Styled Dropdowns ---------- */
+    .custom-select-container {
+      position: relative;
+      width: 100%;
+      user-select: none;
+      font-family: var(--sans);
+    }
+    
+    .custom-select-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background-color: var(--panel);
+      color: var(--silk);
+      font-size: 14.5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .custom-select-trigger:hover {
+      border-color: var(--copper-dim);
+    }
+    
+    .custom-select-container.open .custom-select-trigger {
+      border-color: var(--copper);
+      box-shadow: 0 0 10px rgba(198, 255, 0, 0.15);
+    }
+    
+    body.gold-theme .custom-select-container.open .custom-select-trigger {
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+    }
+    
+    .custom-select-arrow {
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--copper);
+      border-bottom: 2px solid var(--copper);
+      transform: translateY(-2px) rotate(45deg);
+      transition: transform 0.2s ease;
+      margin-left: 12px;
+    }
+    
+    .custom-select-container.open .custom-select-arrow {
+      transform: translateY(2px) rotate(-135deg);
+    }
+    
+    .custom-select-options {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+      z-index: 100;
+      max-height: 250px;
+      overflow-y: auto;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    
+    .custom-select-container.open .custom-select-options {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .custom-select-option {
+      padding: 11px 14px;
+      color: var(--silk);
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+    
+    .custom-select-option:hover {
+      background-color: var(--panel);
+      color: var(--copper-bright);
+    }
+    
+    .custom-select-option.selected {
+      background-color: var(--copper-dim);
+      color: #12180C;
+    }
+    
+    .custom-select-option.disabled {
+      color: var(--silk-dim);
+      opacity: 0.5;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -1434,7 +1842,7 @@
                 <span class="field-badge">01</span>
                 <span class="field-title-wrap">
                   <span class="field-eyebrow">Component 01 · Main Board</span>
-                  <span class="field-title">บอร์ด PCB<span class="req">*</span></span>
+                  <span class="field-title">บอร์ด PCB<span class="req">*</span><span class="info-tip" data-tip="ชิปประมวลผลหลักของคอนโทรลเลอร์ ควบคุมความเร็วในการส่งสัญญาณ (Polling Rate) และความล่าช้า (Delay)">?</span></span>
                 </span>
               </legend>
               <div class="options">
@@ -1448,7 +1856,7 @@
                     <input type="radio" name="pcb" value="suiovoi">
                     <span class="option-text">
                       <span class="option-title">🔲 SuiOvOi 8K</span>
-                      <span class="option-sub">บอร์ดมาตรฐาน โพลลิ่งเรตสูง</span>
+                      <span class="option-sub" data-th="บอร์ดมาตรฐาน โพลลิ่งเรตสูง" data-en="High-spec board · Ultra-fast response (8000 Hz)">บอร์ดมาตรฐาน โพลลิ่งเรตสูง</span>
                     </span>
                     <span class="option-price">+฿2,000</span>
                   </label>
@@ -1463,7 +1871,7 @@
                     <input type="radio" name="pcb" value="hyperstrike">
                     <span class="option-text">
                       <span class="option-title">Hyperstrike 8K</span>
-                      <span class="option-sub">บอร์ดสเปกสูง ตอบสนองไว</span>
+                      <span class="option-sub" data-th="บอร์ดสเปกสูง ตอบสนองไว" data-en="High-spec board · Ultra-fast response (8000 Hz)">บอร์ดสเปกสูง ตอบสนองไว</span>
                     </span>
                     <span class="option-price">+฿2,500 ◔</span>
                   </label>
@@ -1478,7 +1886,7 @@
                 <span class="field-badge">02</span>
                 <span class="field-title-wrap">
                   <span class="field-eyebrow">Component 02 · Rear Paddles</span>
-                  <span class="field-title">ปุ่มหลัง<span class="req">*</span></span>
+                  <span class="field-title">ปุ่มหลัง<span class="req">*</span><span class="info-tip" data-tip="เพิ่มปุ่มลัดด้านหลังจอย ช่วยให้กดคำสั่งด่วนได้โดยไม่ต้องละนิ้วโป้งออกจากปุ่มอนาล็อก">?</span></span>
                 </span>
               </legend>
 
@@ -1532,7 +1940,7 @@
                 <span class="field-badge">03</span>
                 <span class="field-title-wrap">
                   <span class="field-eyebrow">Component 03 · Trigger &amp; Face Buttons</span>
-                  <span class="field-title">Trigger/Bumper &amp; Face Buttons<span class="req">*</span></span>
+                  <span class="field-title">Trigger/Bumper &amp; Face Buttons<span class="req">*</span><span class="info-tip" data-tip="การเปลี่ยนสวิตช์ปุ่มกด ให้มีเสียงดังคลิกและระยะกดสั้นลงแบบเมาส์ เพิ่มความเร็วในการกด">?</span></span>
                 </span>
               </legend>
 
@@ -1558,7 +1966,7 @@
                 <span class="field-badge">04</span>
                 <span class="field-title-wrap">
                   <span class="field-eyebrow">Component 04 · Stick Module</span>
-                  <span class="field-title">Stick Module (ก้านอนาล็อก)<span class="req">*</span></span>
+                  <span class="field-title">Stick Module (ก้านอนาล็อก)<span class="req">*</span><span class="info-tip" data-tip="ชนิดอนาล็อกสติ๊ก: Alps (มาตรฐาน), HE (Hall Effect ป้องกันดริฟท์ถาวร), TMR (แม่นยำสูงสุดประหยัดไฟที่สุด)">?</span></span>
                 </span>
               </legend>
               <div class="options">
@@ -1566,7 +1974,7 @@
                   <input type="radio" name="stickModule" value="alps">
                   <span class="option-text">
                     <span class="option-title">ALPS</span>
-                    <span class="option-sub">มาตรฐานโรงงาน</span>
+                    <span class="option-sub" data-th="มาตรฐานโรงงาน" data-en="Standard factory module · budget-friendly">มาตรฐานโรงงาน</span>
                   </span>
                   <span class="option-price">+฿200</span>
                 </label>
@@ -1574,7 +1982,7 @@
                   <input type="radio" name="stickModule" value="he">
                   <span class="option-text">
                     <span class="option-title">HE</span>
-                    <span class="option-sub">เซนเซอร์ Hall Effect ไม่มีการสึกหรอ ลดปัญหา Stick Drift</span>
+                    <span class="option-sub" data-th="เซนเซอร์ Hall Effect ไม่มีการสึกหรอ ลดปัญหา Stick Drift" data-en="Hall Effect sensor · zero wear, eliminates stick drift permanently">เซนเซอร์ Hall Effect ไม่มีการสึกหรอ ลดปัญหา Stick Drift</span>
                   </span>
                   <span class="option-price">+฿400</span>
                 </label>
@@ -1582,7 +1990,7 @@
                   <input type="radio" name="stickModule" value="tmr">
                   <span class="option-text">
                     <span class="option-title">TMR</span>
-                    <span class="option-sub">เซนเซอร์รุ่นใหม่ล่าสุด แม่นยำสูงสุด ลดปัญหา Stick Drift ได้ดีกว่า HE</span>
+                    <span class="option-sub" data-th="เซนเซอร์รุ่นใหม่ล่าสุด แม่นยำสูงสุด ลดปัญหา Stick Drift ได้ดีกว่า HE" data-en="Latest gen sensor · highest precision, better drift resistance than HE">เซนเซอร์รุ่นใหม่ล่าสุด แม่นยำสูงสุด ลดปัญหา Stick Drift ได้ดีกว่า HE</span>
                   </span>
                   <span class="option-price">+฿600</span>
                 </label>
@@ -1598,7 +2006,7 @@
                 <span class="field-badge">05</span>
                 <span class="field-title-wrap">
                   <span class="field-eyebrow">Component 05 · PS4 Shell</span>
-                  <span class="field-title">กรอบคอนโทรลเลอร์ PS4<span class="req">*</span></span>
+                  <span class="field-title">กรอบคอนโทรลเลอร์ PS4<span class="req">*</span><span class="info-tip" data-tip="ทางเลือกว่าจะส่งจอยที่มีอยู่มาทำการดัดแปลง หรือให้ทางร้านจัดหากรอบจอยตัวใหม่เพื่อประกอบให้เลย">?</span></span>
                 </span>
               </legend>
               <div class="options">
@@ -1606,7 +2014,7 @@
                   <input type="radio" name="ps4shell" value="withController">
                   <span class="option-text">
                     <span class="option-title">ส่งจอยมาให้ทำ</span>
-                    <span class="option-sub">มีคอนโทรลเลอร์ PS4 อยู่แล้ว ส่งเข้ามาประกอบ</span>
+                    <span class="option-sub" data-th="มีคอนโทรลเลอร์ PS4 อยู่แล้ว ส่งเข้ามาประกอบ" data-en="You already own a PS4 controller — ship it in for modding">มีคอนโทรลเลอร์ PS4 อยู่แล้ว ส่งเข้ามาประกอบ</span>
                   </span>
                   <span class="option-price included">รวมแล้ว</span>
                 </label>
@@ -1614,7 +2022,7 @@
                   <input type="radio" name="ps4shell" value="noController">
                   <span class="option-text">
                     <span class="option-title">ไม่มีจอย PS4</span>
-                    <span class="option-sub">ทางร้านจัดหากรอบ/ตัวเครื่องให้</span>
+                    <span class="option-sub" data-th="ทางร้านจัดหากรอบ/ตัวเครื่องให้" data-en="Shop provides the PS4 shell/housing — no controller needed from you">ทางร้านจัดหากรอบ/ตัวเครื่องให้</span>
                   </span>
                   <span class="option-price">+฿400</span>
                 </label>
@@ -1642,7 +2050,7 @@
                   <input type="radio" name="analogType" value="alps">
                   <span class="option-text">
                     <span class="option-title">ALPS</span>
-                    <span class="option-sub">มาตรฐาน ทนทาน คุ้มราคา</span>
+                    <span class="option-sub" data-th="มาตรฐาน ทนทาน คุ้มราคา" data-en="Standard · durable · budget-friendly">มาตรฐาน ทนทาน คุ้มราคา</span>
                   </span>
                   <span class="option-price">+฿200/ก้าน</span>
                 </label>
@@ -1650,7 +2058,7 @@
                   <input type="radio" name="analogType" value="he">
                   <span class="option-text">
                     <span class="option-title">HE (Hall Effect)</span>
-                    <span class="option-sub">เซนเซอร์แม่เหล็ก ไม่มีดริฟท์ระยะยาว</span>
+                    <span class="option-sub" data-th="เซนเซอร์แม่เหล็ก ไม่มีดริฟท์ระยะยาว" data-en="Magnetic Hall Effect sensor · no drift over time">เซนเซอร์แม่เหล็ก ไม่มีดริฟท์ระยะยาว</span>
                   </span>
                   <span class="option-price">+฿300/ก้าน</span>
                 </label>
@@ -1658,7 +2066,7 @@
                   <input type="radio" name="analogType" value="tmr">
                   <span class="option-text">
                     <span class="option-title">TMR</span>
-                    <span class="option-sub">รุ่นท็อป แม่นยำสูงสุด ตอบสนองไวสุด</span>
+                    <span class="option-sub" data-th="รุ่นท็อป แม่นยำสูงสุด ตอบสนองไวสุด" data-en="Top-tier · highest precision · fastest response time">รุ่นท็อป แม่นยำสูงสุด ตอบสนองไวสุด</span>
                   </span>
                   <span class="option-price">+฿400/ก้าน</span>
                 </label>
@@ -1681,14 +2089,14 @@
                   <input type="radio" name="analogQuantity" value="1">
                   <span class="option-text">
                     <span class="option-title">1 ก้าน</span>
-                    <span class="option-sub">เปลี่ยนข้างเดียว (เลือกด้านด้านล่าง)</span>
+                    <span class="option-sub" data-th="เปลี่ยนข้างเดียว (เลือกด้านด้านล่าง)" data-en="Replace one side only (choose L or R below)">เปลี่ยนข้างเดียว (เลือกด้านด้านล่าง)</span>
                   </span>
                 </label>
                 <label class="option">
                   <input type="radio" name="analogQuantity" value="2">
                   <span class="option-text">
                     <span class="option-title">2 ก้าน (คู่ L+R)</span>
-                    <span class="option-sub">เปลี่ยนทั้งสองข้าง</span>
+                    <span class="option-sub" data-th="เปลี่ยนทั้งสองข้าง" data-en="Replace both left and right sticks (L + R pair)">เปลี่ยนทั้งสองข้าง</span>
                   </span>
                 </label>
               </div>
@@ -1752,6 +2160,32 @@
         </form>
 
         <aside class="summary-col" id="summaryCol">
+          <!-- Step Progress Tracker -->
+          <div class="step-tracker" id="stepTracker">
+            <span class="bom-eyebrow">Configurator Progress</span>
+            <div class="step-progress-grid">
+              <a href="#field-pcb" class="step-dot" data-step="pcb" title="บอร์ด PCB">01</a>
+              <a href="#field-paddles" class="step-dot" data-step="paddles" title="ปุ่มหลัง">02</a>
+              <a href="#field-trigger-face" class="step-dot" data-step="triggerFace" title="Trigger/Face Buttons">03</a>
+              <a href="#field-stickModule" class="step-dot" data-step="stickModule" title="Stick Module">04</a>
+              <a href="#field-ps4shell" class="step-dot" data-step="ps4shell" title="กรอบ PS4">05</a>
+              <a href="#field-contact" class="step-dot" data-step="contact" title="ข้อมูลติดต่อ">06</a>
+            </div>
+          </div>
+
+          <!-- Component Preview Panel -->
+          <div class="bom-panel preview-panel" id="configPreviewPanel">
+            <span class="bom-eyebrow">Component Preview</span>
+            <div class="preview-stage">
+              <div class="preview-placeholder" id="previewPlaceholder">
+                <span>กรุณาเลือกส่วนประกอบเพื่อดูตัวอย่าง</span>
+              </div>
+              <img class="preview-img pcb-preview" id="previewPcb" src="" alt="PCB Board" hidden>
+              <img class="preview-img paddles-preview" id="previewPaddles" src="" alt="Paddles" hidden>
+            </div>
+            <div class="preview-labels" id="previewLabels"></div>
+          </div>
+
           <div class="bom-panel">
             <span class="bom-eyebrow">Bill of Materials</span>
             <h2 class="bom-title">สรุปรายการสั่งซื้อ</h2>
@@ -1838,11 +2272,11 @@
       const translations = {
         '.mode-select-title': {
           th: 'เลือกบริการที่ต้องการ',
-          en: 'Select Service'
+          en: 'Choose Your Service'
         },
         '.mode-select-sub': {
           th: 'เลือกโหมดที่ตรงกับสิ่งที่ต้องการ แล้วค่อยกรอกรายละเอียดในขั้นตอนถัดไป',
-          en: 'Choose the mode that fits your needs, then fill in details on the next page.'
+          en: 'Select the service that matches your needs. You can customize individual options after choosing a mode.'
         },
         '#modeCardCustom .mode-card-name': {
           th: 'Custom Build',
@@ -1850,7 +2284,7 @@
         },
         '#modeCardCustom .mode-card-desc': {
           th: 'คัสตอมคอนโทรลเลอร์เต็มรูปแบบ — เลือกบอร์ด PCB, ปุ่มหลัง, Trigger/Face Buttons, อนาล็อกสติ๊ก และกรอบ PS4 ได้ตามต้องการ',
-          en: 'Full custom controller — select PCB board, back paddles, Trigger/Face Buttons, analog sticks, and PS4 shell.'
+          en: 'Build your fully custom PS4 controller — choose your PCB board (polling rate), back paddles, clicky Trigger/Face Buttons, analog stick module, and PS4 shell. Price is calculated in real-time.'
         },
         '#modeCardCustomCta': {
           th: 'เริ่ม Custom Build →',
@@ -1862,7 +2296,7 @@
         },
         '#modeCardAnalog .mode-card-desc': {
           th: 'ไม่ต้องคัสตอมทั้งตัว แค่เปลี่ยนก้านอนาล็อก (ALPS / HE / TMR) เลือกได้ทั้งข้างเดียวหรือทั้งคู่',
-          en: 'No full custom needed — just swap the analog sticks (ALPS / HE / TMR) on one side or both.'
+          en: 'No full custom required — just replace one or both analog sticks with an upgraded module (ALPS / Hall Effect / TMR) to eliminate stick drift and improve accuracy.'
         },
         '#modeCardAnalogCta': {
           th: 'เริ่มเปลี่ยนอนาล็อก →',
@@ -1874,15 +2308,15 @@
         },
         '#heroCustom p': {
           th: 'เลือกบอร์ด PCB ปุ่มหลัง ทริกเกอร์ และอนาล็อกสติ๊กตามที่ต้องการ ระบบจะคำนวณราคารวมให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)',
-          en: 'Select PCB boards, back paddles, triggers, and analog sticks as desired. The system automatically computes the total price on the sidebar (or bottom on mobile).'
+          en: 'Configure each component step by step — PCB board, back paddles, clicky triggers, and analog sticks. Pricing updates live on the right panel (or at the bottom on mobile).'
         },
         '#heroAnalog h1': {
           th: 'แบบฟอร์มเปลี่ยนอนาล็อกอย่างเดียว',
-          en: 'Analog Stick Replacement Form'
+          en: 'Analog Stick Swap Form'
         },
         '#heroAnalog p': {
           th: 'เลือกชนิดอนาล็อกและจำนวนก้านที่ต้องการเปลี่ยน ระบบจะคำนวณราคารวม (อะไหล่ + ค่าแรง) ให้อัตโนมัติที่แผงสรุปด้านข้าง (หรือด้านล่างในมือถือ)',
-          en: 'Select the analog stick type and quantity. The system automatically calculates the total price (parts + labor) on the sidebar.'
+          en: 'Select the analog stick type (ALPS, Hall Effect, or TMR) and the number of sticks to replace. The system automatically calculates the total cost including parts and labor.'
         },
         '.mode-switch-btn': {
           th: 'เปลี่ยนโหมด',
@@ -1890,19 +2324,19 @@
         },
         '#field-preset .field-title': {
           th: 'เลือกแพ็กเกจสำเร็จรูป (ไม่บังคับ)',
-          en: 'Select Preset Package (Optional)'
+          en: 'Quick Start: Preset Packages (Optional)'
         },
         '#field-preset .field-note': {
           th: 'เลือกแพ็กเกจเพื่อกรอกตัวเลือกด้านล่างให้อัตโนมัติ แล้วยังปรับแก้แต่ละช่องเองภายหลังได้ตามต้องการ (ถ้าตัวเลือกในแพ็กเกจสินค้าหมด ระบบจะเว้นช่องนั้นว่างไว้ให้เลือกเอง) — แอดมินแก้ไข/เพิ่ม/ลบแพ็กเกจได้จากชีต "Presets" โดยตรง',
-          en: 'Select a preset package to automatically configure the options below. You can still modify individual options later (if a preset item is out of stock, it will be left blank for you to choose).'
+          en: 'Pick a preset package to auto-fill the options below. You can still tweak each selection afterwards. If any item in the preset is sold out, that field will be left blank for you to choose. Admins can manage presets directly from the "Presets" sheet.'
         },
         '#field-pcb .field-title': {
           th: 'บอร์ด PCB<span class="req">*</span>',
-          en: 'PCB Board<span class="req">*</span>'
+          en: 'PCB Board (Polling Rate)<span class="req">*</span>'
         },
         '#field-paddles .field-title': {
           th: 'ปุ่มหลัง (Paddles)<span class="req">*</span>',
-          en: 'Back Buttons (Paddles)<span class="req">*</span>'
+          en: 'Back Paddles (Rear Buttons)<span class="req">*</span>'
         },
         '#paddleSideFrame label.field-title': {
           th: 'เลือกด้านปุ่มหลัง (Paddles)<span class="req">*</span>',
@@ -1946,19 +2380,19 @@
         },
         '#field-contact .field-title': {
           th: 'อีเมล & ที่อยู่จัดส่ง<span class="req">*</span>',
-          en: 'Email & Shipping Address<span class="req">*</span>'
+          en: 'Contact Info & Shipping Address<span class="req">*</span>'
         },
         '#field-contact input[name="name"]': {
-          placeholder: { th: 'ระบุชื่อ-นามสกุล', en: 'Enter first and last name' }
+          placeholder: { th: 'ระบุชื่อ-นามสกุล', en: 'Full name (first & last)' }
         },
         '#field-contact input[name="phone"]': {
-          placeholder: { th: 'ระบุเบอร์โทรศัพท์', en: 'Enter phone number' }
+          placeholder: { th: 'ระบุเบอร์โทรศัพท์', en: 'Phone number (for delivery contact)' }
         },
         '#field-contact input[name="facebook"]': {
-          placeholder: { th: 'ระบุลิงก์ Facebook หรือชื่อบัญชี', en: 'Enter Facebook link or profile name' }
+          placeholder: { th: 'ระบุลิงก์ Facebook หรือชื่อบัญชี', en: 'Facebook profile link or username (for follow-up)' }
         },
         '#field-contact textarea[name="address"]': {
-          placeholder: { th: 'บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์', en: 'House number, street, sub-district, district, province, postal code' }
+          placeholder: { th: 'บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์', en: 'Full shipping address: house number, street, sub-district, district, province, postal code' }
         },
         '#field-contact input[name="slipAmount"]': {
           placeholder: { th: 'ระบุจำนวนเงินที่โอน', en: 'Enter transferred amount' }
@@ -1972,11 +2406,11 @@
         },
         '.payment-title': {
           th: 'ชำระเงินผ่านพร้อมเพย์',
-          en: 'Pay via PromptPay'
+          en: 'Payment via PromptPay QR'
         },
         '.qr-note': {
           th: '*ยอดโอนต้องตรงกับราคาสุทธิเท่านั้น เพื่อให้ระบบตรวจสอบความถูกต้องได้รวดเร็ว',
-          en: '*Transfer amount must match the net price exactly for faster verification.'
+          en: '⚠ Transfer exactly the net amount shown. Auto-verification only supports SCB, TTB & Bangkok Bank. Other banks are accepted — the shop will verify manually. Orders with no transfer slip attached will be cancelled immediately.'
         },
         '.pay-confirm-btn': {
           th: 'ยืนยันและส่งคำสั่งซื้อ',
@@ -1984,27 +2418,27 @@
         },
         '.bom-title': {
           th: 'สรุปรายการสั่งซื้อ',
-          en: 'Order Summary'
+          en: 'Your Build Summary'
         },
         '#subtotalRow span:first-child': {
           th: 'ราคารวมก่อนลด',
-          en: 'Subtotal'
+          en: 'Subtotal (before discount)'
         },
         '#discountAppliedRow span:first-child': {
           th: 'ส่วนลด',
-          en: 'Discount'
+          en: 'Discount Applied'
         },
         '.bom-total-row span:first-child': {
           th: 'ยอดรวมทั้งหมด',
-          en: 'Net Price'
+          en: 'Total Net Price'
         },
         '.submit-btn': {
           th: 'ยืนยันคำสั่งซื้อ',
-          en: 'Confirm Order'
+          en: 'Confirm & Place Order'
         },
         '.confirm-title': {
           th: '✓ รับคำสั่งซื้อแล้ว',
-          en: '✓ Order Received'
+          en: '✓ Order Successfully Received'
         },
         '.confirm-code': {
           th: 'เลขที่คำสั่งซื้อ: <span id="orderCode"></span>',
@@ -2038,6 +2472,12 @@
           });
         }
 
+        // Translate option-sub elements using data-th / data-en attributes
+        document.querySelectorAll('.option-sub[data-' + lang + ']').forEach(function (el) {
+          var text = el.getAttribute('data-' + lang);
+          if (text) el.textContent = text;
+        });
+
         // Apply translations to dynamic drop-down lists and re-render calculations
         if (typeof applyPriceDataToDom === 'function') {
           applyPriceDataToDom();
@@ -2049,11 +2489,18 @@
         const body = document.body;
         const btn = document.getElementById('themeToggleBtn');
         if (currentTheme === 'dark') {
+          body.classList.remove('gold-theme');
           body.classList.add('light-theme');
           currentTheme = 'light';
+          if (btn) btn.innerHTML = '<span class="theme-icon">👑</span> <span class="theme-text">Gold Theme</span>';
+        } else if (currentTheme === 'light') {
+          body.classList.remove('light-theme');
+          body.classList.add('gold-theme');
+          currentTheme = 'gold';
           if (btn) btn.innerHTML = '<span class="theme-icon">🌙</span> <span class="theme-text">Dark Theme</span>';
         } else {
           body.classList.remove('light-theme');
+          body.classList.remove('gold-theme');
           currentTheme = 'dark';
           if (btn) btn.innerHTML = '<span class="theme-icon">☀️</span> <span class="theme-text">Light Theme</span>';
         }
@@ -2221,6 +2668,34 @@
         return '฿' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       }
 
+      function animatePrice(el, targetPrice, prefix = '', duration = 400) {
+        if (!el) return;
+        const currentText = el.textContent.replace(/[^\d.-]/g, '');
+        const currentPrice = parseFloat(currentText) || 0;
+        
+        if (currentPrice === targetPrice) {
+          el.textContent = prefix + currency(targetPrice);
+          return;
+        }
+        
+        const startTime = performance.now();
+        function update(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easeOutQuint = 1 - Math.pow(1 - progress, 5);
+          const currentVal = currentPrice + (targetPrice - currentPrice) * easeOutQuint;
+          
+          el.textContent = prefix + currency(Math.round(currentVal));
+          
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            el.textContent = prefix + currency(targetPrice);
+          }
+        }
+        requestAnimationFrame(update);
+      }
+
       function rowHtml(name, price) {
         if (name === null) {
           return '<div class="bom-row muted"><span class="bom-name">— ยังไม่ได้เลือก —</span></div>';
@@ -2314,17 +2789,17 @@
 
         if (appliedDiscount) {
           subtotalRow.classList.remove('hidden');
-          subtotalValueEl.textContent = currency(lastSubtotal);
+          animatePrice(subtotalValueEl, lastSubtotal);
           discountAppliedRow.classList.remove('hidden');
           discountAppliedLabel.textContent = 'ส่วนลด (' + appliedDiscount.code + ' -' + appliedDiscount.percent + '%)';
-          discountAppliedValue.textContent = '-' + currency(discountAmount);
+          animatePrice(discountAppliedValue, discountAmount, '-');
         } else {
           subtotalRow.classList.add('hidden');
           discountAppliedRow.classList.add('hidden');
         }
 
-        bomTotalEl.textContent = currency(lastTotal);
-        mobilePillTotal.textContent = currency(lastTotal);
+        animatePrice(bomTotalEl, lastTotal);
+        animatePrice(mobilePillTotal, lastTotal);
 
         document.querySelectorAll('.option').forEach(function (opt) {
           const input = opt.querySelector('input');
@@ -2390,17 +2865,17 @@
 
         if (appliedDiscount) {
           subtotalRow.classList.remove('hidden');
-          subtotalValueEl.textContent = currency(lastSubtotal);
+          animatePrice(subtotalValueEl, lastSubtotal);
           discountAppliedRow.classList.remove('hidden');
           discountAppliedLabel.textContent = 'ส่วนลด (' + appliedDiscount.code + ' -' + appliedDiscount.percent + '%)';
-          discountAppliedValue.textContent = '-' + currency(discountAmount);
+          animatePrice(discountAppliedValue, discountAmount, '-');
         } else {
           subtotalRow.classList.add('hidden');
           discountAppliedRow.classList.add('hidden');
         }
 
-        bomTotalEl.textContent = currency(lastTotal);
-        mobilePillTotal.textContent = currency(lastTotal);
+        animatePrice(bomTotalEl, lastTotal);
+        animatePrice(mobilePillTotal, lastTotal);
 
         document.querySelectorAll('#analogOnlyFields .option').forEach(function (opt) {
           const input = opt.querySelector('input');
@@ -2416,11 +2891,265 @@
         } else {
           computeAndRender();
         }
+        if (typeof updateStepTracker === 'function') updateStepTracker();
+        if (typeof updateConfigPreview === 'function') updateConfigPreview();
       }
 
       form.querySelectorAll('input, select').forEach(function (el) {
         el.addEventListener('change', function () { rerender(); });
       });
+
+      // ========== อัปเดตความคืบหน้าทีละขั้นตอน (Step Progress Tracker) ==========
+      function updateStepTracker() {
+        const stepTracker = document.getElementById('stepTracker');
+        if (!stepTracker) return;
+
+        if (currentMode === 'analogOnly') {
+          stepTracker.hidden = true;
+          stepTracker.style.display = 'none';
+          return;
+        }
+
+        stepTracker.hidden = false;
+        stepTracker.style.display = '';
+
+        const steps = {
+          pcb: getSelected('pcb'),
+          paddles: getPaddlesValue(),
+          triggerFace: getTriggerFaceValue(),
+          stickModule: getSelected('stickModule'),
+          ps4shell: getSelected('ps4shell'),
+          contact: customerEmail.value.trim() && customerAddress.value.trim()
+        };
+
+        let firstUncompletedFound = false;
+        let completedCount = 0;
+        const totalSteps = Object.keys(steps).length;
+
+        for (const step in steps) {
+          const dot = document.querySelector('.step-dot[data-step="' + step + '"]');
+          if (!dot) continue;
+
+          let completed = !!steps[step];
+
+          if (completed) {
+            completedCount++;
+            dot.classList.add('completed');
+            dot.classList.remove('active');
+          } else {
+            dot.classList.remove('completed');
+            if (!firstUncompletedFound) {
+              dot.classList.add('active');
+              firstUncompletedFound = true;
+            } else {
+              dot.classList.remove('active');
+            }
+          }
+        }
+        
+        // Interactive Progress Bar (fill up background line)
+        const stepGrid = document.querySelector('.step-progress-grid');
+        if (stepGrid) {
+          const segments = Math.max(1, totalSteps - 1);
+          // Fill up to the current active step (or 100% if all complete)
+          const activeIndex = firstUncompletedFound ? completedCount : totalSteps;
+          const progressPercent = (activeIndex / segments) * 100;
+          stepGrid.style.setProperty('--progress-percent', progressPercent + '%');
+        }
+      }
+
+      // Smooth scroll เมื่อกดที่วงกลมขั้นตอน Step Progress Tracker
+      document.querySelectorAll('.step-dot').forEach(function (dot) {
+        dot.addEventListener('click', function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
+            // เพิ่มเอฟเฟกต์กะพริบหรือเน้นกรอบของฟิลด์เป้าหมายเพื่อความชัดเจน
+            targetEl.style.outline = '2px solid var(--copper)';
+            setTimeout(function () { targetEl.style.outline = ''; }, 1200);
+          }
+        });
+      });
+
+      // ========== แสดงภาพตัวอย่างชิ้นส่วนอะไหล่แบบเรียลไทม์ (Dynamic Preview) ==========
+      function updateConfigPreview() {
+        const previewPanel = document.getElementById('configPreviewPanel');
+        if (!previewPanel) return;
+
+        if (currentMode === 'analogOnly') {
+          previewPanel.hidden = true;
+          previewPanel.style.display = 'none';
+          return;
+        }
+
+        previewPanel.hidden = false;
+        previewPanel.style.display = '';
+
+        const pcbVal = getSelected('pcb');
+        const paddlesVal = getPaddlesValue();
+        const heightVal = getPaddleHeightValue();
+
+        const previewPcb = document.getElementById('previewPcb');
+        const previewPaddles = document.getElementById('previewPaddles');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewLabels = document.getElementById('previewLabels');
+
+        let hasContent = false;
+        let labelsHtml = '';
+
+        // อัปเดตพรีวิวบอร์ด PCB
+        if (pcbVal) {
+          const radioInput = form.querySelector('input[name="pcb"][value="' + pcbVal + '"]');
+          const pcbImg = radioInput ? radioInput.closest('.pcb-col').querySelector('.pcb-preview-img') : null;
+          if (pcbImg && pcbImg.src) {
+            previewPcb.src = pcbImg.src;
+            previewPcb.hidden = false;
+            previewPcb.style.display = 'block';
+            hasContent = true;
+            labelsHtml += '<span class="preview-badge">บอร์ด: ' + (pcbVal === 'suiovoi' ? 'SuiOvOi' : 'Hyperstrike') + '</span>';
+          }
+        } else {
+          previewPcb.hidden = true;
+          previewPcb.style.display = 'none';
+        }
+
+        // อัปเดตพรีวิวปุ่มหลัง
+        if (paddlesVal && paddlesVal !== 'none' && heightVal && heightImages[heightVal]) {
+          previewPaddles.src = heightImages[heightVal];
+          previewPaddles.hidden = false;
+          previewPaddles.style.display = 'block';
+          hasContent = true;
+
+          let hLabel = 'ปุ่มหลัง: ';
+          if (heightVal === 'standard') hLabel += 'ปกติ';
+          else if (heightVal === 'medium') hLabel += 'ต่ำ';
+          else if (heightVal === 'high') hLabel += 'สูง';
+          labelsHtml += '<span class="preview-badge">' + hLabel + '</span>';
+        } else {
+          previewPaddles.hidden = true;
+          previewPaddles.style.display = 'none';
+        }
+
+        if (hasContent) {
+          previewPlaceholder.hidden = true;
+          previewPlaceholder.style.display = 'none';
+          previewLabels.innerHTML = labelsHtml;
+        } else {
+          previewPlaceholder.hidden = false;
+          previewPlaceholder.style.display = 'block';
+          previewLabels.innerHTML = '';
+        }
+      }
+
+      // ========== จัดการ Tooltip สำหรับหน้าจอมือถือ/แท็บเล็ต ==========
+      document.querySelectorAll('.info-tip').forEach(function (tip) {
+        tip.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const active = this.classList.contains('active');
+          document.querySelectorAll('.info-tip').forEach(function (t) { t.classList.remove('active'); });
+          if (!active) {
+            this.classList.add('active');
+          }
+        });
+      });
+      document.addEventListener('click', function () {
+        document.querySelectorAll('.info-tip').forEach(function (t) { t.classList.remove('active'); });
+      });
+
+      // ========== ระบบแปลง Dropdown ทั่วไปเป็น Custom Styled Dropdowns ==========
+      function initCustomSelects() {
+        document.querySelectorAll('select.select-input').forEach(function (select) {
+          if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-container')) {
+            return;
+          }
+          
+          select.style.display = 'none';
+          
+          const container = document.createElement('div');
+          container.className = 'custom-select-container';
+          
+          const trigger = document.createElement('div');
+          trigger.className = 'custom-select-trigger';
+          
+          const labelSpan = document.createElement('span');
+          labelSpan.textContent = select.options[select.selectedIndex] ? select.options[select.selectedIndex].textContent : 'เลือกตัวเลือก...';
+          
+          const arrowSpan = document.createElement('span');
+          arrowSpan.className = 'custom-select-arrow';
+          
+          trigger.appendChild(labelSpan);
+          trigger.appendChild(arrowSpan);
+          container.appendChild(trigger);
+          
+          const optionsContainer = document.createElement('div');
+          optionsContainer.className = 'custom-select-options';
+          
+          function rebuildOptions() {
+            optionsContainer.innerHTML = '';
+            Array.prototype.forEach.call(select.options, function (opt) {
+              const optionDiv = document.createElement('div');
+              optionDiv.className = 'custom-select-option';
+              optionDiv.textContent = opt.textContent;
+              optionDiv.dataset.value = opt.value;
+              
+              if (opt.disabled) {
+                optionDiv.classList.add('disabled');
+              }
+              if (opt.selected) {
+                optionDiv.classList.add('selected');
+                labelSpan.textContent = opt.textContent;
+              }
+              
+              optionDiv.addEventListener('click', function (e) {
+                e.stopPropagation();
+                select.value = opt.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                container.classList.remove('open');
+              });
+              
+              optionsContainer.appendChild(optionDiv);
+            });
+          }
+          
+          rebuildOptions();
+          container.appendChild(optionsContainer);
+          select.parentNode.insertBefore(container, select.nextSibling);
+          
+          trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = container.classList.contains('open');
+            document.querySelectorAll('.custom-select-container').forEach(function (c) {
+              c.classList.remove('open');
+            });
+            if (!isOpen) {
+              rebuildOptions();
+              container.classList.add('open');
+            }
+          });
+          
+          select.addEventListener('change', function () {
+            rebuildOptions();
+          });
+          
+          select.syncCustomSelect = rebuildOptions;
+        });
+        
+        document.addEventListener('click', function () {
+          document.querySelectorAll('.custom-select-container').forEach(function (c) {
+            c.classList.remove('open');
+          });
+        });
+      }
+
+      function syncCustomSelects() {
+        document.querySelectorAll('select.select-input').forEach(function (select) {
+          if (select.syncCustomSelect) {
+            select.syncCustomSelect();
+          }
+        });
+      }
 
       const paddlesSelect = document.getElementById('paddlesSelect');
       const paddleSideFrame = document.getElementById('paddleSideFrame');
@@ -2505,7 +3234,7 @@
 
       // modeSettings: เปิดรับออเดอร์ทั้งสองโหมดไว้ก่อนเป็นค่าเริ่มต้น (กันหน้าเว็บพังถ้าดึงชีต Settings ไม่ได้)
       // จะถูกแทนที่ด้วยค่าจริงจากชีตตอนเรียก loadSettings() ด้านล่าง
-      let modeSettings = { customBuildEnabled: true, analogOnlyEnabled: false };
+      let modeSettings = { customBuildEnabled: true, analogOnlyEnabled: false, presetBuildsEnabled: true };
 
       function enterMode(mode) {
         if (mode === 'custom' && modeSettings.customBuildEnabled === false) return;
@@ -2571,6 +3300,12 @@
           analogCta.textContent = enabled ? 'เริ่มเปลี่ยนอนาล็อก →' : 'ปิดรับชั่วคราว';
           analogCta.classList.toggle('soldout', !enabled);
         }
+        const presetField = document.getElementById('field-preset');
+        if (presetField) {
+          const enabled = modeSettings.presetBuildsEnabled !== false;
+          presetField.hidden = !enabled;
+          presetField.style.display = enabled ? '' : 'none';
+        }
       }
 
       function loadSettings() {
@@ -2582,7 +3317,7 @@
           .then(function (res) { return res.json(); })
           .then(function (result) {
             if (result && result.result === 'success' && result.settings) {
-              modeSettings = Object.assign({ customBuildEnabled: true, analogOnlyEnabled: true }, result.settings);
+              modeSettings = Object.assign({ customBuildEnabled: true, analogOnlyEnabled: true, presetBuildsEnabled: true }, result.settings);
             }
           })
           .catch(function () { /* ดึงไม่ได้ ใช้ค่าเริ่มต้น (เปิดทั้งคู่) ต่อไปเงียบๆ */ })
@@ -2634,7 +3369,7 @@
       // triggerFace: 'none' | 'clicky' | 'full' — อิงตามช่อง 03 ที่รวมเป็น dropdown เดียวแล้ว
       // FALLBACK_PRESETS ใช้เฉพาะตอนดึงจากชีตไม่ได้ (เช่น ยังไม่ได้ตั้ง ORDER_WEBHOOK_URL) กันไม่ให้หน้าเว็บว่างเปล่า
       const FALLBACK_PRESETS = [
-        { order: 1, key: 'starter', icon: '🎮', name: 'Starter', desc: 'เซ็ตพื้นฐาน คุ้มค่าที่สุด เหมาะมือใหม่หรืองบจำกัด', pcb: 'suiovoi', paddles: 'none', paddleSide: '', triggerFace: 'none', stickModule: 'alps', ps4shell: 'withController' },
+        // { order: 1, key: 'starter', icon: '🎮', name: 'Starter', desc: 'เซ็ตพื้นฐาน คุ้มค่าที่สุด เหมาะมือใหม่หรืองบจำกัด', pcb: 'suiovoi', paddles: 'none', paddleSide: '', triggerFace: 'none', stickModule: 'alps', ps4shell: 'withController' },
         { order: 2, key: 'balanced', icon: '🎯', name: 'Balanced', desc: 'อัปเกรดกลางๆ คุ้มค่า เพิ่มปุ่มหลัง 1 ปุ่ม + HE Stick', pcb: 'suiovoi', paddles: 'one', paddleSide: 'right', triggerFace: 'clicky', stickModule: 'he', ps4shell: 'withController' },
         { order: 3, key: 'apex', icon: '⚡', name: 'Apex / FPS Pro', desc: 'สเปกสูงสุด ปุ่มหลัง 2 ปุ่ม + TMR Stick + Full Face Clicky', pcb: 'hyperstrike', paddles: 'two', paddleSide: '', triggerFace: 'full', stickModule: 'tmr', ps4shell: 'withController' }
       ];
@@ -2781,6 +3516,15 @@
       function renderPresetCards() {
         const grid = document.getElementById('presetGrid');
         if (!grid) return;
+
+        const activePresets = PRESETS_LIST.filter(function (p) { return p.key !== 'reset'; });
+        const presetField = document.getElementById('field-preset');
+        if (presetField) {
+          const enabled = (modeSettings.presetBuildsEnabled !== false) && (activePresets.length > 0);
+          presetField.hidden = !enabled;
+          presetField.style.display = enabled ? '' : 'none';
+        }
+
         const resetBtn = grid.querySelector('.preset-reset');
         grid.querySelectorAll('.preset-card:not(.preset-reset)').forEach(function (el) { el.remove(); });
 
@@ -2816,7 +3560,7 @@
         fetch(ORDER_WEBHOOK_URL + '?action=getPresets')
           .then(function (res) { return res.json(); })
           .then(function (result) {
-            if (result && result.result === 'success' && Array.isArray(result.presets) && result.presets.length > 0) {
+            if (result && result.result === 'success' && Array.isArray(result.presets)) {
               PRESETS_LIST = result.presets;
             }
           })
@@ -3491,6 +4235,9 @@
         }
 
         updatePresetPrices();
+        if (typeof syncCustomSelects === 'function') {
+          syncCustomSelects();
+        }
       }
 
       // รวมตัวเลือกปัจจุบันของลูกค้าเป็นก้อนเดียว ส่งไปให้เซิร์ฟเวอร์ตรวจสอบราคาซ้ำตอนยืนยันคำสั่งซื้อ
@@ -3557,6 +4304,7 @@
         themeBtn.addEventListener('click', toggleTheme);
       }
 
+      initCustomSelects();
       rerender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
       loadPrices();
       loadPresets();
