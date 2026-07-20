@@ -14,7 +14,7 @@
       --bg: #090A07;
       --panel: #141812;
       --panel-2: #1C2218;
-      --line: #293123;
+      --line: #5C6E1A;
       --copper: #C6FF00;
       --copper-dim: #5C6E1A;
       --copper-text: #D4FF4D;
@@ -280,7 +280,7 @@
     }
 
     .form-col {
-      border-left: 1px solid var(--line);
+      border-left: 2px solid var(--line);
       padding-left: 24px;
     }
 
@@ -295,10 +295,11 @@
       border: none;
       margin: 0;
       padding: 30px 0;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 2px solid var(--line);
     }
 
-    fieldset.field:last-of-type {
+    fieldset.field:last-of-type,
+    fieldset.field.last-visible-fieldset {
       border-bottom: none;
       padding-bottom: 6px;
     }
@@ -1471,93 +1472,170 @@
 
     /* ---------- Step Progress Tracker ---------- */
     .step-tracker {
-      background: var(--panel-2);
+      background: linear-gradient(135deg, rgba(20, 24, 18, 0.6) 0%, rgba(28, 34, 24, 0.4) 100%);
       border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 16px;
+      border-radius: 12px;
+      padding: 16px 20px;
       margin-bottom: 12px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .step-progress-grid {
+    .step-tracker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
+    .step-tracker-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+    }
+    .step-active-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--silk);
+      letter-spacing: 0.02em;
+    }
+    .step-percent {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--copper-text);
+      text-shadow: 0 0 8px rgba(198, 255, 0, 0.3);
+    }
+    
+    .step-dots-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
       position: relative;
+      padding: 10px 0;
     }
-    .step-progress-grid::before {
-      content: "";
+    .step-progress-line {
       position: absolute;
       top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: var(--line);
+      left: 14px;
+      right: 14px;
+      height: 2px;
+      background: rgba(255,255,255,0.08);
       z-index: 1;
       transform: translateY(-50%);
     }
-    .step-progress-grid::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      height: 2px;
+    .step-progress-line-fill {
+      height: 100%;
       width: var(--progress-percent, 0%);
       background: var(--copper);
-      z-index: 1;
-      transform: translateY(-50%);
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px rgba(198, 255, 0, 0.4);
     }
     .step-dot {
-      width: 26px;
-      height: 26px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      background: var(--panel);
-      border: 1.5px solid var(--line);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
       color: var(--silk-dim);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       position: relative;
       z-index: 2;
-      transition: all 0.25s ease;
+      transition: all 0.3s ease;
       cursor: pointer;
       text-decoration: none;
     }
+    /* The glowing outer ring */
+    .step-dot::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border-radius: 50%;
+      border: 1px solid var(--copper);
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.4s ease;
+      z-index: -1;
+    }
     .step-dot.active {
-      border-color: var(--copper);
       color: var(--copper-text);
-      box-shadow: 0 0 8px rgba(198, 255, 0, 0.2);
+      background: rgba(198, 255, 0, 0.1);
+      border-color: var(--copper);
+    }
+    .step-dot.active::before {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(198, 255, 0, 0.4) inset, 0 0 10px rgba(198, 255, 0, 0.4);
     }
     body.gold-theme .step-dot.active {
-      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+      color: rgba(212, 175, 55, 1);
+      border-color: rgba(212, 175, 55, 1);
+      background: rgba(212, 175, 55, 0.1);
+    }
+    body.gold-theme .step-dot.active::before {
+      border-color: rgba(212, 175, 55, 1);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.4) inset, 0 0 10px rgba(212, 175, 55, 0.4);
     }
     .step-dot.completed {
-      background: var(--copper-dim);
+      color: #000;
+      background: var(--copper);
       border-color: var(--copper);
-      color: #12180C;
+      box-shadow: 0 0 8px rgba(198, 255, 0, 0.2);
     }
+    
+    /* Keep tooltip */
     .step-dot::after {
       content: attr(title);
       position: absolute;
       top: 100%;
       left: 50%;
-      transform: translate(-50%, 6px);
-      font-size: 9px;
+      transform: translate(-50%, 10px) scale(0.9);
+      font-size: 10px;
       font-family: var(--sans);
       color: var(--silk-dim);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      border-radius: 4px;
       white-space: nowrap;
       opacity: 0;
-      transition: opacity 0.15s ease;
+      transition: all 0.2s ease;
       pointer-events: none;
-      z-index: 10;
+      z-index: 99;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
     .step-dot:hover::after {
       opacity: 1;
+      transform: translate(-50%, 10px) scale(1);
     }
-
+    
+    
+    .progress-tube-container {
+      margin-top: 16px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 2px rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .progress-tube-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(95deg, var(--copper-dim), var(--copper));
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(198, 255, 0, 0.4), inset 0 0 4px rgba(255,255,255,0.3);
+      transition: width 0.4s ease;
+    }
     /* ---------- Dynamic Component Preview ---------- */
     .preview-panel {
       margin-bottom: 12px;
@@ -1733,6 +1811,432 @@
       opacity: 0.5;
       pointer-events: none;
     }
+
+    /* ===================================================================
+       WIZARD STYLES
+       =================================================================== */
+
+    /* Wizard Nav (Step Tabs) */
+    .wizard-nav {
+      display: flex;
+      align-items: stretch;
+      background: linear-gradient(135deg, rgba(20, 24, 18, 0.6) 0%, rgba(28, 34, 24, 0.4) 100%);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .wizard-nav-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 14px 8px;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--silk-dim);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      text-align: center;
+    }
+
+    .wizard-nav-step:last-child {
+      border-right: none;
+    }
+
+    .wizard-nav-step::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      background: var(--copper);
+      opacity: 0;
+      transform: scaleX(0.8);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px var(--copper);
+    }
+
+    /* Hover effect */
+    .wizard-nav-step:hover {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--silk);
+    }
+
+    .wizard-nav-step .wz-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--silk-dim);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+
+    .wizard-nav-step .wz-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    @media (min-width: 600px) {
+      .wizard-nav-step .wz-label {
+        display: block;
+      }
+    }
+
+    /* Active State */
+    .wizard-nav-step.active {
+      background: rgba(198, 255, 0, 0.04);
+      color: var(--copper-text);
+    }
+    body.gold-theme .wizard-nav-step.active {
+      background: rgba(212, 175, 55, 0.04);
+      color: rgba(212, 175, 55, 1);
+    }
+
+    .wizard-nav-step.active::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    .wizard-nav-step.active .wz-num {
+      background: var(--copper-dim);
+      border-color: var(--copper);
+      color: #000;
+      box-shadow: 0 0 10px rgba(198, 255, 0, 0.4);
+    }
+    body.gold-theme .wizard-nav-step.active .wz-num {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: rgba(212, 175, 55, 1);
+      color: rgba(212, 175, 55, 1);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
+
+    /* Completed (Done) State */
+    .wizard-nav-step.done {
+      color: var(--silk);
+    }
+
+    .wizard-nav-step.done .wz-num {
+      background: var(--copper);
+      border-color: var(--copper);
+      color: #000;
+      box-shadow: 0 0 6px rgba(198, 255, 0, 0.2);
+    }
+    body.gold-theme .wizard-nav-step.done .wz-num {
+      background: rgba(212, 175, 55, 1);
+      border-color: rgba(212, 175, 55, 1);
+      color: #000;
+      box-shadow: 0 0 6px rgba(212, 175, 55, 0.2);
+    }
+
+    .wizard-nav-step.done .wz-num::after {
+      content: "✓";
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .wizard-nav-step.done .wz-num-text {
+      display: none;
+    }
+
+    /* Wizard Body */
+    .wizard-body {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wizard-step {
+      display: none;
+      animation: wizardIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .wizard-step.active {
+      display: block;
+    }
+
+    .wizard-step.slide-out-left {
+      animation: wizardOutLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .wizard-step.slide-in-right {
+      animation: wizardInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .wizard-step.slide-out-right {
+      animation: wizardOutRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .wizard-step.slide-in-left {
+      animation: wizardInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes wizardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wizardInRight {
+      from { opacity: 0; transform: translateX(32px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes wizardInLeft {
+      from { opacity: 0; transform: translateX(-32px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes wizardOutLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(-32px); }
+    }
+    @keyframes wizardOutRight {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(32px); }
+    }
+
+    /* Wizard Footer (Next / Back Buttons) */
+    .wizard-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0 4px;
+      border-top: 2px solid var(--line);
+      margin-top: 20px;
+    }
+
+    .wizard-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .wizard-btn-back {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--silk-dim);
+    }
+
+    .wizard-btn-back:hover {
+      border-color: var(--silk-dim);
+      color: var(--silk);
+    }
+
+    .wizard-btn-next {
+      background: var(--copper-bright);
+      color: #12180C;
+      margin-left: auto;
+    }
+
+    .wizard-btn-next:hover {
+      filter: brightness(1.08);
+    }
+
+    .wizard-btn-next:active {
+      transform: scale(0.98);
+    }
+
+    .wizard-btn[hidden] { display: none; }
+
+    /* Wizard Step Title */
+    .wizard-step-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .wizard-step-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--copper-text);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .wizard-step-title {
+      font-size: clamp(18px, 3vw, 24px);
+      font-weight: 700;
+      color: var(--silk);
+      margin: 0;
+    }
+
+    /* Wizard Summary (Step 4) */
+    .wizard-summary-block {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+
+    .wizard-summary-block h4 {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--copper-text);
+      margin: 0 0 12px;
+    }
+
+    .wizard-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 13px;
+      padding: 4px 0;
+      gap: 12px;
+      color: var(--silk);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wizard-summary-row:last-child { border-bottom: none; }
+    .wizard-summary-row-label { color: var(--silk-dim); flex: 1; }
+    .wizard-summary-row-value { text-align: right; font-weight: 600; }
+    .wizard-summary-row-value.empty { color: var(--silk-dim); font-weight: 400; font-style: italic; }
+
+    /* ===================================================================
+       SVG CONTROLLER PREVIEW STYLES
+       =================================================================== */
+
+    .svg-preview-container {
+      position: relative;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .svg-preview-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 60%, rgba(198,255,0,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    body.gold-theme .svg-preview-container::before {
+      background: radial-gradient(circle at 50% 60%, rgba(212,175,55,0.06) 0%, transparent 70%);
+    }
+
+    .svg-preview-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--copper-text);
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .svg-preview-stage {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .svg-preview-stage svg {
+      width: 100%;
+      height: auto;
+      max-height: 180px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4));
+    }
+
+    .svg-color-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .svg-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--silk-dim);
+    }
+
+    .svg-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ===================================================================
+       WIZARD LAYOUT OVERRIDES (replaces .layout when in wizard mode)
+       =================================================================== */
+
+    .wizard-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .wizard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .wizard-main-col {
+      min-width: 0;
+    }
+
+    /* Highlight for required fields when validation fails */
+    @keyframes fieldShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    .field.shake-invalid {
+      animation: fieldShake 0.35s ease;
+    }
   </style>
 </head>
 
@@ -1802,8 +2306,34 @@
           เลือกเพิ่มได้ตามต้องการ</p>
       </header>
 
-      <div class="layout">
-        <form class="form-col" id="orderForm">
+      <!-- ===== WIZARD NAV TABS ===== -->
+      <nav class="wizard-nav" id="wizardNav" aria-label="ขั้นตอนการสั่งซื้อ">
+        <button type="button" class="wizard-nav-step active" data-wz="1" id="wzNav1" title="เลือก Preset">
+          <span class="wz-num"><span class="wz-num-text">1</span></span>
+          <span class="wz-label">Preset</span>
+        </button>
+        <button type="button" class="wizard-nav-step" data-wz="2" id="wzNav2" title="ส่วนประกอบ">
+          <span class="wz-num"><span class="wz-num-text">2</span></span>
+          <span class="wz-label">ชิ้นส่วน</span>
+        </button>
+        <button type="button" class="wizard-nav-step" data-wz="3" id="wzNav3" title="Trigger & Shell">
+          <span class="wz-num"><span class="wz-num-text">3</span></span>
+          <span class="wz-label">Shell & Keys</span>
+        </button>
+        <button type="button" class="wizard-nav-step" data-wz="4" id="wzNav4" title="ข้อมูลติดต่อ">
+          <span class="wz-num"><span class="wz-num-text">4</span></span>
+          <span class="wz-label">ติดต่อ</span>
+        </button>
+        <button type="button" class="wizard-nav-step" data-wz="5" id="wzNav5" title="สรุปคำสั่งซื้อ">
+          <span class="wz-num"><span class="wz-num-text">5</span></span>
+          <span class="wz-label">สรุป</span>
+        </button>
+      </nav>
+
+      <div class="wizard-layout">
+        <!-- Main Wizard Column -->
+        <div class="wizard-main-col">
+          <form class="form-col" id="orderForm">
 
           <!-- Honeypot กันบอท: ช่องนี้ต้องว่างเสมอสำหรับคนจริง ซ่อนด้วย CSS (ไม่ใช้ display:none เพราะบอทบางตัว
            เช็ค computed style แล้วข้ามช่องที่ display:none แต่ยังกรอกช่องที่แค่ขยับออกจออยู่) ห้ามลบ/แก้ id
@@ -2157,13 +2687,124 @@
             <p class="field-note">ใช้สำหรับติดต่อกลับและจัดส่งพัสดุเท่านั้น</p>
           </fieldset>
 
+          <!-- Wizard Footer (Back / Next buttons) — hidden in analogOnly mode -->
+          <div class="wizard-footer" id="wizardFooter">
+            <button type="button" class="wizard-btn wizard-btn-back" id="wzBtnBack" hidden>← ย้อนกลับ</button>
+            <button type="button" class="wizard-btn wizard-btn-next" id="wzBtnNext">ถัดไป →</button>
+          </div>
+
         </form>
+          </div><!-- /.wizard-main-col -->
 
         <aside class="summary-col" id="summaryCol">
+          <!-- SVG Controller Interactive Preview -->
+          <div class="svg-preview-container" id="svgPreviewContainer">
+            <span class="svg-preview-label">Controller Preview</span>
+            <div class="svg-preview-stage" id="svgPreviewStage">
+              <!-- Inline SVG: Simplified DualShock 4 shape with colorable zones -->
+              <svg viewBox="0 0 973 788" xmlns="http://www.w3.org/2000/svg" id="controllerSvg" aria-label="Controller Preview">
+  <defs>
+    <radialGradient id="bodyGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#3a3d43" id="gradStop0"/>
+      <stop offset="100%" stop-color="#1e2126" id="gradStop1"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <path id="svgBody" d="M0 0 C0.69644623 0.00432037 1.39289246 0.00864075 2.11044312 0.01309204 C17.18892769 0.12259588 30.50176126 1.27556573 44.125 8.375 C44.125 12.335 44.125 16.295 44.125 20.375 C46.105 20.684375 46.105 20.684375 48.125 21 C51.90597214 21.5907769 53.84200315 22.94061965 56.65527344 25.38867188 C61.47410793 29.04875654 65.48271028 29.23881772 71.390625 29.1796875 C72.3464447 29.19339386 73.3022644 29.20710022 74.28704834 29.22122192 C77.31685062 29.25834442 80.34500389 29.2548233 83.375 29.25 C85.42450475 29.26814294 87.47398774 29.28895063 89.5234375 29.3125 C94.72414635 29.36577047 99.92405757 29.38097775 105.125 29.375 C106.445 29.375 107.765 29.375 109.125 29.375 C110.61 28.385 110.61 28.385 112.125 27.375 C114.11408556 27.123151 114.11408556 27.123151 116.43137169 27.12052441 C117.75765479 27.11177612 117.75765479 27.11177612 119.11073148 27.10285109 C120.08299228 27.10663042 121.05525307 27.11040974 122.05697632 27.11430359 C123.08915051 27.11047804 124.1213247 27.10665249 125.1847769 27.10271102 C128.6601823 27.09235235 132.13542337 27.09637864 135.61083984 27.1003418 C138.09575047 27.09599689 140.58065974 27.09081449 143.06556702 27.08485413 C149.12483145 27.07282444 155.18403074 27.07031571 161.24330114 27.07265439 C166.16786807 27.07443586 171.09242153 27.07269159 176.01698685 27.06842995 C177.06746131 27.06753716 177.06746131 27.06753716 178.13915748 27.06662634 C179.56176523 27.06541462 180.98437297 27.06420048 182.40698071 27.06298397 C195.75586548 27.05210128 209.10472501 27.05427424 222.45361121 27.06036881 C234.66857624 27.06553746 246.88346152 27.05428523 259.09841077 27.03527059 C271.63602504 27.01590309 284.17360155 27.00763435 296.71123087 27.01139385 C303.75200628 27.0133077 310.7927138 27.01080057 317.83347702 26.99667931 C324.45395175 26.98353562 331.07429299 26.98601078 337.69477654 26.99909019 C340.12764095 27.00146349 342.56051649 26.99869452 344.99336815 26.99046707 C348.30878522 26.98006168 351.62365927 26.98805067 354.9390564 27.0007782 C356.39075543 26.98971677 356.39075543 26.98971677 357.87178171 26.97843188 C362.94897758 27.01957069 365.84012253 27.42051348 370.125 30.375 C371.115 30.045 372.105 29.715 373.125 29.375 C374.49416074 29.29573028 375.86686827 29.27021327 377.23828125 29.28076172 C378.47602295 29.28473465 378.47602295 29.28473465 379.73876953 29.28878784 C381.07464111 29.29665817 381.07464111 29.29665817 382.4375 29.3046875 C384.33724871 29.29609557 386.23698965 29.28561679 388.13671875 29.2734375 C391.12119637 29.25682177 394.10394449 29.24981959 397.08837891 29.27539062 C412.10547531 29.64409109 412.10547531 29.64409109 425.08325195 22.96704102 C428.06585663 20.64137259 430.41525405 20.4574388 434.125 20.375 C434.125 16.415 434.125 12.455 434.125 8.375 C448.26862164 0.95232756 462.09385372 -0.01369152 477.75 -0.0625 C478.4876358 -0.06858276 479.22527161 -0.07466553 479.98526001 -0.08093262 C495.01442992 -0.16183887 508.78126659 1.61884637 522.5625 8 C523.94405273 8.61101562 523.94405273 8.61101562 525.35351562 9.234375 C531.91233102 12.16233102 531.91233102 12.16233102 533.125 13.375 C533.19679964 14.89428038 533.20892007 16.41667482 533.1875 17.9375 C533.17847656 18.76378906 533.16945313 19.59007812 533.16015625 20.44140625 C533.14275391 21.39853516 533.14275391 21.39853516 533.125 22.375 C534.1975 22.436875 535.27 22.49875 536.375 22.5625 C540.92599656 23.54854925 541.53694277 24.64020197 544.125 28.375 C545.00591013 30.08042052 545.83699193 31.81221285 546.625 33.5625 C549.28287208 39.04603912 552.43719923 43.97410825 555.875 49 C575.16858926 77.41105915 587.7023559 107.6265984 595.23535156 140.97045898 C597.77255755 152.18076541 600.66445953 163.22746087 604.38330078 174.11279297 C605.93338331 178.84059571 607.23048907 183.64467851 608.5625 188.4375 C609.02317871 190.08915161 609.02317871 190.08915161 609.49316406 191.77416992 C611.85050024 200.27564025 614.04154766 208.80282956 616.125 217.375 C616.44729836 218.64237251 616.44729836 218.64237251 616.77610779 219.93534851 C618.61523457 227.17710288 620.27606447 234.44258864 621.83203125 241.75 C622.0781868 242.90184784 622.32434235 244.05369568 622.57795715 245.240448 C623.36837546 248.95114961 624.15377996 252.66287817 624.9375 256.375 C625.20512146 257.64023499 625.47274292 258.90546997 625.74847412 260.20904541 C629.87038179 279.75540433 633.56572748 299.30901772 636.5949707 319.05297852 C637.08048635 322.09600541 637.62895997 325.11797031 638.20703125 328.14453125 C639.19354333 333.47287791 639.75025039 338.78893108 640.1875 344.1875 C640.26983887 345.19047119 640.35217773 346.19344238 640.43701172 347.22680664 C640.67879472 350.27542701 640.90610722 353.32465579 641.125 356.375 C641.18574707 357.21836914 641.24649414 358.06173828 641.30908203 358.93066406 C642.1446324 371.29680951 642.27331516 383.6950085 642.35516357 396.08547974 C642.36817917 397.83379405 642.38596306 399.58208072 642.40899658 401.33029175 C642.59197704 416.30671877 641.1436631 430.18899801 635.9375 444.375 C635.63706787 445.20821777 635.33663574 446.04143555 635.02709961 446.89990234 C630.4534883 459.24288733 625.07986501 470.58289152 616.125 480.375 C615.57328125 481.00664063 615.0215625 481.63828125 614.453125 482.2890625 C603.48393441 494.14623519 585.11915893 503.06935913 568.953125 503.84375 C566.760661 503.87810014 564.56769552 503.88783404 562.375 503.875 C561.22483398 503.86855469 560.07466797 503.86210938 558.88964844 503.85546875 C549.99662804 503.6642751 543.0941376 502.53062352 535.125 498.375 C534.25294922 497.93293213 534.25294922 497.93293213 533.36328125 497.48193359 C525.2533807 493.32539341 518.01070686 488.35859933 511.125 482.375 C510.31675781 481.69953125 509.50851562 481.0240625 508.67578125 480.328125 C497.69431183 470.88095821 489.22211557 459.98096536 482.125 447.375 C481.79886719 446.81022949 481.47273437 446.24545898 481.13671875 445.66357422 C463.76067139 415.41482768 451.86696674 381.39685345 440.42089844 348.54394531 C436.7291467 335.69506148 436.7291467 335.69506148 428.125 326.375 C424.11656516 324.99438824 424.11656516 324.99438824 420.125 325.375 C417.57740172 327.07187426 415.38062865 329.02651234 413.078125 331.04296875 C399.89315867 341.45490644 384.00980489 345.6765269 367.5 345.8125 C366.46302979 345.8228125 365.42605957 345.833125 364.35766602 345.84375 C353.53375379 345.72037128 343.78979032 343.18969408 334.125 338.375 C332.70767578 337.71371094 332.70767578 337.71371094 331.26171875 337.0390625 C327.83291446 335.22004553 324.8943829 333.10650822 321.8125 330.75 C320.76449219 329.95335937 319.71648437 329.15671875 318.63671875 328.3359375 C316.125 326.375 316.125 326.375 315.125 325.375 C312.39775721 325.27400512 309.69637477 325.23529471 306.96875 325.2421875 C306.15128296 325.24123077 305.33381592 325.24027405 304.49157715 325.23928833 C302.75984622 325.23860655 301.02811276 325.24046071 299.29638672 325.24462891 C296.63633518 325.24997721 293.9764525 325.24468388 291.31640625 325.23828125 C289.63802046 325.23894203 287.95963477 325.2402232 286.28125 325.2421875 C285.48021851 325.24016327 284.67918701 325.23813904 283.85388184 325.23605347 C280.18917699 324.90286332 280.18917699 324.90286332 277.125 326.375 C274.75738425 326.47525695 272.41892927 326.51118935 270.05078125 326.50439453 C268.94106461 326.50702301 268.94106461 326.50702301 267.80892944 326.50970459 C265.35176277 326.5141231 262.89466747 326.51118513 260.4375 326.5078125 C258.73738593 326.50848554 257.03727195 326.50945557 255.3371582 326.51071167 C251.76935919 326.51218864 248.20158517 326.51003411 244.63378906 326.50537109 C240.05011506 326.4996738 235.46649961 326.50295281 230.88282776 326.50894356 C227.37080439 326.51254919 223.85879502 326.51141057 220.34677124 326.50881577 C218.65619907 326.5081465 216.96562564 326.50897489 215.27505493 326.51129532 C212.91640843 326.51382189 210.55785805 326.50998121 208.19921875 326.50439453 C207.49372894 326.50641876 206.78823914 326.50844299 206.06137085 326.51052856 C201.23926271 326.48926271 201.23926271 326.48926271 200.125 325.375 C194.98108729 325.0334831 189.83496248 324.97517859 184.6809082 324.91503906 C182.94755265 324.88853367 181.21435167 324.84772061 179.48168945 324.79199219 C168.16060372 323.96784056 168.16060372 323.96784056 158.390625 328.64453125 C157.29586509 329.88254984 156.20681134 331.12565076 155.125 332.375 C152.83857909 333.99236963 150.42636795 335.28399723 147.9375 336.5625 C146.97855835 337.06438843 146.97855835 337.06438843 146.00024414 337.57641602 C129.18082661 346.0993344 107.58430876 348.64123813 89.2734375 343.546875 C78.86310152 339.67206012 69.59911354 334.58286669 61.125 327.375 C57.5251586 324.97510573 56.37401872 324.73363868 52.125 325.375 C45.49597241 328.96583385 42.67538135 333.11607167 40.44140625 340.14453125 C40.14398026 341.0012442 39.84655426 341.85795715 39.54011536 342.7406311 C38.90126645 344.5861257 38.27361292 346.43552708 37.65618896 348.28829956 C35.99070044 353.27295949 34.23110317 358.22442585 32.48046875 363.1796875 C32.12325745 364.19661179 31.76604614 365.21353607 31.39801025 366.26127625 C13.08822973 418.05587041 -7.54841472 473.47767186 -59.37109375 499.33984375 C-60.61052734 499.85224609 -60.61052734 499.85224609 -61.875 500.375 C-62.77472534 500.76014771 -62.77472534 500.76014771 -63.69262695 501.15307617 C-70.48305734 503.77158786 -76.97386776 503.8566569 -84.1875 503.8125 C-85.33412109 503.83248047 -86.48074219 503.85246094 -87.66210938 503.87304688 C-99.06122902 503.86659576 -108.57177977 500.52489305 -118.5 495.125 C-119.58655884 494.53803345 -119.58655884 494.53803345 -120.69506836 493.93920898 C-142.23316252 482.01801232 -152.76912956 462.00817576 -159.55224609 439.08642578 C-162.31913166 429.16644985 -164.02541541 419.52516565 -164.04296875 409.21484375 C-164.0471582 408.44414047 -164.05134766 407.67343719 -164.05566406 406.87937927 C-164.06546598 404.35703456 -164.06543981 401.83486075 -164.0625 399.3125 C-164.06222809 398.44095276 -164.06195618 397.56940552 -164.06167603 396.67144775 C-163.96210905 326.54921811 -163.96210905 326.54921811 -157.875 314.375 C-157.55490181 312.5196126 -157.27395415 310.65741447 -157.01171875 308.79296875 C-155.80901621 300.70881239 -154.26385732 292.70464078 -152.6875 284.6875 C-152.5367099 283.9167514 -152.3859198 283.14600281 -152.2305603 282.35189819 C-140.71524336 223.4997707 -140.71524336 223.4997707 -134.6640625 203.40966797 C-133.13638564 198.33441231 -131.80878204 193.23227341 -130.5546875 188.08203125 C-129.18270186 182.6177436 -127.63357436 177.25389661 -125.5234375 172.02734375 C-123.34539744 166.26534012 -121.97861003 160.27130008 -120.51690674 154.2973938 C-119.99013767 152.14724426 -119.45550054 149.99916714 -118.91943359 147.85131836 C-117.40106044 141.7445157 -115.90434396 135.63979794 -114.59375 129.484375 C-107.62220154 96.95150724 -90.92613985 67.99269241 -72.375 40.75 C-69.64691224 36.71446769 -67.46709139 32.73926672 -65.6640625 28.21484375 C-64.875 26.375 -64.875 26.375 -62.875 23.375 C-60.9296875 22.86328125 -60.9296875 22.86328125 -58.75 22.6875 C-57.47125 22.584375 -56.1925 22.48125 -54.875 22.375 C-54.875 19.405 -54.875 16.435 -54.875 13.375 C-38.03800747 3.2525596 -19.4394851 -0.22978941 0 0 Z " fill="#0C0D10" transform="translate(250.875,189.625)"/>
+  <path id="svgGripL" d="M0 0 C0.33 0 0.66 0 1 0 C1.02578125 0.81082031 1.0515625 1.62164063 1.078125 2.45703125 C1.6951866 14.50375654 5.16916835 23.13110357 11.4140625 33.37109375 C12.7259651 35.54575003 13.90659081 37.7103362 15 40 C15.66 40 16.32 40 17 40 C17 40.66 17 41.32 17 42 C17.58322021 42.28447998 18.16644043 42.56895996 18.76733398 42.86206055 C20.81141881 43.90388442 22.76157198 45.01807146 24.72265625 46.20703125 C57.83044716 66.10841151 99.75103084 78.41579508 138.41015625 69.91796875 C146.9017027 67.74657222 154.47465781 65.51520531 162 61 C162.66 61.33 163.32 61.66 164 62 C149.43994818 88.86194746 130.85131337 110.77706335 102 123 C101.39583252 123.25966553 100.79166504 123.51933105 100.16918945 123.78686523 C93.38603668 126.40126195 86.89257178 126.4816045 79.6875 126.4375 C78.54087891 126.45748047 77.39425781 126.47746094 76.21289062 126.49804688 C64.81377098 126.49159576 55.30322023 123.14989305 45.375 117.75 C44.65062744 117.35868896 43.92625488 116.96737793 43.17993164 116.56420898 C21.64183748 104.64301232 11.10587044 84.63317576 4.32275391 61.71142578 C1.41162168 51.27428956 -0.16462719 41.28602626 -0.09765625 30.46875 C-0.0962413 29.59222778 -0.09482635 28.71570557 -0.09336853 27.81262207 C-0.08781768 25.04171179 -0.07527461 22.27088543 -0.0625 19.5 C-0.05747864 17.60937618 -0.05291685 15.71875107 -0.04882812 13.828125 C-0.0378644 9.21871817 -0.02063425 4.60937327 0 0 Z " fill="#212225" transform="translate(87,567)"/>
+  <path id="svgGripR" d="M0 0 C0.33 0 0.66 0 1 0 C1.07526466 5.40361633 1.12911695 10.80691453 1.16479492 16.2109375 C1.17969888 18.04172086 1.20002914 19.87246973 1.22631836 21.703125 C1.44244886 37.1628123 0.19056196 51.3455998 -5.1875 66 C-5.48793213 66.83321777 -5.78836426 67.66643555 -6.09790039 68.52490234 C-10.6715117 80.86788733 -16.04513499 92.20789152 -25 102 C-25.55171875 102.63164063 -26.1034375 103.26328125 -26.671875 103.9140625 C-37.64106559 115.77123519 -56.00584107 124.69435913 -72.171875 125.46875 C-74.364339 125.50310014 -76.55730448 125.51283404 -78.75 125.5 C-79.90016602 125.49355469 -81.05033203 125.48710938 -82.23535156 125.48046875 C-91.12837196 125.2892751 -98.0308624 124.15562352 -106 120 C-106.87205078 119.55793213 -106.87205078 119.55793213 -107.76171875 119.10693359 C-115.8716193 114.95039341 -123.11429314 109.98359933 -130 104 C-130.80824219 103.32453125 -131.61648438 102.6490625 -132.44921875 101.953125 C-143.47982603 92.46368577 -151.7845804 81.58029629 -159 69 C-159.45503906 68.24074219 -159.91007813 67.48148438 -160.37890625 66.69921875 C-163 62.28810976 -163 62.28810976 -163 60 C-160.70331916 60.88903775 -158.43239535 61.78475474 -156.2265625 62.8828125 C-151.26285731 65.298102 -146.27246362 66.84958971 -140.9375 68.1875 C-140.27709717 68.35427246 -139.61669434 68.52104492 -138.9362793 68.69287109 C-114.33382319 74.62183451 -86.72730446 71.02128732 -63 63 C-62.35192383 62.79149414 -61.70384766 62.58298828 -61.03613281 62.36816406 C-39.54443334 55.45187217 -17.88894334 46.22662961 -6.2890625 26.01953125 C-1.93614968 17.47295852 -0.7017014 9.42457572 0 0 Z " fill="#212225" transform="translate(892,568)"/>
+  <path id="svgR2" d="M0 0 C20.6329472 14.75273122 24.93359123 45.83793968 30.25390625 68.90625 C30.4653125 69.81624756 30.67671875 70.72624512 30.89453125 71.66381836 C31.08402344 72.51210205 31.27351562 73.36038574 31.46875 74.234375 C31.63366943 74.97075195 31.79858887 75.70712891 31.96850586 76.46582031 C32.3539566 78.89267225 32.37485645 81.20295766 32.31640625 83.65625 C31.65261963 83.59566406 30.98883301 83.53507812 30.30493164 83.47265625 C-1.96635757 80.63825537 -34.34878074 81.18059887 -66.68359375 82.65625 C-64.83117713 23.05953605 -64.83117713 23.05953605 -48.703125 5.5 C-46.77046312 3.7409305 -44.80442588 2.18197105 -42.68359375 0.65625 C-41.92691406 0.10195312 -41.17023437 -0.45234375 -40.390625 -1.0234375 C-26.94714729 -10.43612373 -13.49363842 -8.61565646 0 0 Z " fill="#111111" transform="translate(751.68359375,102.34375)"/>
+  <path id="svgL2" d="M0 0 C13.0032153 8.67584657 23.176387 20.83358344 26.40625 36.60546875 C26.67971845 39.19804988 26.91899654 41.78102599 27.125 44.37890625 C27.21920227 45.51919785 27.21920227 45.51919785 27.31530762 46.68252563 C27.51538891 49.11493099 27.71079744 51.54768758 27.90625 53.98046875 C28.03747295 55.57814864 28.16898067 57.17580516 28.30078125 58.7734375 C29.06147405 68.04688327 29.76619855 77.32284025 30.40625 86.60546875 C29.82286865 86.57517578 29.2394873 86.54488281 28.63842773 86.51367188 C-0.64148487 85.05514572 -29.90194623 84.75102804 -59.11328125 87.41796875 C-62.28895499 87.65801968 -65.4110198 87.67699078 -68.59375 87.60546875 C-65.99552693 60.99033754 -58.89880392 24.24295786 -38.59375 5.60546875 C-35.40135463 3.25942936 -32.14086352 1.3616377 -28.59375 -0.39453125 C-27.94921875 -0.73355469 -27.3046875 -1.07257813 -26.640625 -1.421875 C-18.03295781 -5.34595857 -8.09347386 -4.69053599 0 0 Z " fill="#111111" transform="translate(264.59375,98.39453125)"/>
+  <path d="M0 0 C6.10794182 3.3057976 10.10322464 7.26480597 12.16796875 13.97265625 C13.48682291 21.54839991 12.44008934 27.48783834 8.0546875 33.8359375 C4.10960862 38.30375975 0.13865296 40.4554926 -5.7265625 41.4765625 C-12.31136509 41.87384841 -17.24464217 40.67757193 -22.6953125 36.9296875 C-27.95081962 32.11614259 -30.06690979 26.3795956 -30.45703125 19.34765625 C-30.1355415 13.0250245 -27.71500717 8.86300551 -23.3046875 4.44140625 C-16.42433859 -1.58108745 -8.75763101 -3.17690615 0 0 Z " fill="#050505" transform="translate(498.83203125,437.02734375)"/>
+  <path id="svgAnalogR" d="M0 0 C11.15980011 8.22677572 18.87926008 19.62095978 21.9375 33.234375 C22.14612153 34.750023 22.31603115 36.27176611 22.4375 37.796875 C22.50582031 38.49425781 22.57414063 39.19164062 22.64453125 39.91015625 C23.31441485 53.48150176 18.41635496 66.32572886 10.02734375 76.80859375 C1.27311309 86.25903716 -10.80767781 93.44725961 -23.9453125 94.1328125 C-39.81539616 94.43736633 -52.85608084 91.49220883 -65 80.61328125 C-75.7012898 69.60469089 -80.96033227 56.22422922 -80.93383789 41.00585938 C-80.54195069 26.99548546 -74.24834935 15.01338207 -64.8125 4.8984375 C-47.02294535 -11.71750069 -20.12315715 -13.02845431 0 0 Z M-64.97265625 9.8359375 C-73.89522177 20.84116574 -77.94645009 33.68058407 -76.5625 47.796875 C-74.85440677 59.75352761 -69.19362674 71.25442635 -59.5625 78.796875 C-48.03553353 86.7712682 -36.58663094 89.90568713 -22.5625 88.796875 C-9.72052581 86.20178784 1.26582646 80.21414542 9.05859375 69.5859375 C16.59910568 57.96489916 19.51515379 45.02173299 16.7421875 31.375 C13.34079186 19.19857528 7.173325 8.37872462 -3.90625 1.81640625 C-24.25923465 -9.0421861 -48.48917688 -7.92743556 -64.97265625 9.8359375 Z " fill="#000000" transform="translate(647.5625,408.203125)"/>
+  <path id="svgAnalogL" d="M0 0 C12.09203973 8.31327732 19.93523981 20.60441271 23.25 34.875 C24.71394124 52.06779823 20.63023206 66.14089446 9.5625 79.5625 C0.07231702 89.73568857 -12.02911179 94.82968888 -25.82836914 95.34545898 C-41.12382584 95.5273509 -53.49032947 90.84338969 -64.875 80.5 C-73.23792642 71.75454225 -78.84959165 59.98049009 -79.75 47.875 C-79.853125 46.616875 -79.95625 45.35875 -80.0625 44.0625 C-79.4855533 28.35672868 -73.21875925 15.06056909 -61.85546875 4.32421875 C-43.89420578 -9.84145657 -19.71705018 -11.51976827 0 0 Z M-63.16015625 10.9140625 C-72.08272177 21.91929074 -76.13395009 34.75870907 -74.75 48.875 C-73.04190677 60.83165261 -67.38112674 72.33255135 -57.75 79.875 C-46.22303353 87.8493932 -34.77413094 90.98381213 -20.75 89.875 C-7.90802581 87.27991284 3.07832646 81.29227042 10.87109375 70.6640625 C18.41160568 59.04302416 21.32765379 46.09985799 18.5546875 32.453125 C15.15329186 20.27670028 8.985825 9.45684962 -2.09375 2.89453125 C-22.44673465 -7.9640611 -46.67667688 -6.84931056 -63.16015625 10.9140625 Z " fill="#000000" transform="translate(389.75,407.125)"/>
+  <path id="svgBtnCircle" d="M0 0 C4.38479958 2.93915605 6.89621363 7.37245413 8.7890625 12.19921875 C9.50163954 18.51061535 8.47776636 22.983413 4.7890625 28.19921875 C0.691461 32.58203614 -2.57153134 34.83287589 -8.578125 35.4375 C-16.04732001 35.65855094 -19.31354507 33.70151221 -24.9609375 28.82421875 C-28.99454548 24.11834277 -29.63474196 19.39081665 -29.453125 13.3671875 C-28.79377475 7.4649393 -25.46932104 4.00808146 -21.03515625 0.45703125 C-14.23008672 -4.23511519 -7.0004036 -3.85157341 0 0 Z " fill="#1D1B1B" transform="translate(806.2109375,322.80078125)"/>
+  <path id="svgBtnSquare" d="M0 0 C9.57 0 19.14 0 29 0 C29 9.57 29 19.14 29 29 C19.43 29 9.86 29 0 29 C0 19.43 0 9.86 0 0 Z " fill="#1E1C1D" transform="translate(667,325)"/>
+  <path id="svgBtnTriangle" d="M0 0 C2.9280087 2.58811555 4.63760125 5.5722112 6.57421875 8.9453125 C6.90291458 9.51579315 7.23161041 10.0862738 7.57026672 10.67404175 C8.26076975 11.87466194 8.94897528 13.07660605 9.63500977 14.27978516 C10.6894694 16.12845274 11.75134353 17.97270201 12.81445312 19.81640625 C18 28.8492644 18 28.8492644 18 30 C6.78 30 -4.44 30 -16 30 C-13.7505106 23.25153181 -13.7505106 23.25153181 -11.7578125 19.94140625 C-11.33113281 19.22533203 -10.90445313 18.50925781 -10.46484375 17.77148438 C-9.80162109 16.67803711 -9.80162109 16.67803711 -9.125 15.5625 C-8.25221576 14.10570138 -7.37981555 12.64867261 -6.5078125 11.19140625 C-6.08790039 10.49289551 -5.66798828 9.79438477 -5.23535156 9.07470703 C-3.44814672 6.07319187 -1.72191225 3.03937534 0 0 Z " fill="#1D2220" transform="translate(739,263)"/>
+  <path d="M0 0 C0.73186523 -0.00421967 1.46373047 -0.00843933 2.21777344 -0.01278687 C16.17743068 -0.04814706 29.84555308 1.32912612 42.6875 7.1875 C43.79544922 7.66799805 43.79544922 7.66799805 44.92578125 8.15820312 C46.68616425 8.92408404 48.43795548 9.70967358 50.1875 10.5 C50.1875 11.16 50.1875 11.82 50.1875 12.5 C49.57342285 12.38406494 48.9593457 12.26812988 48.32666016 12.14868164 C45.48940593 11.61559754 42.65097911 11.08902148 39.8125 10.5625 C38.84699219 10.38009766 37.88148438 10.19769531 36.88671875 10.00976562 C24.70122716 7.7607655 12.86121138 7.33648139 0.5 7.375 C-0.72098892 7.37632935 -0.72098892 7.37632935 -1.96664429 7.37768555 C-15.268743 7.3946865 -28.53111767 7.72119643 -41.8125 8.5 C-32.8693388 -1.44085257 -12.40410883 0.00710638 0 0 Z " fill="#0C0B0A" transform="translate(728.8125,189.5)"/>
+  <path id="svgBody" d="M0 0 C0.69611389 0.00432037 1.39222778 0.00864075 2.10943604 0.01309204 C16.52116021 0.1178122 30.5116475 0.53426736 43.125 8.375 C40.32771722 9.77364139 38.02902304 9.10717601 35.00683594 8.75097656 C23.46286149 7.40787551 11.98081035 7.14598965 0.375 7.125 C-0.3942984 7.12009552 -1.1635968 7.11519104 -1.95620728 7.11013794 C-16.67210331 7.0316025 -31.40334867 7.67666184 -45.58984375 11.88671875 C-47.875 12.375 -47.875 12.375 -50.875 11.375 C-36.20751573 1.82408001 -17.09987331 -0.20216069 0 0 Z " fill="#0C0B0A" transform="translate(250.875,189.625)"/>
+  <path id="svgL1" d="M0 0 C0.33 0 0.66 0 1 0 C1 3.96 1 7.92 1 12 C2.32 12.20625 3.64 12.4125 5 12.625 C8.78473152 13.2163643 10.71514521 14.56691528 13.52807617 17.02026367 C18.3688475 20.69726847 22.37363505 20.81951821 28.30078125 20.69921875 C29.25897263 20.70581009 30.217164 20.71240143 31.20439148 20.7191925 C34.24115033 20.73657939 37.27584024 20.71474435 40.3125 20.6875 C43.36659372 20.6762019 46.42008361 20.67351519 49.47416687 20.6879425 C51.36838878 20.69533567 53.26275047 20.68708839 55.15681458 20.6615448 C56.01167953 20.66197281 56.86654449 20.66240082 57.74731445 20.6628418 C58.87361015 20.65235054 58.87361015 20.65235054 60.0226593 20.64164734 C62.51625467 21.09356063 63.40381374 22.08731951 65 24 C58.57659904 23.95823904 52.15405811 23.88582336 45.73120117 23.79248047 C43.54801199 23.76432281 41.36472185 23.74308248 39.18139648 23.72900391 C36.03577177 23.70750271 32.89135426 23.66081416 29.74609375 23.609375 C28.7760289 23.60814636 27.80596405 23.60691772 26.8065033 23.60565186 C20.65817438 23.4739339 17.07769266 22.4968352 12 19 C-2.91372711 9.98239756 -26.04116269 12.79515101 -42.9375 12.8125 C-43.93145782 12.81277191 -44.92541565 12.81304382 -45.94949341 12.81332397 C-60.69616357 12.83188221 -75.36741841 12.95780468 -90 15 C-90.73138184 15.10183594 -91.46276367 15.20367187 -92.21630859 15.30859375 C-99.4467184 16.39390891 -104.9600846 17.51538618 -110 23 C-108.87548273 20.0280615 -107.77706209 17.66559313 -106 15 C-86.98133195 7.9502466 -64.44100753 9.70728028 -44.53741455 9.80438232 C-41.72102314 9.8152697 -38.90467997 9.81484844 -36.08827114 9.81424427 C-32.6825266 9.8145833 -29.27682782 9.82342371 -25.87109375 9.83203125 C-24.62613632 9.83314407 -23.38117889 9.8342569 -22.09849548 9.83540344 C-4.13481536 9.93259232 -4.13481536 9.93259232 0 12 C0 8.04 0 4.08 0 0 Z " fill="#1F1B1C" transform="translate(294,198)"/>
+  <path id="svgR1" d="M0 0 C0.33 0 0.66 0 1 0 C1 3.96 1 7.92 1 12 C1.66 11.67 2.32 11.34 3 11 C10.60319325 9.88866157 18.1423483 9.82283506 25.81640625 9.796875 C26.80166951 9.79263393 26.80166951 9.79263393 27.80683708 9.78830719 C31.29692851 9.77338435 34.7869795 9.76411667 38.27709961 9.75976562 C41.10731167 9.75541962 43.93721223 9.74167064 46.76733398 9.71875 C99.20709823 9.30272755 99.20709823 9.30272755 107.9375 16.625 C108.288125 17.07875 108.63875 17.5325 109 18 C108.67 18.66 108.34 19.32 108 20 C107.01 19.01 107.01 19.01 106 18 C86.10857123 12.09749888 64.33810672 12.80667609 43.8125 12.75 C42.35842239 12.74209946 42.35842239 12.74209946 40.87496948 12.73403931 C30.41863805 12.69018729 20.05275358 12.92146479 9.63671875 13.890625 C8.3794976 14.00685211 8.3794976 14.00685211 7.09687805 14.12542725 C-1.73941363 15.03792628 -8.37021839 15.84377422 -15 22 C-17.80537303 22.93512434 -19.48165364 23.12182907 -22.37963867 23.11352539 C-23.26032516 23.11344986 -24.14101166 23.11337433 -25.04838562 23.11329651 C-25.99534805 23.10813522 -26.94231049 23.10297394 -27.91796875 23.09765625 C-28.89034988 23.0962413 -29.86273102 23.09482635 -30.86457825 23.09336853 C-33.97225004 23.08776817 -37.07984996 23.07521562 -40.1875 23.0625 C-42.29361875 23.05748505 -44.39973863 23.05292213 -46.50585938 23.04882812 C-51.67060064 23.03779862 -56.83528813 23.02053375 -62 23 C-61.67 22.34 -61.34 21.68 -61 21 C-59.75500732 21.00636475 -58.51001465 21.01272949 -57.22729492 21.01928711 C-52.56193876 21.03383104 -47.89779734 21.00216507 -43.23266602 20.95727539 C-41.22229163 20.94421996 -39.21179698 20.94332343 -37.20141602 20.95532227 C-22.0933638 21.29782101 -22.0933638 21.29782101 -9.03515625 14.58984375 C-6.05743223 12.26367547 -3.70597896 12.08235509 0 12 C0 8.04 0 4.08 0 0 Z " fill="#1F1B1C" transform="translate(685,198)"/>
+  <path id="svgBtnCircle" d="M0 0 C4.38479958 2.93915605 6.89621363 7.37245413 8.7890625 12.19921875 C9.50163954 18.51061535 8.47776636 22.983413 4.7890625 28.19921875 C0.691461 32.58203614 -2.57153134 34.83287589 -8.578125 35.4375 C-16.04732001 35.65855094 -19.31354507 33.70151221 -24.9609375 28.82421875 C-28.99454548 24.11834277 -29.63474196 19.39081665 -29.453125 13.3671875 C-28.79377475 7.4649393 -25.46932104 4.00808146 -21.03515625 0.45703125 C-14.23008672 -4.23511519 -7.0004036 -3.85157341 0 0 Z M-21.71875 4.59765625 C-25.34370538 8.67832031 -26.07182579 11.32121073 -26.4609375 16.57421875 C-26.0896486 21.95790787 -24.2714848 24.97551032 -20.7734375 29.01171875 C-16.73908505 32.45567816 -13.53596257 32.50275077 -8.234375 32.4140625 C-3.7859857 31.94174317 -0.97264579 30.00324417 2.0390625 26.82421875 C5.46983061 21.67806658 5.98672594 18.43527474 5.2734375 12.3828125 C4.1791545 7.44971416 1.94771637 5.00326282 -2.15234375 2.25 C-8.7694571 -1.12761573 -16.1385665 -0.5777471 -21.71875 4.59765625 Z " fill="#D85D5E" transform="translate(806.2109375,322.80078125)"/>
+  <path id="svgBtnSquare" d="M0 0 C9.57 0 19.14 0 29 0 C29 9.57 29 19.14 29 29 C19.43 29 9.86 29 0 29 C0 19.43 0 9.86 0 0 Z M3 3 C3 10.59 3 18.18 3 26 C10.59 26 18.18 26 26 26 C26 18.41 26 10.82 26 3 C18.41 3 10.82 3 3 3 Z " fill="#B46C9D" transform="translate(667,325)"/>
+  <path d="M0 0 C9.60759494 1.81012658 9.60759494 1.81012658 12 5 C12.1875 8.1875 12.1875 8.1875 12 11 C10.35 11.33 8.7 11.66 7 12 C7 9.36 7 6.72 7 4 C6.34 4 5.68 4 5 4 C5.33 7.3 5.66 10.6 6 14 C9.80859375 13.95117188 9.80859375 13.95117188 13.6171875 13.90234375 C16 14 16 14 18 15 C17 18 17 18 14.9609375 19.203125 C9.43088077 21.44187908 5.82509067 22.51958887 0 21 C0 20.34 0 19.68 0 19 C-2.97 19 -5.94 19 -9 19 C-9 17.68 -9 16.36 -9 15 C-6.03 14.01 -3.06 13.02 0 12 C0 8.04 0 4.08 0 0 Z " fill="#EDEDED" transform="translate(486,446)"/>
+  <path id="svgBtnTriangle" d="M0 0 C2.9280087 2.58811555 4.63760125 5.5722112 6.57421875 8.9453125 C6.90291458 9.51579315 7.23161041 10.0862738 7.57026672 10.67404175 C8.26076975 11.87466194 8.94897528 13.07660605 9.63500977 14.27978516 C10.6894694 16.12845274 11.75134353 17.97270201 12.81445312 19.81640625 C18 28.8492644 18 28.8492644 18 30 C6.78 30 -4.44 30 -16 30 C-13.7505106 23.25153181 -13.7505106 23.25153181 -11.7578125 19.94140625 C-11.33113281 19.22533203 -10.90445313 18.50925781 -10.46484375 17.77148438 C-9.80162109 16.67803711 -9.80162109 16.67803711 -9.125 15.5625 C-8.25221576 14.10570138 -7.37981555 12.64867261 -6.5078125 11.19140625 C-6.08790039 10.49289551 -5.66798828 9.79438477 -5.23535156 9.07470703 C-3.44814672 6.07319187 -1.72191225 3.03937534 0 0 Z M0 6 C-1.99637483 9.0151725 -3.75248259 12.18281947 -5.5625 15.3125 C-6.34270508 16.63411133 -6.34270508 16.63411133 -7.13867188 17.98242188 C-7.87633789 19.25375977 -7.87633789 19.25375977 -8.62890625 20.55078125 C-9.08338135 21.33106689 -9.53785645 22.11135254 -10.00610352 22.9152832 C-11.21517399 25.06641183 -11.21517399 25.06641183 -11 28 C-3.08 28 4.84 28 13 28 C11.22446444 22.62936826 11.22446444 22.62936826 8.65234375 17.9140625 C7.99202148 16.86025391 7.99202148 16.86025391 7.31835938 15.78515625 C6.86267578 15.07230469 6.40699219 14.35945313 5.9375 13.625 C5.47794922 12.88894531 5.01839844 12.15289062 4.54492188 11.39453125 C3.39575079 9.57543224 2.2018385 7.78474077 1 6 C0.67 6 0.34 6 0 6 Z " fill="#61B68C" transform="translate(739,263)"/>
+  <path id="svgBtnCross" d="M0 0 C3.39859703 1.46966358 5.64963709 3.38037514 8.25 6 C8.95640625 6.70125 9.6628125 7.4025 10.390625 8.125 C12 10 12 10 12 12 C17.59967378 7.20497249 17.59967378 7.20497249 22.875 2.0625 C25 0 25 0 27 0 C26.48223379 4.10447392 24.35372556 5.95699523 21.4375 8.75 C20.61121094 9.54921875 19.78492188 10.3484375 18.93359375 11.171875 C18.29550781 11.77515625 17.65742187 12.3784375 17 13 C18.8517185 17.35641143 21.90127449 19.92804984 25.3203125 23.09765625 C27 25 27 25 27 28 C22.89552608 27.48223379 21.04300477 25.35372556 18.25 22.4375 C17.45078125 21.61121094 16.6515625 20.78492188 15.828125 19.93359375 C15.22484375 19.29550781 14.6215625 18.65742188 14 18 C10.54798361 19.47721422 8.35038064 21.43794001 5.75 24.125 C5.04359375 24.84945313 4.3371875 25.57390625 3.609375 26.3203125 C3.07828125 26.87460937 2.5471875 27.42890625 2 28 C1.01 27.67 0.02 27.34 -1 27 C3 22.33333333 7 17.66666667 11 13 C10.42765625 12.75507813 9.8553125 12.51015625 9.265625 12.2578125 C6.61975598 10.78889901 4.85146861 9.04651756 2.75 6.875 C2.04359375 6.15054687 1.3371875 5.42609375 0.609375 4.6796875 C-0.18726563 3.84824219 -0.18726563 3.84824219 -1 3 C-0.67 2.01 -0.34 1.02 0 0 Z " fill="#719CC4" transform="translate(726,383)"/>
+  <path id="svgDpadU" d="M0 0 C3.44428265 1.44781793 5.36130962 3.27694609 7.75 6.125 C8.36359375 6.84945313 8.9771875 7.57390625 9.609375 8.3203125 C10.06828125 8.87460937 10.5271875 9.42890625 11 10 C10.67 10.66 10.34 11.32 10 12 C4.06 12 -1.88 12 -8 12 C-8 8 -8 8 -6.25 5.859375 C-5.5075 5.16328125 -4.765 4.4671875 -4 3.75 C-3.2575 3.04359375 -2.515 2.3371875 -1.75 1.609375 C-1.1725 1.07828125 -0.595 0.5471875 0 0 Z " fill="#1D1D1D" transform="translate(240,253)"/>
+  <path id="svgDpadD" d="M0 0 C6.6 0 13.2 0 20 0 C18.25323081 3.49353838 17.08594785 5.13945763 14.375 7.75 C13.74335938 8.36359375 13.11171875 8.9771875 12.4609375 9.609375 C11.73777344 10.29773438 11.73777344 10.29773438 11 11 C7.84164893 9.60249952 5.67727175 7.94801766 3.25 5.5 C2.63640625 4.8915625 2.0228125 4.283125 1.390625 3.65625 C0 2 0 2 0 0 Z " fill="#1E1E1E" transform="translate(231,414)"/>
+  <path id="svgDpadL" d="M0 0 C0 6.6 0 13.2 0 20 C-3.19892281 18.4005386 -5.15353735 17.17187081 -7.75 14.875 C-8.36359375 14.33617187 -8.9771875 13.79734375 -9.609375 13.2421875 C-10.06828125 12.83226562 -10.5271875 12.42234375 -11 12 C-10.48847971 7.94437487 -8.53410061 6.34242774 -5.5 3.75 C-4.6853125 3.04359375 -3.870625 2.3371875 -3.03125 1.609375 C-1 0 -1 0 0 0 Z " fill="#1E1E1E" transform="translate(166,329)"/>
+  <path d="M0 0 C3.63 0 7.26 0 11 0 C12 5 12 5 11 8 C11.27571139 10.00875442 11.60235737 12.01178687 12 14 C11.01 14 10.02 14 9 14 C8.67 12.35 8.34 10.7 8 9 C6.35 8.67 4.7 8.34 3 8 C3 9.98 3 11.96 3 14 C2.01 14 1.02 14 0 14 C0 9.38 0 4.76 0 0 Z " fill="#232323" transform="translate(715,154)"/>
+  <path id="svgDpadR" d="M0 0 C3.08627627 1.54313813 5.17739364 2.7771703 7.75 4.9375 C8.67039062 5.69353516 8.67039062 5.69353516 9.609375 6.46484375 C11 8 11 8 11 11 C9.35546875 12.7890625 9.35546875 12.7890625 7.1875 14.625 C6.47980469 15.23601562 5.77210938 15.84703125 5.04296875 16.4765625 C3 18 3 18 0 19 C0 12.73 0 6.46 0 0 Z " fill="#1E1E1E" transform="translate(316,330)"/>
+  <path d="M0 0 C11.88 0 23.76 0 36 0 C36.495 1.485 36.495 1.485 37 3 C24.79 3 12.58 3 0 3 C0 2.01 0 1.02 0 0 Z " fill="#010101" transform="translate(459,511)"/>
+  <path d="M0 0 C1.2684375 0.0309375 1.2684375 0.0309375 2.5625 0.0625 C3.2225 0.0625 3.8825 0.0625 4.5625 0.0625 C6.89583333 0.0625 9.22916667 0.0625 11.5625 0.0625 C11.2325 1.7125 10.9025 3.3625 10.5625 5.0625 C9.5725 5.0625 8.5825 5.0625 7.5625 5.0625 C7.5625 6.0525 7.5625 7.0425 7.5625 8.0625 C6.5725 8.0625 5.5825 8.0625 4.5625 8.0625 C4.2325 7.4025 3.9025 6.7425 3.5625 6.0625 C3.2325 6.3925 2.9025 6.7225 2.5625 7.0625 C0.0625 7.1875 0.0625 7.1875 -2.4375 7.0625 C-3.4375 6.0625 -3.4375 6.0625 -3.5625 3.5625 C-3.39608249 0.23414972 -3.3316248 0.08542628 0 0 Z " fill="#868788" transform="translate(630.4375,225.9375)"/>
+  <path d="M0 0 C3.29714793 0.32971479 4.6226839 0.6226839 7 3 C6.77256695 5.95662966 6.38764062 7.55033688 4.4375 9.8125 C3.963125 10.204375 3.48875 10.59625 3 11 C4.32 11.33 5.64 11.66 7 12 C7 12.99 7 13.98 7 15 C3.7 15 0.4 15 -3 15 C-1.85397617 10.41590468 -0.30215353 9.21959969 3 6 C3.33 5.01 3.66 4.02 4 3 C0.88214887 3.64644661 0.88214887 3.64644661 0 6 C-0.99 6 -1.98 6 -3 6 C-2.42655063 3.13275314 -2.1385485 2.1385485 0 0 Z " fill="#212121" transform="translate(258,153)"/>
+  <path d="M0 0 C2.00720923 0.28674418 4.0085944 0.61866701 6 1 C6.75 3.75 6.75 3.75 7 7 C5.0625 9.375 5.0625 9.375 3 11 C4.32 11.33 5.64 11.66 7 12 C7 12.99 7 13.98 7 15 C4.03 15 1.06 15 -2 15 C-1.75 12.6875 -1.75 12.6875 -1 10 C0.31337396 8.9739266 1.64664105 7.97272675 3 7 C3.79623822 4.90584196 3.79623822 4.90584196 4 3 C2.02 3.66 0.04 4.32 -2 5 C-1.125 1.125 -1.125 1.125 0 0 Z " fill="#222222" transform="translate(733,153)"/>
+  <path d="M0 0 C0.89847656 0.00257813 1.79695313 0.00515625 2.72265625 0.0078125 C3.61855469 0.00523437 4.51445312 0.00265625 5.4375 0 C7.78515625 0.1328125 7.78515625 0.1328125 9.78515625 1.1328125 C8.78515625 4.1328125 8.78515625 4.1328125 6.640625 5.3359375 C5.76019531 5.68140625 4.87976563 6.026875 3.97265625 6.3828125 C3.09996094 6.73859375 2.22726562 7.094375 1.328125 7.4609375 C-1.35125611 8.16885386 -2.64696498 8.0665866 -5.21484375 7.1328125 C-4.55484375 7.1328125 -3.89484375 7.1328125 -3.21484375 7.1328125 C-3.23546875 6.1634375 -3.25609375 5.1940625 -3.27734375 4.1953125 C-3.19563585 0.19162543 -3.19563585 0.19162543 0 0 Z " fill="#D8D8D8" transform="translate(494.21484375,459.8671875)"/>
+  <path d="M0 0 C0.33 0 0.66 0 1 0 C1 6.93 1 13.86 1 21 C0.67 20.34 0.34 19.68 0 19 C-2.97 19 -5.94 19 -9 19 C-9 17.68 -9 16.36 -9 15 C-6.03 14.01 -3.06 13.02 0 12 C0 8.04 0 4.08 0 0 Z " fill="#DEDEDE" transform="translate(486,446)"/>
+  <path d="M0 0 C0.99 0 1.98 0 3 0 C3 3.96 3 7.92 3 12 C5.31 12 7.62 12 10 12 C10 12.99 10 13.98 10 15 C6.7 15 3.4 15 0 15 C0 10.05 0 5.1 0 0 Z " fill="#222222" transform="translate(242,153)"/>
+  <path d="M0 0 C3.125 0.375 3.125 0.375 6 1 C6.042721 2.66611905 6.04063832 4.33382885 6 6 C5 7 5 7 1.9375 7.0625 C0.968125 7.041875 -0.00125 7.02125 -1 7 C-1.625 4.625 -1.625 4.625 -2 2 C-1.34 1.34 -0.68 0.68 0 0 Z " fill="#A2A2A3" transform="translate(656,226)"/>
+  <path d="M0 0 C2.475 0.99 2.475 0.99 5 2 C4.67 3.65 4.34 5.3 4 7 C2.35 7 0.7 7 -1 7 C-1.66 5.68 -2.32 4.36 -3 3 C-2.01 2.01 -1.02 1.02 0 0 Z " fill="#000000" transform="translate(503,407)"/>
+  <path d="M0 0 C2.475 0.99 2.475 0.99 5 2 C4.67 3.65 4.34 5.3 4 7 C2.35 7 0.7 7 -1 7 C-1.66 5.68 -2.32 4.36 -3 3 C-2.01 2.01 -1.02 1.02 0 0 Z " fill="#000001" transform="translate(503,386)"/>
+  <path d="M0 0 C2.6875 0.875 2.6875 0.875 5 2 C4.34 3.65 3.68 5.3 3 7 C1.35 6.67 -0.3 6.34 -2 6 C-2.33 4.68 -2.66 3.36 -3 2 C-2.01 1.34 -1.02 0.68 0 0 Z " fill="#000000" transform="translate(489,407)"/>
+  <path d="M0 0 C2.5625 0.1875 2.5625 0.1875 4.5625 2.1875 C4.5625 3.1775 4.5625 4.1675 4.5625 5.1875 C2.2525 5.5175 -0.0575 5.8475 -2.4375 6.1875 C-2.81968767 4.53135343 -3.15145102 2.86292976 -3.4375 1.1875 C-2.4375 0.1875 -2.4375 0.1875 0 0 Z " fill="#000000" transform="translate(496.4375,396.8125)"/>
+  <path d="M0 0 C2.1875 0.3125 2.1875 0.3125 4 1 C4.625 2.875 4.625 2.875 5 5 C4.34 5.66 3.68 6.32 3 7 C0.375 6.625 0.375 6.625 -2 6 C-2.33 5.01 -2.66 4.02 -3 3 C-1.75 1.4375 -1.75 1.4375 0 0 Z " fill="#000000" transform="translate(489,386)"/>
+  <path d="M0 0 C0.78375 0.04125 1.5675 0.0825 2.375 0.125 C3.5 3.875 3.5 3.875 2.375 6.125 C0.395 6.125 -1.585 6.125 -3.625 6.125 C-4.25 4.25 -4.25 4.25 -4.625 2.125 C-2.625 0.125 -2.625 0.125 0 0 Z " fill="#000000" transform="translate(483.625,396.875)"/>
+  <path d="M0 0 C1.32 0.66 2.64 1.32 4 2 C3.67 3.65 3.34 5.3 3 7 C1.35 6.67 -0.3 6.34 -2 6 C-2.33 4.68 -2.66 3.36 -3 2 C-2.01 1.34 -1.02 0.68 0 0 Z " fill="#000000" transform="translate(475,407)"/>
+  <path d="M0 0 C1.2065625 0.0309375 1.2065625 0.0309375 2.4375 0.0625 C2.81968767 1.71864657 3.15145102 3.38707024 3.4375 5.0625 C2.4375 6.0625 2.4375 6.0625 -0.125 6.125 C-1.3315625 6.0940625 -1.3315625 6.0940625 -2.5625 6.0625 C-2.94468767 4.40635343 -3.27645102 2.73792976 -3.5625 1.0625 C-2.5625 0.0625 -2.5625 0.0625 0 0 Z " fill="#000000" transform="translate(511.5625,396.9375)"/>
+  <path d="M0 0 C1.2065625 0.0309375 1.2065625 0.0309375 2.4375 0.0625 C2.81968767 1.71864657 3.15145102 3.38707024 3.4375 5.0625 C2.4375 6.0625 2.4375 6.0625 -0.125 6.125 C-1.3315625 6.0940625 -1.3315625 6.0940625 -2.5625 6.0625 C-2.94468767 4.40635343 -3.27645102 2.73792976 -3.5625 1.0625 C-2.5625 0.0625 -2.5625 0.0625 0 0 Z " fill="#000000" transform="translate(468.5625,396.9375)"/>
+  <path d="M0 0 C1.2065625 0.0309375 1.2065625 0.0309375 2.4375 0.0625 C2.81968767 1.71864657 3.15145102 3.38707024 3.4375 5.0625 C2.4375 6.0625 2.4375 6.0625 -0.125 6.125 C-1.3315625 6.0940625 -1.3315625 6.0940625 -2.5625 6.0625 C-2.94468767 4.40635343 -3.27645102 2.73792976 -3.5625 1.0625 C-2.5625 0.0625 -2.5625 0.0625 0 0 Z " fill="#000000" transform="translate(518.5625,386.9375)"/>
+  <path d="M0 0 C1.2684375 0.12375 1.2684375 0.12375 2.5625 0.25 C3.2225 1.24 3.8825 2.23 4.5625 3.25 C3.5725 4.735 3.5725 4.735 2.5625 6.25 C-0.0625 6.4375 -0.0625 6.4375 -2.4375 6.25 C-2.81968767 4.59385343 -3.15145102 2.92542976 -3.4375 1.25 C-2.4375 0.25 -2.4375 0.25 0 0 Z " fill="#000000" transform="translate(475.4375,386.75)"/>
+  <path d="M0 0 C1.2065625 0.0309375 1.2065625 0.0309375 2.4375 0.0625 C2.81968767 1.71864657 3.15145102 3.38707024 3.4375 5.0625 C2.4375 6.0625 2.4375 6.0625 -0.125 6.125 C-1.3315625 6.0940625 -1.3315625 6.0940625 -2.5625 6.0625 C-2.94468767 4.40635343 -3.27645102 2.73792976 -3.5625 1.0625 C-2.5625 0.0625 -2.5625 0.0625 0 0 Z " fill="#000000" transform="translate(461.5625,386.9375)"/>
+  <path d="M0 0 C0.33 0 0.66 0 1 0 C1 6.93 1 13.86 1 21 C0.34 20.34 -0.32 19.68 -1 19 C-3.57061311 18.35232207 -3.57061311 18.35232207 -6 18 C-5.67 17.34 -5.34 16.68 -5 16 C-3.66666667 15.66666667 -2.33333333 15.33333333 -1 15 C-0.67 14.34 -0.34 13.68 0 13 C-0.66 12.67 -1.32 12.34 -2 12 C-1.34 12 -0.68 12 0 12 C0 8.04 0 4.08 0 0 Z " fill="#7D7D7D" transform="translate(486,446)"/>
+  <path d="M0 0 C1.98 0 3.96 0 6 0 C6.33 2.31 6.66 4.62 7 7 C6.34 7 5.68 7 5 7 C4.67 6.34 4.34 5.68 4 5 C3.01 4.67 2.02 4.34 1 4 C0.67 4.99 0.34 5.98 0 7 C0 4.69 0 2.38 0 0 Z " fill="#8F8F91" transform="translate(333,226)"/>
+  <path d="M0 0 C-2.25740623 2.33524782 -4.2805761 4.18705073 -7 6 C-9.1875 5.625 -9.1875 5.625 -11 5 C-10.34 5 -9.68 5 -9 5 C-9 3.68 -9 2.36 -9 1 C-5.57367167 -0.61798838 -3.61944899 -1.34053666 0 0 Z " fill="#797979" transform="translate(500,462)"/>
+  <path d="M0 0 C0.66 0 1.32 0 2 0 C2 2.64 2 5.28 2 8 C4.31 8.33 6.62 8.66 9 9 C9 9.33 9 9.66 9 10 C4.545 10.495 4.545 10.495 0 11 C0 7.37 0 3.74 0 0 Z " fill="#2C2C2C" transform="translate(491,450)"/>
+  <path d="M0 0 C0.99 0 1.98 0 3 0 C3.66 0.99 4.32 1.98 5 3 C5.66 2.01 6.32 1.02 7 0 C7 2.31 7 4.62 7 7 C6.34 7 5.68 7 5 7 C4.34 6.01 3.68 5.02 3 4 C2.67 4.99 2.34 5.98 2 7 C1.34 7 0.68 7 0 7 C0 4.69 0 2.38 0 0 Z " fill="#A3A3A4" transform="translate(663,226)"/>
+  <path d="M0 0 C2.00720923 0.28674418 4.0085944 0.61866701 6 1 C6 1.99 6 2.98 6 4 C4.02 4.33 2.04 4.66 0 5 C-0.5625 3.0625 -0.5625 3.0625 -1 1 C-0.67 0.67 -0.34 0.34 0 0 Z " fill="#010101" transform="translate(513,510)"/>
+  <path d="M0 0 C0.99 0 1.98 0 3 0 C4.0625 1.8125 4.0625 1.8125 5 4 C4.67 4.99 4.34 5.98 4 7 C2.68 6.34 1.36 5.68 0 5 C0 5.66 0 6.32 0 7 C-0.66 7 -1.32 7 -2 7 C-1.34 4.69 -0.68 2.38 0 0 Z " fill="#979798" transform="translate(326,226)"/>
+  <path d="M0 0 C1.98 0 3.96 0 6 0 C4.68 0.33 3.36 0.66 2 1 C2 1.66 2 2.32 2 3 C3.32 3.33 4.64 3.66 6 4 C4.68 4 3.36 4 2 4 C2 4.66 2 5.32 2 6 C3.32 6.33 4.64 6.66 6 7 C4.02 7 2.04 7 0 7 C0 4.69 0 2.38 0 0 Z " fill="#B5B5B6" transform="translate(341,226)"/>
+  <path d="M0 0 C0.33 0.99 0.66 1.98 1 3 C2.32 3 3.64 3 5 3 C5 2.01 5 1.02 5 0 C5.66 0 6.32 0 7 0 C7 2.31 7 4.62 7 7 C6.34 7 5.68 7 5 7 C5 6.01 5 5.02 5 4 C3.68 4 2.36 4 1 4 C0.67 4.99 0.34 5.98 0 7 C0 4.69 0 2.38 0 0 Z " fill="#B3B3B4" transform="translate(316,226)"/>
+  <path d="M0 0 C0.4125 0.474375 0.825 0.94875 1.25 1.4375 C3.182185 3.16266518 4.48192275 3.56584875 7 4 C7 4.66 7 5.32 7 6 C5.35 5.67 3.7 5.34 2 5 C2 5.66 2 6.32 2 7 C1.34 7 0.68 7 0 7 C0 4.69 0 2.38 0 0 Z " fill="#2A2B2F" transform="translate(670,226)"/>
+  <path d="M0 0 C2.62386487 3.06117568 3 3.73173127 3 8 C2.01 8 1.02 8 0 8 C-0.33 6.68 -0.66 5.36 -1 4 C-2.32 3.67 -3.64 3.34 -5 3 C-5 2.34 -5 1.68 -5 1 C-3.35 0.67 -1.7 0.34 0 0 Z " fill="#2B2C31" transform="translate(315,226)"/>
+  <path d="M0 0 C1.65 0 3.3 0 5 0 C5 1.32 5 2.64 5 4 C3.35 4 1.7 4 0 4 C0 2.68 0 1.36 0 0 Z " fill="#141414" transform="translate(718,156)"/>
+  <path d="M0 0 C1.98 0.495 1.98 0.495 4 1 C3.67 2.32 3.34 3.64 3 5 C1.68 4.67 0.36 4.34 -1 4 C-0.67 2.68 -0.34 1.36 0 0 Z " fill="#16171B" transform="translate(629,227)"/>
+  <path d="M0 0 C0.99 0.33 1.98 0.66 3 1 C3 2.32 3 3.64 3 5 C1.68 5 0.36 5 -1 5 C-0.67 3.35 -0.34 1.7 0 0 Z " fill="#131419" transform="translate(657,227)"/>
+</svg>
+            </div>
+            <!-- Color legend -->
+            <div class="svg-color-legend" id="svgColorLegend">
+              <div class="svg-legend-item">
+                <span class="svg-legend-dot" id="legendDotBody" style="background:#3a3d43"></span>
+                <span id="legendLabelBody">Shell: ยังไม่เลือก</span>
+              </div>
+              <div class="svg-legend-item">
+                <span class="svg-legend-dot" id="legendDotAnalog" style="background:#1e2126"></span>
+                <span id="legendLabelAnalog">อนาล็อก: ยังไม่เลือก</span>
+              </div>
+              <div class="svg-legend-item">
+                <span class="svg-legend-dot" id="legendDotTrigger" style="background:#4a6fa5"></span>
+                <span id="legendLabelTrigger">Trigger: ยังไม่เลือก</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Step Progress Tracker -->
           <div class="step-tracker" id="stepTracker">
-            <span class="bom-eyebrow">Configurator Progress</span>
-            <div class="step-progress-grid">
+            <div class="step-tracker-header">
+              <div class="step-tracker-title-wrap">
+                <span class="bom-eyebrow" id="stepProgressNum">Step 1/6</span>
+                <span class="step-active-title" id="stepActiveLabel">บอร์ด PCB</span>
+              </div>
+              <span class="step-percent" id="stepPercentLabel">0%</span>
+            </div>
+            
+            <div class="step-dots-container">
+              <div class="step-progress-line">
+                 <div class="step-progress-line-fill" id="progressLineFill"></div>
+              </div>
               <a href="#field-pcb" class="step-dot" data-step="pcb" title="บอร์ด PCB">01</a>
               <a href="#field-paddles" class="step-dot" data-step="paddles" title="ปุ่มหลัง">02</a>
               <a href="#field-trigger-face" class="step-dot" data-step="triggerFace" title="Trigger/Face Buttons">03</a>
@@ -2171,8 +2812,12 @@
               <a href="#field-ps4shell" class="step-dot" data-step="ps4shell" title="กรอบ PS4">05</a>
               <a href="#field-contact" class="step-dot" data-step="contact" title="ข้อมูลติดต่อ">06</a>
             </div>
+            
+            <div class="progress-tube-container" id="progressTubeContainer">
+              <div class="progress-tube-fill" id="progressTubeFill"></div>
+            </div>
           </div>
-
+          
           <!-- Component Preview Panel -->
           <div class="bom-panel preview-panel" id="configPreviewPanel">
             <span class="bom-eyebrow">Component Preview</span>
@@ -2252,7 +2897,7 @@
             </div>
           </div>
         </aside>
-      </div>
+      </div><!-- /.wizard-layout -->
 
       <button type="button" class="mobile-pill" id="mobilePill" aria-label="ดูสรุปยอดรวม">
         <span class="mobile-pill-label">รวม</span>
@@ -2893,6 +3538,7 @@
         }
         if (typeof updateStepTracker === 'function') updateStepTracker();
         if (typeof updateConfigPreview === 'function') updateConfigPreview();
+        if (typeof updateSvgPreview === 'function') updateSvgPreview();
       }
 
       form.querySelectorAll('input, select').forEach(function (el) {
@@ -2947,14 +3593,44 @@
           }
         }
         
-        // Interactive Progress Bar (fill up background line)
-        const stepGrid = document.querySelector('.step-progress-grid');
-        if (stepGrid) {
+        // Interactive Progress Tube (fill up)
+        const lineFill = document.getElementById('progressLineFill');
+        const tubeFill = document.getElementById('progressTubeFill');
+        
+        if (lineFill || tubeFill) {
           const segments = Math.max(1, totalSteps - 1);
-          // Fill up to the current active step (or 100% if all complete)
-          const activeIndex = firstUncompletedFound ? completedCount : totalSteps;
-          const progressPercent = (activeIndex / segments) * 100;
-          stepGrid.style.setProperty('--progress-percent', progressPercent + '%');
+          const activeIndex = Math.min(completedCount, segments);
+          const progressPercent = (completedCount / totalSteps) * 100;
+          
+          if (lineFill) {
+            lineFill.style.width = ((activeIndex / segments) * 100) + '%';
+          }
+          if (tubeFill) {
+            tubeFill.style.width = progressPercent + '%';
+          }
+          
+          // Update dynamic text labels
+          const currentStepIndex = firstUncompletedFound ? completedCount + 1 : totalSteps;
+          const progressNumEl = document.getElementById('stepProgressNum');
+          const activeLabelEl = document.getElementById('stepActiveLabel');
+          const percentLabelEl = document.getElementById('stepPercentLabel');
+          
+          if (progressNumEl) {
+            progressNumEl.textContent = 'STEP 0' + currentStepIndex + ' / 0' + totalSteps;
+          }
+          if (activeLabelEl) {
+            const activeDot = document.querySelector('.step-dot.active');
+            if (activeDot) {
+              activeLabelEl.textContent = activeDot.getAttribute('title');
+            } else if (completedCount === totalSteps) {
+              activeLabelEl.textContent = 'เสร็จสมบูรณ์ / All Complete';
+            } else {
+              activeLabelEl.textContent = 'บอร์ด PCB';
+            }
+          }
+          if (percentLabelEl) {
+            percentLabelEl.textContent = Math.round(progressPercent) + '%';
+          }
         }
       }
 
@@ -3820,6 +4496,447 @@
         return crc.toString(16).toUpperCase().padStart(4, '0');
       }
 
+      initCustomSelects();
+      rerender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
+      loadPrices();
+      loadPresets();
+      loadSettings();
+
+      // =====================================================================
+      // WIZARD ENGINE
+      // =====================================================================
+      (function initWizard() {
+        var wizardNav     = document.getElementById('wizardNav');
+        var wzBtnBack     = document.getElementById('wzBtnBack');
+        var wzBtnNext     = document.getElementById('wzBtnNext');
+        var wizardFooter  = document.getElementById('wizardFooter');
+
+        // Step definitions: which fieldset IDs belong to each step
+        var WIZARD_STEPS = [
+          { label: 'Preset',      fields: ['field-preset'] },
+          { label: 'ชิ้นส่วน',   fields: ['field-pcb', 'field-paddles'] },
+          { label: 'Shell & Keys', fields: ['field-trigger-face', 'field-stickModule', 'field-ps4shell'] },
+          { label: 'ติดต่อ',     fields: ['field-contact'] },
+          { label: 'สรุป',       fields: [] }
+        ];
+
+        var currentStep = 1; // 1-indexed
+        var TOTAL_STEPS = WIZARD_STEPS.length;
+
+        // Collect all fieldsets
+        var allFieldsets = document.querySelectorAll('#customBuildFields fieldset.field, #field-contact');
+
+        // Helper: get fieldsets for a step (1-indexed)
+        function getFieldsetsForStep(stepNum) {
+          var ids = WIZARD_STEPS[stepNum - 1].fields;
+          return ids.map(function(id) {
+            return document.getElementById(id);
+          }).filter(Boolean);
+        }
+
+        // Show only fieldsets of currentStep, hide others
+        function applyStepVisibility() {
+          allFieldsets.forEach(function(fs) {
+            fs.style.display = 'none';
+            fs.classList.remove('last-visible-fieldset');
+          });
+          var visibleFieldsets = getFieldsetsForStep(currentStep);
+          visibleFieldsets.forEach(function(fs) {
+            if (fs) fs.style.display = '';
+          });
+          if (visibleFieldsets.length > 0) {
+            var lastFs = visibleFieldsets[visibleFieldsets.length - 1];
+            if (lastFs) lastFs.classList.add('last-visible-fieldset');
+          }
+
+          // Step 5: show summary view
+          if (currentStep === TOTAL_STEPS) {
+            renderWizardSummary();
+          }
+        }
+
+        // Render summary step
+        function renderWizardSummary() {
+          var existingSummary = document.getElementById('wizardSummaryView');
+          if (existingSummary) existingSummary.remove();
+
+          var cfDiv = document.getElementById('customBuildFields');
+          var div = document.createElement('div');
+          div.id = 'wizardSummaryView';
+          div.style.paddingTop = '8px';
+
+          var pcbInput   = form.querySelector('input[name="pcb"]:checked');
+          var shellInput = form.querySelector('input[name="ps4shell"]:checked');
+          var stickInput = form.querySelector('input[name="stickModule"]:checked');
+          var paddlesEl  = document.getElementById('paddlesSelect');
+          var tfEl       = document.getElementById('triggerFaceSelect');
+
+          function rowHtmlSummary(label, val) {
+            return '<div class="wizard-summary-row">' +
+              '<span class="wizard-summary-row-label">' + label + '</span>' +
+              '<span class="wizard-summary-row-value' + (!val ? ' empty' : '') + '">' + (val || 'ยังไม่เลือก') + '</span>' +
+              '</div>';
+          }
+
+          var pcbLabel    = pcbInput ? (pcbInput.closest('.option')?.querySelector('.option-title')?.textContent || pcbInput.value) : null;
+          var shellLabel  = shellInput ? (shellInput.closest('.option')?.querySelector('.option-title')?.textContent || shellInput.value) : null;
+          var stickLabel  = stickInput ? (stickInput.closest('.option')?.querySelector('.option-title')?.textContent || stickInput.value) : null;
+          var paddlesLabel = (paddlesEl && paddlesEl.value) ? (paddlesEl.options[paddlesEl.selectedIndex]?.text?.split(' — ')[0] || paddlesEl.value) : null;
+          var tfLabel     = (tfEl && tfEl.value) ? (tfEl.options[tfEl.selectedIndex]?.text?.split(' — ')[0] || tfEl.value) : null;
+          var email = document.getElementById('customerEmail')?.value || '';
+          var addr  = document.getElementById('customerAddress')?.value || '';
+
+          var html = '<div class="wizard-step-header">' +
+            '<span class="wizard-step-eyebrow">Step 5 · ตรวจสอบและยืนยัน</span>' +
+            '<h2 class="wizard-step-title">สรุปคำสั่งซื้อ</h2>' +
+            '</div>';
+          html += '<div class="wizard-summary-block"><h4>ส่วนประกอบ</h4>' +
+            rowHtmlSummary('บอร์ด PCB', pcbLabel) +
+            rowHtmlSummary('ปุ่มหลัง Paddle', paddlesLabel) +
+            rowHtmlSummary('Trigger/Face', tfLabel) +
+            rowHtmlSummary('Stick Module', stickLabel) +
+            rowHtmlSummary('กรอบ Shell', shellLabel) +
+            '</div>';
+          html += '<div class="wizard-summary-block"><h4>ข้อมูลติดต่อ</h4>' +
+            rowHtmlSummary('Email / Discord', email || null) +
+            rowHtmlSummary('ที่อยู่จัดส่ง', addr ? addr.substring(0, 60) + (addr.length > 60 ? '…' : '') : null) +
+            '</div>';
+          html += '<p style="font-size:12px;color:var(--silk-dim);margin:0 0 16px;">ตรวจสอบให้ถูกต้องก่อนกด <strong style="color:var(--copper-text)">ยืนยันคำสั่งซื้อ</strong> ด้านขวามือ</p>';
+
+          div.innerHTML = html;
+          cfDiv.appendChild(div);
+        }
+
+        // Update nav tab styles
+        function updateNav() {
+          document.querySelectorAll('.wizard-nav-step').forEach(function(btn) {
+            var s = parseInt(btn.dataset.wz, 10);
+            btn.classList.toggle('active', s === currentStep);
+            btn.classList.toggle('done', s < currentStep);
+          });
+        }
+
+        // Update footer buttons
+        function updateFooter() {
+          if (!wzBtnBack || !wzBtnNext) return;
+          wzBtnBack.hidden = (currentStep === 1);
+          if (currentStep === TOTAL_STEPS) {
+            wzBtnNext.hidden = true;
+          } else {
+            wzBtnNext.hidden = false;
+            wzBtnNext.textContent = currentStep === TOTAL_STEPS - 1 ? 'สรุปคำสั่งซื้อ →' : 'ถัดไป →';
+          }
+        }
+
+        // Validate current step (required fields must be filled)
+        function validateStep(stepNum) {
+          var valid = true;
+          var stepData = WIZARD_STEPS[stepNum - 1];
+
+          if (stepNum === 4) { // Contact step
+            ['customerEmail', 'customerAddress'].forEach(function(id) {
+              var el = document.getElementById(id);
+              if (el && !el.value.trim()) {
+                el.style.outlineColor = 'var(--required)';
+                el.style.outline = '2px solid var(--required)';
+                setTimeout(function() { el.style.outline = ''; }, 1500);
+                valid = false;
+              }
+            });
+          } else if (stepNum === 2) {
+            // PCB is required
+            var pcbChecked = form.querySelector('input[name="pcb"]:checked');
+            if (!pcbChecked) {
+              var pcbField = document.getElementById('field-pcb');
+              if (pcbField) {
+                pcbField.classList.add('shake-invalid');
+                setTimeout(function() { pcbField.classList.remove('shake-invalid'); }, 400);
+              }
+              valid = false;
+            }
+          }
+          return valid;
+        }
+
+        // Navigate to a step (direction: 'next' or 'back')
+        function goToStep(newStep, direction) {
+          if (newStep < 1 || newStep > TOTAL_STEPS) return;
+          currentStep = newStep;
+          updateNav();
+          applyStepVisibility();
+          updateFooter();
+          // Scroll to top of wizard area
+          var wzNav = document.getElementById('wizardNav');
+          if (wzNav) wzNav.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+        }
+
+        // Wire buttons
+        if (wzBtnNext) {
+          wzBtnNext.addEventListener('click', function() {
+            if (!validateStep(currentStep)) return;
+            goToStep(currentStep + 1, 'next');
+          });
+        }
+        if (wzBtnBack) {
+          wzBtnBack.addEventListener('click', function() {
+            goToStep(currentStep - 1, 'back');
+            // Remove summary view when going back from step 5
+            var sv = document.getElementById('wizardSummaryView');
+            if (sv) sv.remove();
+          });
+        }
+
+        // Nav tab click
+        if (wizardNav) {
+          wizardNav.addEventListener('click', function(e) {
+            var btn = e.target.closest('.wizard-nav-step');
+            if (!btn) return;
+            var targetStep = parseInt(btn.dataset.wz, 10);
+            if (targetStep < currentStep || targetStep === currentStep + 1) {
+              if (targetStep > currentStep && !validateStep(currentStep)) return;
+              var sv = document.getElementById('wizardSummaryView');
+              if (sv && targetStep < TOTAL_STEPS) sv.remove();
+              goToStep(targetStep, targetStep > currentStep ? 'next' : 'back');
+            }
+          });
+        }
+
+        // Hide wizard for analogOnly mode
+        var origShowMode = window.__showModeOverride;
+        function handleModeForWizard(mode) {
+          var isAnalog = (mode === 'analogOnly');
+          if (wizardNav) wizardNav.style.display = isAnalog ? 'none' : '';
+          if (wizardFooter) wizardFooter.style.display = isAnalog ? 'none' : '';
+          var svgCont = document.getElementById('svgPreviewContainer');
+          if (svgCont) svgCont.style.display = isAnalog ? 'none' : '';
+          if (!isAnalog) {
+            // Reset to step 1 on mode change
+            currentStep = 1;
+            allFieldsets.forEach(function(fs) { fs.style.display = ''; });
+          }
+        }
+
+        // Hook into mode change: watch modeSwitchLabel or override selectMode
+        var modeSwitchBtn = document.getElementById('modeSwitchBtn');
+        if (modeSwitchBtn) {
+          modeSwitchBtn.addEventListener('click', function() {
+            setTimeout(function() {
+              handleModeForWizard(currentMode);
+              if (currentMode !== 'analogOnly') goToStep(1, 'next');
+            }, 50);
+          });
+        }
+
+        // Hook into mode card selection
+        ['modeCardCustom', 'modeCardAnalog'].forEach(function(id) {
+          var card = document.getElementById(id);
+          if (card) {
+            card.addEventListener('click', function() {
+              setTimeout(function() {
+                handleModeForWizard(currentMode);
+                if (currentMode !== 'analogOnly') {
+                  currentStep = 1;
+                  applyStepVisibility();
+                  updateNav();
+                  updateFooter();
+                }
+              }, 100);
+            });
+          }
+        });
+
+        // Init
+        goToStep(1, 'next');
+      })();
+
+      // =====================================================================
+      // SVG INTERACTIVE PREVIEW ENGINE
+      // =====================================================================
+      (function initSvgPreview() {
+        // Shell color palette mapping (value → [baseColor, darkerColor, label])
+        var shellColorMap = {
+          'white':    { body: '#E8E8E8', grip: '#D0D0D0', label: 'White' },
+          'black':    { body: '#2a2d33', grip: '#1e2126', label: 'Black' },
+          'red':      { body: '#8B1A1A', grip: '#6B1010', label: 'Red' },
+          'blue':     { body: '#1A3A8B', grip: '#102060', label: 'Blue' },
+          'midnight': { body: '#1c2030', grip: '#13161f', label: 'Midnight Blue' },
+          'purple':   { body: '#4A1A8B', grip: '#301060', label: 'Purple' },
+          'pink':     { body: '#C84A8A', grip: '#A03070', label: 'Pink' },
+          'orange':   { body: '#C86A1A', grip: '#A04A10', label: 'Orange' },
+          'green':    { body: '#1A8B4A', grip: '#106030', label: 'Green' },
+          'clear':    { body: 'rgba(200,220,240,0.35)', grip: 'rgba(180,200,220,0.25)', label: 'Clear/Transparent' }
+        };
+
+        // Analog color palette mapping
+        var analogColorMap = {
+          'alps':  { color: '#3a3d43', label: 'ALPS (Standard)' },
+          'he':    { color: '#1A8B6A', label: 'HE (Hall Effect)' },
+          'tmr':   { color: '#8B6A1A', label: 'TMR (Magnetic)' }
+        };
+
+        // Trigger color mapping
+        var triggerColorMap = {
+          'clicky': { color: '#2E7D32', label: 'Clicky Trigger' },
+          'full':   { color: '#2E7D32', label: 'Clicky + Face' }
+        };
+
+        var svgBody   = document.getElementById('svgBody');
+        var svgGripL  = document.getElementById('svgGripL');
+        var svgGripR  = document.getElementById('svgGripR');
+        var svgAnalogL = document.getElementById('svgAnalogL');
+        var svgAnalogR = document.getElementById('svgAnalogR');
+        var svgL2     = document.getElementById('svgL2');
+        var svgR2     = document.getElementById('svgR2');
+        var svgL1     = document.getElementById('svgL1');
+        var svgR1     = document.getElementById('svgR1');
+        var gradStop0 = document.getElementById('gradStop0');
+        var gradStop1 = document.getElementById('gradStop1');
+        
+        var svgBtnTriangle = document.getElementById('svgBtnTriangle');
+        var svgBtnCross = document.getElementById('svgBtnCross');
+        var svgBtnCircle = document.getElementById('svgBtnCircle');
+        var svgBtnSquare = document.getElementById('svgBtnSquare');
+        var svgDpadU = document.getElementById('svgDpadU');
+        var svgDpadD = document.getElementById('svgDpadD');
+        var svgDpadL = document.getElementById('svgDpadL');
+        var svgDpadR = document.getElementById('svgDpadR');
+
+        var legendDotBody    = document.getElementById('legendDotBody');
+        var legendLabelBody  = document.getElementById('legendLabelBody');
+        var legendDotAnalog  = document.getElementById('legendDotAnalog');
+        var legendLabelAnalog = document.getElementById('legendLabelAnalog');
+        var legendDotTrigger  = document.getElementById('legendDotTrigger');
+        var legendLabelTrigger = document.getElementById('legendLabelTrigger');
+
+        function hexToRgb(hex) {
+          var r = parseInt(hex.slice(1,3),16);
+          var g = parseInt(hex.slice(3,5),16);
+          var b = parseInt(hex.slice(5,7),16);
+          return 'rgb(' + r + ',' + g + ',' + b + ')';
+        }
+
+        function setSvgColor(el, color, transition) {
+          if (!el) return;
+          if (transition !== false) {
+            el.style.transition = 'fill 0.4s cubic-bezier(0.4,0,0.2,1)';
+          }
+          el.setAttribute('fill', color);
+        }
+
+        function updateSvgPreview() {
+          if (currentMode === 'analogOnly') return;
+
+          // 1) Shell color
+          var shellVal = getSelected('ps4shell');
+          var shellDef = shellVal && shellColorMap[shellVal];
+          if (shellDef) {
+            if (gradStop0) { gradStop0.setAttribute('stop-color', shellDef.body); }
+            if (gradStop1) { gradStop1.setAttribute('stop-color', shellDef.grip); }
+            setSvgColor(svgGripL, shellDef.grip);
+            setSvgColor(svgGripR, shellDef.grip);
+            if (legendDotBody) legendDotBody.style.background = shellDef.body;
+            if (legendLabelBody) legendLabelBody.textContent = 'Shell: ' + shellDef.label;
+          } else {
+            if (gradStop0) gradStop0.setAttribute('stop-color', '#3a3d43');
+            if (gradStop1) gradStop1.setAttribute('stop-color', '#1e2126');
+            setSvgColor(svgGripL, '#2e3035');
+            setSvgColor(svgGripR, '#2e3035');
+            if (legendDotBody) legendDotBody.style.background = '#3a3d43';
+            if (legendLabelBody) legendLabelBody.textContent = 'Shell: ยังไม่เลือก';
+          }
+
+          // 2) Stick module color (analogType for analogOnly, stickModule for custom)
+          var stickVal = getSelected('stickModule');
+          var stickDef = stickVal && analogColorMap[stickVal.replace(/_/g, '-').toLowerCase()];
+          // Try to match on any analogType key substring
+          if (!stickDef && stickVal) {
+            for (var k in analogColorMap) {
+              if (stickVal.toLowerCase().indexOf(k) !== -1) { stickDef = analogColorMap[k]; break; }
+            }
+          }
+          if (stickDef) {
+            setSvgColor(svgAnalogL, stickDef.color);
+            setSvgColor(svgAnalogR, stickDef.color);
+            if (legendDotAnalog) legendDotAnalog.style.background = stickDef.color;
+            if (legendLabelAnalog) legendLabelAnalog.textContent = 'อนาล็อก: ' + stickDef.label;
+          } else {
+            setSvgColor(svgAnalogL, '#1e2126');
+            setSvgColor(svgAnalogR, '#1e2126');
+            if (legendDotAnalog) legendDotAnalog.style.background = '#1e2126';
+            if (legendLabelAnalog) legendLabelAnalog.textContent = 'อนาล็อก: ยังไม่เลือก';
+          }
+
+          // 3) Trigger/bumper color
+          var tfVal = getTriggerFaceValue ? getTriggerFaceValue() : null;
+          
+          // Reset button glow/colors first
+          var dpadButtons = [svgDpadU, svgDpadD, svgDpadL, svgDpadR];
+          var faceButtons = [
+            { el: svgBtnTriangle, defaultColor: '#61B68C' },
+            { el: svgBtnCross, defaultColor: '#719CC4' },
+            { el: svgBtnCircle, defaultColor: '#D85D5E' },
+            { el: svgBtnSquare, defaultColor: '#B46C9D' }
+          ];
+          
+          dpadButtons.forEach(function(el) {
+            if (el) {
+              setSvgColor(el, '#1D1D1D');
+              el.style.filter = 'none';
+            }
+          });
+          faceButtons.forEach(function(item) {
+            if (item.el) {
+              setSvgColor(item.el, item.defaultColor);
+              item.el.style.filter = 'none';
+            }
+          });
+
+          if (tfVal && tfVal !== 'none') {
+            var trigDef = triggerColorMap[tfVal] || triggerColorMap['clicky'];
+            setSvgColor(svgL2, trigDef.color);
+            setSvgColor(svgR2, trigDef.color);
+            setSvgColor(svgL1, trigDef.color);
+            setSvgColor(svgR1, trigDef.color);
+            if (legendDotTrigger) legendDotTrigger.style.background = trigDef.color;
+            if (legendLabelTrigger) legendLabelTrigger.textContent = 'Trigger: ' + trigDef.label;
+            
+            if (tfVal === 'full') {
+              // Make buttons and D-pad glow neon lime
+              dpadButtons.forEach(function(el) {
+                if (el) {
+                  setSvgColor(el, '#C6FF00');
+                  el.style.filter = 'drop-shadow(0 0 12px #C6FF00)';
+                }
+              });
+              faceButtons.forEach(function(item) {
+                if (item.el) {
+                  setSvgColor(item.el, '#C6FF00');
+                  item.el.style.filter = 'drop-shadow(0 0 12px #C6FF00)';
+                }
+              });
+            }
+          } else {
+            setSvgColor(svgL2, '#111111');
+            setSvgColor(svgR2, '#111111');
+            setSvgColor(svgL1, '#1e1c1d');
+            setSvgColor(svgR1, '#1e1c1d');
+            if (legendDotTrigger) legendDotTrigger.style.background = '#111111';
+            if (legendLabelTrigger) legendLabelTrigger.textContent = 'Trigger: ' + (tfVal === 'none' ? 'ไม่เปลี่ยน' : 'ยังไม่เลือก');
+          }
+        }
+
+        // Patch into rerender so SVG updates on every change
+        form.addEventListener('change', function() {
+          setTimeout(updateSvgPreview, 50);
+        });
+
+        // Initial call
+        updateSvgPreview();
+
+        // Expose for external use
+        window.updateSvgPreview = updateSvgPreview;
+      })();
+
       function tlv(id, value) {
         return id + value.length.toString().padStart(2, '0') + value;
       }
@@ -4304,11 +5421,6 @@
         themeBtn.addEventListener('click', toggleTheme);
       }
 
-      initCustomSelects();
-      rerender(); // เรนเดอร์ด้วยราคาสำรองก่อนทันที กันพื้นที่ BOM ว่างเปล่าระหว่างรอโหลดราคาจากชีต
-      loadPrices();
-      loadPresets();
-      loadSettings();
     })();
   </script>
 
