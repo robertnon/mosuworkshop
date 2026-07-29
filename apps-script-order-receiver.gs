@@ -64,6 +64,18 @@
  *      ชีต Orders ไม่ตัดโค้ดส่วนลด) แล้วตอบกลับ { result:'error', code:'sold_out', message, soldOutItems }
  *      ให้หน้าเว็บแจ้งลูกค้าและดึงสต๊อกล่าสุดมาปิดตัวเลือกให้อัตโนมัติ
  *
+ * ========== เพิ่มใหม่: คอลัมน์ "เปิดขาย" ในชีต Prices (ปิดขายตัวเลือกใดตัวเลือกหนึ่งชั่วคราวโดยไม่ต้องลบโค้ด) ==========
+ * เพิ่มคอลัมน์ G "เปิดขาย" ต่อท้ายคอลัมน์ต้นทุน — เว้นว่าง = โชว์ปกติเหมือนเดิม, พิมพ์คำว่า "ปิด" (หรือ FALSE/0)
+ * = ซ่อนตัวเลือกนั้นออกจากหน้าเว็บไปเลยทั้งหัวข้อ ต่างจากคอลัมน์ "คงเหลือ"=0 ตรงที่ "คงเหลือ"=0 ยังโชว์หัวข้อ
+ * แต่ขึ้น "สินค้าหมด" (ลูกค้ายังเห็นว่ามีตัวเลือกนี้อยู่) ส่วน "เปิดขาย"=ปิด จะซ่อนไปเลยเหมือนไม่เคยมีตัวเลือกนี้
+ * ให้เลือก เหมาะกับกรณีอยากงดขายชั่วคราว (เช่น ปิด Hyperstrike ไว้ก่อน เหลือแค่ SuiOvOi ให้เลือก) โดยยังไม่อยาก
+ * ลบโค้ด/แถวออกเพราะจะกลับมาเปิดขายใหม่ในอนาคต — พิมพ์ "ปิด" ออกจากคอลัมน์นี้เมื่อไหร่ก็กลับมาโชว์ปกติทันที
+ * ผลลัพธ์เมื่อตั้งเป็น "ปิด":
+ *   1. หน้าเว็บ (doGet?action=getPrices) จะส่ง visible:false กลับไป ตัวเลือกนั้นจะถูกซ่อนทั้งหัวข้อออกจาก
+ *      หน้าเว็บทันทีที่โหลด/รีเฟรชหน้า
+ *   2. doPost เช็คซ้ำฝั่งเซิร์ฟเวอร์ผ่าน runAntiSpamChecks() เหมือนกัน ถ้ามีใครยิง request ตรงมาเลือกตัวเลือก
+ *      ที่ปิดขายอยู่ (ข้าม UI หน้าเว็บ) จะถูกปฏิเสธเป็น invalid_request ทันที
+ *
  * ========== เพิ่มใหม่: แพ็กเกจสำเร็จรูป (ชีต "Presets" — แก้ไข/เพิ่ม/ลบแพ็กเกจได้จากในชีตเลย) ==========
  * เพิ่มปุ่มเลือกแพ็กเกจสำเร็จรูปไว้บนสุดของฟอร์ม (Starter / Balanced / Apex-FPS Pro เป็นค่าเริ่มต้น + ปุ่ม
  * ล้างค่า/กำหนดเองที่ตรึงไว้ถาวร) กดแพ็กเกจไหนแล้วระบบจะกรอกตัวเลือกทุกฟิลด์ให้อัตโนมัติ (ยังแก้ไขเองทีละ
@@ -103,9 +115,49 @@
  *   2. บันทึกหมายเหตุไว้ในคอลัมน์ "ผลตรวจสอบราคา" ของชีต Orders
  *   3. ขึ้นหัวข้ออีเมลแจ้งเตือนเป็น "⚠ ตรวจสอบราคา — ..." ให้เห็นชัดว่ามีความผิดปกติเกิดขึ้น
  * ปิดช่องโหว่เดิมที่เคยเตือนไว้ด้านบนว่า "subtotal ยังคงเชื่อค่าที่หน้าเว็บส่งมาอยู่" เรียบร้อยแล้ว
+ *
+ * ========== เพิ่มใหม่: หน้าแดชบอร์ดสรุปกำไรรายเดือน (dashboard.html — แอดมินเท่านั้น) ==========
+ * ไฟล์ dashboard.html แยกต่างหากจากหน้าเว็บลูกค้า (index.html) ไม่ได้ลิงก์ไว้ที่ไหนในหน้าเว็บลูกค้าเลย เปิด
+ * ใช้เองจากเครื่องร้านเท่านั้น ต้องกรอกรหัสผ่านให้ตรงกับ DASHBOARD_PASSWORD ด้านบนไฟล์นี้ก่อนถึงจะเห็นข้อมูล
+ * (เปลี่ยนรหัสนี้ก่อนใช้งานจริงเสมอ! endpoint นี้เป็น URL สาธารณะเหมือน endpoint อื่นๆ ของ Apps Script
+ * รหัสผ่านคือด่านกันเดียวเท่านั้น อย่าแชร์ไฟล์ dashboard.html หรือรหัสผ่านนี้ให้ใคร)
+ * ดึงข้อมูลผ่าน doGet?action=getDashboard&password=... → buildDashboardSummary() จะอ่านชีต Orders ทั้งหมด
+ * จัดกลุ่มตามเดือน (ตามเขตเวลาของสเปรดชีต) แล้วแยกยอดขาย/ต้นทุน/กำไรเป็น 4 กลุ่มตามคอลัมน์ "สถานะการชำระเงิน":
+ *   - confirmed: ตรวจสอบสลิปผ่านอัตโนมัติแล้ว (ขึ้นต้นด้วย ✓) → นับเป็นยอดขาย/กำไรจริง
+ *   - flagged:   แจ้งจ่ายแล้วแต่ตรวจสลิปไม่ผ่าน (ขึ้นต้นด้วย ⚠) → แยกเตือนให้ร้านตรวจเองด่วน ไม่นับเป็นกำไรจริง
+ *   - cancelled: แอดมินตั้งสถานะเป็นยกเลิกเองจากหน้า dashboard.html (ขึ้นต้นด้วย ✕) → ไม่นับเป็นยอดขาย/กำไรเลย
+ *   - pending:   ยังไม่แจ้งจ่าย/รอตรวจด้วยตนเอง → นับเป็นยอดขายที่ "อาจจะ" เข้ามาเท่านั้น ไม่ใช่กำไรจริง
+ * แยกกลุ่มแบบนี้เพื่อไม่ให้ตัวเลขกำไรเพี้ยนจากออเดอร์ที่ลูกค้ายังไม่ได้โอนเงินจริง
+ *
+ * ========== เพิ่มใหม่: dashboard.html ยกระดับเป็นแผงควบคุมแอดมิน (แก้ราคา/ปิดขาย/ดูออเดอร์ได้จากหน้าเว็บ) ==========
+ * เดิม dashboard.html ดูได้อย่างเดียว (สรุปกำไร) ตอนนี้เพิ่ม 2 แท็บใหม่ที่ "แก้ข้อมูลได้จริง" ผ่านหน้าเว็บ
+ * โดยไม่ต้องเปิด Google Sheets เองอีกต่อไป (แต่ข้อมูลจริงยังอยู่ในชีตเหมือนเดิมทุกอย่าง แค่มีหน้าเว็บมาช่วยแก้):
+ *   - แท็บ "ราคา/สินค้า": doGet?action=getAdminPrices ดึงทุกแถวจากชีต Prices, doPost action=updatePrice
+ *     แก้ชื่อ/ราคา/คงเหลือ/ต้นทุน/เปิดขาย ของตัวเลือกหนึ่งตัว (จับคู่ด้วยกลุ่ม+รหัสตัวเลือก ห้ามแก้ 2 คอลัมน์
+ *     นี้เด็ดขาดเหมือนเดิม) ปิดขายจากหน้านี้ = เขียนคำว่า "ปิด" ลงคอลัมน์ G ให้อัตโนมัติ ผลลัพธ์เหมือนไปพิมพ์
+ *     เองในชีตทุกประการ (ดูรายละเอียดกลไก "เปิดขาย" ด้านบน)
+ *   - แท็บ "ออเดอร์": doGet?action=getAdminOrders ดึงคำสั่งซื้อล่าสุดจากชีต Orders (ทุกคอลัมน์ที่มีจริง รวม
+ *     อีเมล/ที่อยู่/รายการ/สถานะ) ให้ดูโดยไม่ต้องเปิดชีต, doPost action=updateOrderStatus แก้ "สถานะการชำระเงิน"
+ *     ด้วยมือ (เช่นตรวจสลิปเองแล้วอยากยืนยัน หรือยกเลิกคำสั่งซื้อ) — ไม่ได้แก้ยอดเงิน/ต้นทุนย้อนหลังให้อัตโนมัติ
+ *     ถ้าอยากแก้ยอดต้องไปแก้ในชีต Orders โดยตรง (จงใจไม่เปิดให้แก้ยอดเงินจากหน้าเว็บ กันกดพลาดแล้วบัญชีเพี้ยน)
+ * ทุก action ข้างต้นเช็ค DASHBOARD_PASSWORD เหมือนกับ getDashboard ทุกประการ (ผ่าน isAdminPasswordValid())
+ *
+ * ========== เพิ่มใหม่: ต้นทุนเป็นช่วงได้ (คอลัมน์ H "ต้นทุนสูงสุด" ในชีต Prices) ==========
+ * ต้นทุนจริงมักไม่นิ่ง (ราคาซัพพลายเออร์ขยับขึ้นลง) เลยรองรับกรอกเป็นช่วงได้แทนตัวเลขเดียว — คอลัมน์ F เดิม
+ * ("ต้นทุน บาท") กลายเป็น "ต้นทุนต่ำสุด" และเพิ่มคอลัมน์ H "ต้นทุนสูงสุด" ต่อท้ายเปิดขาย เว้นคอลัมน์ H ว่างไว้
+ * = ไม่ใช้ช่วง ถือว่าต้นทุนคงที่ตามคอลัมน์ F ค่าเดียวเหมือนเดิมทุกประการ (ไม่กระทบชีตเก่าที่ยังไม่เคยตั้งช่วง)
+ * ต้นทุนที่ใช้คำนวณกำไรจริงทุกจุด (computeServerCost, ต้นทุนรวม/กำไรสุทธิที่บันทึกลงชีต Orders ทุกออเดอร์)
+ * คือค่ากลางของช่วง (ต่ำสุด+สูงสุด)/2 เสมอ — ถ้าไม่ได้ตั้งช่วงไว้ ค่ากลางก็เท่ากับต้นทุนตัวเดียวนั้นพอดี ไม่ต้อง
+ * แก้ค่าที่ใช้คำนวณอะไรเพิ่ม แก้ไขต้นทุน/ช่วงได้จากแท็บ "ราคา/สินค้า" ในหน้า dashboard.html โดยตรง
  */
 
 var NOTIFY_EMAIL = 'moszombie1@gmail.com'; // ใส่อีเมลตรงนี้ถ้าต้องการให้แจ้งเตือนทางอีเมลด้วย
+
+// รหัสผ่านหน้าแดชบอร์ดสรุปกำไร (dashboard.html) — เปลี่ยนก่อนใช้งานจริงเสมอ! ใครก็ตามที่รู้รหัสนี้จะดู
+// ยอดขาย/ต้นทุน/กำไรทั้งร้านได้ เพราะ endpoint นี้เป็น URL สาธารณะเหมือน endpoint อื่นๆ (แค่เช็ครหัสผ่านกันไว้
+// ชั้นเดียว ไม่ใช่ระบบ login เต็มรูปแบบ) อย่าแชร์ไฟล์ dashboard.html หรือรหัสนี้ให้คนอื่น
+var DASHBOARD_PASSWORD = 'เปลี่ยนรหัสนี้ก่อนใช้งาน';
+
 var ORDERS_SHEET_NAME = 'Orders';
 var DISCOUNTS_SHEET_NAME = 'Discounts';
 var PRICES_SHEET_NAME = 'Prices';
@@ -143,6 +195,14 @@ function doPost(e) {
     // ปุ่ม "ฉันโอนเงินแล้ว" ในหน้าเว็บ (หลังสร้างคำสั่งซื้อแล้ว) ยิงมาที่นี่แยกจากการสร้างคำสั่งซื้อใหม่
     if (data.action === 'confirmPayment') {
       return handleConfirmPayment(ss, data);
+    }
+
+    // ========== การกระทำฝั่งแอดมิน (จาก dashboard.html เท่านั้น) — เช็ครหัสผ่านแยกจาก anti-spam ด้านล่าง ==========
+    if (data.action === 'updatePrice') {
+      return handleUpdatePrice(ss, data);
+    }
+    if (data.action === 'updateOrderStatus') {
+      return handleUpdateOrderStatus(ss, data);
     }
 
     // ========== กันสแปม/บอทยิง endpoint ตรงๆ (ข้ามหน้าเว็บ) ==========
@@ -208,9 +268,20 @@ function doPost(e) {
       sheet = ss.insertSheet(ORDERS_SHEET_NAME);
     }
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['วันที่/เวลา', 'เลขที่คำสั่งซื้อ', 'รายการ', 'ราคารวมก่อนลด', 'โค้ดส่วนลด', 'สถานะโค้ด', 'ส่วนลด (บาท)', 'ยอดรวมสุทธิ', 'สถานะการชำระเงิน', 'ลิงก์สลิปโอนเงิน', 'อีเมล', 'ที่อยู่จัดส่ง', 'ผลตรวจสอบราคา']);
+      sheet.appendRow(['วันที่/เวลา', 'เลขที่คำสั่งซื้อ', 'รายการ', 'ราคารวมก่อนลด', 'โค้ดส่วนลด', 'สถานะโค้ด', 'ส่วนลด (บาท)', 'ยอดรวมสุทธิ', 'สถานะการชำระเงิน', 'ลิงก์สลิปโอนเงิน', 'อีเมล', 'ที่อยู่จัดส่ง', 'ผลตรวจสอบราคา', 'ต้นทุนรวม (บาท)', 'กำไรสุทธิ (บาท)']);
       sheet.setFrozenRows(1);
+    } else {
+      // Self-healing columns: automatically append cost & profit columns if they don't exist
+      var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      if (headerRow.indexOf('ต้นทุนรวม (บาท)') === -1) {
+        var nextCol = sheet.getLastColumn() + 1;
+        sheet.getRange(1, nextCol).setValue('ต้นทุนรวม (บาท)');
+        sheet.getRange(1, nextCol + 1).setValue('กำไรสุทธิ (บาท)');
+      }
     }
+
+    var totalCost = computeServerCost(ss, orderType, data.selections);
+    var profit = total - totalCost;
 
     var codeStatus = '';
     if (requestedCode) {
@@ -230,7 +301,9 @@ function doPost(e) {
       '',
       data.customerEmail || '',
       data.customerAddress || '',
-      priceCheckNote
+      priceCheckNote,
+      totalCost,
+      profit
     ]);
 
     Logger.log('เขียนแถวสำเร็จ แถวล่าสุดตอนนี้คือแถวที่: ' + sheet.getLastRow());
@@ -322,24 +395,100 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // หน้า dashboard.html (แอดมินเท่านั้น) เรียกเพื่อดึงสรุปยอดขาย/ต้นทุน/กำไรรายเดือนจากชีต Orders
+  // ต้องแนบ ?password= ให้ตรงกับ DASHBOARD_PASSWORD ด้านบนไฟล์นี้เท่านั้น ไม่งั้นจะถูกปฏิเสธ
+  if (action === 'getDashboard') {
+    if (!isAdminPasswordValid(e.parameter.password)) {
+      return jsonOutput({ result: 'error', message: 'รหัสผ่านไม่ถูกต้อง' });
+    }
+    var ssDash = SpreadsheetApp.getActiveSpreadsheet();
+    return jsonOutput({ result: 'success', dashboard: buildDashboardSummary(ssDash) });
+  }
+
+  // หน้า dashboard.html (แท็บ "ราคา/สินค้า") เรียกเพื่อดึงราคาทุกแถวจากชีต Prices มาแก้ไขได้ผ่านหน้าเว็บ
+  // แทนที่จะต้องเข้าไปแก้ในชีตโดยตรง
+  if (action === 'getAdminPrices') {
+    if (!isAdminPasswordValid(e.parameter.password)) {
+      return jsonOutput({ result: 'error', message: 'รหัสผ่านไม่ถูกต้อง' });
+    }
+    var ssAdminPrices = SpreadsheetApp.getActiveSpreadsheet();
+    return jsonOutput({ result: 'success', items: getAdminPricesList(ssAdminPrices) });
+  }
+
+  // หน้า dashboard.html (แท็บ "ออเดอร์") เรียกเพื่อดึงรายการคำสั่งซื้อจากชีต Orders (ล่าสุดก่อน)
+  if (action === 'getAdminOrders') {
+    if (!isAdminPasswordValid(e.parameter.password)) {
+      return jsonOutput({ result: 'error', message: 'รหัสผ่านไม่ถูกต้อง' });
+    }
+    var ssAdminOrders = SpreadsheetApp.getActiveSpreadsheet();
+    var limit = Number(e.parameter.limit) || 300;
+    return jsonOutput({ result: 'success', orders: getAdminOrdersList(ssAdminOrders, limit) });
+  }
+
   return ContentService
     .createTextOutput(JSON.stringify({ result: 'error', message: 'unknown action' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// เช็ครหัสผ่านแอดมิน (ใช้ร่วมกันทุก action ที่เป็นของ dashboard.html — ทั้งอ่านและเขียน)
+function isAdminPasswordValid(providedPassword) {
+  return !!DASHBOARD_PASSWORD && String(providedPassword || '') === DASHBOARD_PASSWORD;
+}
+
 // ========== ตารางราคา (ชีต "Prices" — แหล่งข้อมูลราคาจริงเพียงที่เดียว ทั้งฝั่งแสดงผลและฝั่งตรวจสอบ) ==========
-// อ่านทุกแถวในชีต Prices แล้วแปลงเป็น { กลุ่ม: { รหัสตัวเลือก: { label, price, stock } } }
+// อ่านทุกแถวในชีต Prices แล้วแปลงเป็น { กลุ่ม: { รหัสตัวเลือก: { label, price, stock, cost, costMin, costMax, visible } } }
 // stock: null = ไม่จำกัด (เว้นว่างในชีต), ตัวเลข = จำนวนคงเหลือจริง (0 = สินค้าหมด หน้าเว็บจะปิดตัวเลือกนี้อัตโนมัติ)
+// visible: true = โชว์ปกติ (ค่าเริ่มต้นถ้าเว้นว่างคอลัมน์ G), false = พิมพ์ "ปิด" ไว้ในคอลัมน์ G → ตัวเลือกนี้
+//          จะถูกซ่อนออกจากหน้าเว็บไปเลยทั้งหัวข้อ (ต่างจาก stock=0 ที่ยังโชว์แต่ขึ้น "สินค้าหมด") ใช้ตอนอยาก
+//          ปิดขายตัวเลือกใดตัวเลือกหนึ่งชั่วคราวโดยไม่ต้องลบโค้ด/แถวออก เปิดกลับมาทีหลังได้ทันทีแค่ลบคำว่า "ปิด" ออก
+// costMin/costMax: ต้นทุนไม่นิ่ง (ราคาซัพพลายเออร์ขยับได้) — คอลัมน์ F คือต้นทุนต่ำสุด คอลัมน์ H (ใหม่) คือ
+//          ต้นทุนสูงสุด เว้นคอลัมน์ H ว่างไว้ = ไม่ใช้ช่วง ถือว่าต้นทุนคงที่ตามคอลัมน์ F ค่าเดียว (พฤติกรรมเดิม)
+//          cost ที่ใช้คำนวณกำไรจริงทุกจุด (computeServerCost ฯลฯ) คือค่ากลางของช่วง (costMin+costMax)/2
 function getPricesMap(ss) {
   var sheet = ss.getSheetByName(PRICES_SHEET_NAME);
   if (!sheet) sheet = createPricesSheet(ss);
+
+  // Self-healing: make sure Cost column exists at column 6
+  if (sheet.getLastColumn() < 6) {
+    sheet.getRange(1, 6).setValue('ต้นทุน บาท (แก้ได้)');
+
+    // Fill in default costs for standard options based on option code
+    var lastRow = sheet.getLastRow();
+    if (lastRow >= 2) {
+      var optCodes = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+      var defaultCosts = {
+        'suiovoi': 1000, 'hyperstrike': 1200, 'none': 0, 'one': 100, 'two': 150,
+        'clicky': 200, 'dpad': 120, 'fullface': 220, 'alps': 50, 'he': 120,
+        'tmr': 180, 'withController': 0, 'noController': 150
+      };
+      var costValues = [];
+      for (var i = 0; i < optCodes.length; i++) {
+        var code = (optCodes[i][0] || '').toString().trim();
+        var cVal = (defaultCosts[code] !== undefined) ? defaultCosts[code] : '';
+        costValues.push([cVal]);
+      }
+      sheet.getRange(2, 6, optCodes.length, 1).setValues(costValues);
+    }
+  }
+
+  // Self-healing: make sure "เปิดขาย" (visible) column exists at column 7 — เว้นว่างของแถวเดิมไว้เฉยๆ
+  // ก็ตีความเป็น "โชว์ปกติ" อยู่แล้ว จึงแค่เติม header ให้ ไม่ต้องเติมค่าย้อนหลังในแถวที่มีอยู่
+  if (sheet.getLastColumn() < 7) {
+    sheet.getRange(1, 7).setValue('เปิดขาย (เว้นว่าง=โชว์ปกติ, พิมพ์ ปิด=ซ่อนตัวเลือกนี้ทั้งแถวจากหน้าเว็บ)');
+  }
+
+  // Self-healing: make sure "ต้นทุนสูงสุด" (cost range upper bound) column exists at column 8 — เว้นว่างของ
+  // แถวเดิมไว้เฉยๆ ก็ตีความว่า "ไม่ใช้ช่วง" (ต้นทุนคงที่ตามคอลัมน์ F) เหมือนพฤติกรรมเดิมทุกประการ
+  if (sheet.getLastColumn() < 8) {
+    sheet.getRange(1, 8).setValue('ต้นทุนสูงสุด บาท (เว้นว่าง=ไม่ใช้ช่วง ใช้ค่าจากคอลัมน์ต้นทุนตรงๆ)');
+  }
 
   var lastRow = sheet.getLastRow();
   var map = {};
   if (lastRow < 2) return map;
 
-  // กลุ่ม | รหัสตัวเลือก | ชื่อที่แสดง | ราคา | คงเหลือ (คอลัมน์ E เพิ่มใหม่ — เว้นว่างได้ถ้าไม่ต้องการจำกัดสต๊อก)
-  var values = sheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  // กลุ่ม | รหัสตัวเลือก | ชื่อที่แสดง | ราคา | คงเหลือ | ต้นทุน(ต่ำสุด) | เปิดขาย | ต้นทุนสูงสุด
+  var values = sheet.getRange(2, 1, lastRow - 1, 8).getValues();
   for (var i = 0; i < values.length; i++) {
     var group = (values[i][0] || '').toString().trim();
     var option = (values[i][1] || '').toString().trim();
@@ -348,11 +497,83 @@ function getPricesMap(ss) {
     var stockRaw = values[i][4];
     var stock = (stockRaw === '' || stockRaw === null || stockRaw === undefined) ? null : Number(stockRaw);
     if (stock !== null && isNaN(stock)) stock = null; // กันชีตกรอกค่าที่ไม่ใช่ตัวเลขมาโดยไม่ตั้งใจ
+    var costMin = Number(values[i][5]) || 0;
+    var visibleRaw = (values[i][6] || '').toString().trim().toLowerCase();
+    var visible = !(visibleRaw === 'ปิด' || visibleRaw === 'false' || visibleRaw === '0');
+    var costMaxRaw = values[i][7];
+    var costMax = (costMaxRaw === '' || costMaxRaw === null || costMaxRaw === undefined) ? costMin : (Number(costMaxRaw) || costMin);
+    var cost = (costMin + costMax) / 2; // ค่ากลาง — ใช้เป็นต้นทุนจริงตอนคำนวณกำไรทุกจุด
     if (!group || !option) continue;
     if (!map[group]) map[group] = {};
-    map[group][option] = { label: label, price: price, stock: stock };
+    map[group][option] = { label: label, price: price, stock: stock, cost: cost, costMin: costMin, costMax: costMax, visible: visible };
   }
   return map;
+}
+
+// แปลง getPricesMap() (จัดกลุ่มแล้ว) กลับเป็น list แถวเดียวเรียงตามลำดับในชีต — ใช้แสดงเป็นตารางแก้ไขได้
+// ในหน้า dashboard.html (แท็บ "ราคา/สินค้า") ใช้ข้อมูลชุดเดียวกับที่หน้าเว็บลูกค้าใช้จริงเป๊ะๆ ไม่มีของซ้ำ
+function getAdminPricesList(ss) {
+  var map = getPricesMap(ss);
+  var list = [];
+  for (var group in map) {
+    for (var option in map[group]) {
+      var e = map[group][option];
+      list.push({
+        group: group, option: option, label: e.label, price: e.price,
+        stock: e.stock, cost: e.cost, costMin: e.costMin, costMax: e.costMax, visible: e.visible
+      });
+    }
+  }
+  return list;
+}
+
+// แก้ไขราคา/ต้นทุน/สต๊อก/เปิดขาย ของตัวเลือกหนึ่งตัวในชีต Prices จากหน้า dashboard.html
+// จับคู่ด้วย group+option เท่านั้น (คอลัมน์ A,B) — ห้ามแก้ 2 คอลัมน์นี้เด็ดขาดเพราะโค้ดทั้งระบบใช้จับคู่ตัวเลือก
+// ส่งเฉพาะฟิลด์ที่ต้องการแก้มาก็พอ (ฟิลด์ที่ไม่ส่งมาจะไม่ถูกแตะ)
+function handleUpdatePrice(ss, data) {
+  if (!isAdminPasswordValid(data.password)) {
+    return jsonOutput({ result: 'error', message: 'รหัสผ่านไม่ถูกต้อง' });
+  }
+  var group = (data.group || '').toString().trim();
+  var option = (data.option || '').toString().trim();
+  if (!group || !option) {
+    return jsonOutput({ result: 'error', message: 'ข้อมูลไม่ครบ (group/option)' });
+  }
+
+  var sheet = ss.getSheetByName(PRICES_SHEET_NAME);
+  if (!sheet) return jsonOutput({ result: 'error', message: 'ไม่พบชีต Prices' });
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return jsonOutput({ result: 'error', message: 'ไม่พบข้อมูลราคาในชีต' });
+
+  var pairs = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+  var targetRow = -1;
+  for (var i = 0; i < pairs.length; i++) {
+    if ((pairs[i][0] || '').toString().trim() === group && (pairs[i][1] || '').toString().trim() === option) {
+      targetRow = i + 2;
+      break;
+    }
+  }
+  if (targetRow === -1) {
+    return jsonOutput({ result: 'error', message: 'ไม่พบตัวเลือก "' + group + ' / ' + option + '" ในชีต Prices' });
+  }
+
+  if (data.label !== undefined) sheet.getRange(targetRow, 3).setValue(String(data.label));
+  if (data.price !== undefined) sheet.getRange(targetRow, 4).setValue(Number(data.price) || 0);
+  if (data.stock !== undefined) {
+    var stockVal = (data.stock === '' || data.stock === null) ? '' : (Number(data.stock) || 0);
+    sheet.getRange(targetRow, 5).setValue(stockVal);
+  }
+  // ต้นทุนเป็นช่วงได้ (ต้นทุนไม่นิ่ง) — costMin คือคอลัมน์ F เดิม, costMax คือคอลัมน์ H (ใหม่)
+  // ถ้า costMax ไม่ได้ส่งมาหรือส่งเป็นค่าว่าง ถือว่าไม่ใช้ช่วง (ต้นทุนคงที่ตามคอลัมน์ F อย่างเดียว)
+  if (data.costMin !== undefined) sheet.getRange(targetRow, 6).setValue(Number(data.costMin) || 0);
+  if (data.visible !== undefined) sheet.getRange(targetRow, 7).setValue(data.visible ? '' : 'ปิด');
+  if (data.costMax !== undefined) {
+    var costMaxVal = (data.costMax === '' || data.costMax === null) ? '' : (Number(data.costMax) || 0);
+    sheet.getRange(targetRow, 8).setValue(costMaxVal);
+  }
+
+  return jsonOutput({ result: 'success' });
 }
 
 // ========== กันสแปม/บอทยิง endpoint ตรงๆ (ข้าม UI หน้าเว็บ) ==========
@@ -417,8 +638,9 @@ function runAntiSpamChecks(ss, data) {
     for (var i = 0; i < requiredGroups.length; i++) {
       var g = requiredGroups[i];
       var val = (sel[g] || '').toString().trim();
-      if (!val || !pricesMap[g] || !pricesMap[g][val]) {
-        return { ok: false, reason: 'invalid/missing selection for "' + g + '": "' + val + '"' };
+      var entry = val && pricesMap[g] && pricesMap[g][val];
+      if (!entry || entry.visible === false) {
+        return { ok: false, reason: 'invalid/missing/hidden selection for "' + g + '": "' + val + '"' };
       }
     }
   }
@@ -500,6 +722,219 @@ function computeServerSubtotal(ss, orderType, selections) {
   return total;
 }
 
+// คำนวณต้นทุนรวมจริงจากชีตราคา โดยอิงตัวเลือกที่ลูกค้าเลือกจริง
+// orderType: 'analogOnly' คำนวณจากชีต AnalogService, ที่เหลือ คำนวณจากชีต Prices
+function computeServerCost(ss, orderType, selections) {
+  if (!selections || typeof selections !== 'object') return 0;
+
+  if (orderType === 'analogOnly') {
+    var analogMap = getAnalogServiceMap(ss);
+    var analogType = (selections.analogType || '').toString().trim();
+    var quantity = Number(selections.quantity || 0);
+    if (!analogType || !analogMap[analogType] || (quantity !== 1 && quantity !== 2)) return 0;
+    var unitCost = Number(analogMap[analogType].cost) || 0;
+    return unitCost * quantity;
+  }
+
+  var groups = ['pcb', 'paddles', 'triggerBumper', 'faceButtons', 'stickModule', 'ps4shell'];
+  var pricesMap = getPricesMap(ss);
+  var totalCost = 0;
+
+  for (var i = 0; i < groups.length; i++) {
+    var g = groups[i];
+    var chosen = (selections[g] || '').toString().trim();
+    if (!chosen) continue;
+    var groupPrices = pricesMap[g];
+    if (groupPrices && groupPrices[chosen]) {
+      totalCost += Number(groupPrices[chosen].cost) || 0;
+    }
+  }
+
+  return totalCost;
+}
+
+// หา index คอลัมน์จากชื่อหัวคอลัมน์แบบอ่านอย่างเดียว (ไม่สร้างคอลัมน์ใหม่ให้ ต่างจาก ensureColumn())
+// คืนค่า -1 ถ้าไม่พบ — ใช้กับฟังก์ชันที่แค่อ่านข้อมูล ไม่ควรไปแก้โครงสร้างชีตเฉยๆ ตอนดึงรายงาน
+function findColumnIndex(headers, headerName) {
+  for (var i = 0; i < headers.length; i++) {
+    if ((headers[i] || '').toString().trim() === headerName) return i;
+  }
+  return -1;
+}
+
+// เหมือน findColumnIndex() แต่รับชื่อหัวคอลัมน์ได้หลายชื่อ ลองไล่ทีละชื่อจนกว่าจะเจอ — ชีต Orders ของร้านที่ใช้
+// งานมานานอาจมีหัวคอลัมน์เดิมที่ตั้งไว้ก่อนโค้ดเวอร์ชันนี้ (เช่น "รออกค้าชำระเงิน ( PAYMENT CONFIRM )" แทนที่จะ
+// เป็น "สถานะการชำระเงิน") ฟังก์ชันนี้กันไม่ให้พังเวลาชื่อคอลัมน์จริงในชีตไม่ตรงกับชื่อที่โค้ดคาดไว้เป๊ะๆ
+function findColumnIndexAny(headers, candidateNames) {
+  for (var c = 0; c < candidateNames.length; c++) {
+    var idx = findColumnIndex(headers, candidateNames[c]);
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
+
+// ชื่อคอลัมน์ที่ "เคย" ใช้ในชีต Orders ของร้าน (ก่อนโค้ดเวอร์ชันนี้) เทียบกับชื่อปัจจุบันที่โค้ดใช้ตอนสร้างแถว
+// ใหม่ — ใส่ไว้ตัวเดียวใช้ร่วมกันทุกจุดที่ต้องค้นหาคอลัมน์เหล่านี้ (buildDashboardSummary, handleUpdateOrderStatus)
+// กันปัญหาชีตเก่าที่หัวคอลัมน์ไม่ตรงกับชื่อปัจจุบันเป๊ะๆ ทำให้หาคอลัมน์ไม่เจอ/สร้างคอลัมน์ซ้ำโดยไม่ได้ตั้งใจ
+var ORDER_COLUMN_ALIASES = {
+  total: ['ยอดรวมสุทธิ', 'ยอดรวม (บาท)', 'ยอดรวม'],
+  status: ['สถานะการชำระเงิน', 'รออกค้าชำระเงิน ( PAYMENT CONFIRM )', 'รออกค้าชำระเงิน (PAYMENT CONFIRM)']
+};
+
+// ========== สรุปยอดขาย/ต้นทุน/กำไรรายเดือน (ใช้โดยหน้า dashboard.html เท่านั้น) ==========
+// อ่านทุกแถวในชีต Orders แล้วจัดกลุ่มตามเดือน (ตามเขตเวลาของสเปรดชีต) แยกเป็น 3 กลุ่มตามสถานะการชำระเงิน
+// เพราะนับรวมออเดอร์ที่ "ยังไม่ได้จ่ายจริง" เป็นกำไรจริงไปเลยจะทำให้ตัวเลขเพี้ยน:
+//   - confirmed: สถานะขึ้นต้นด้วย "✓" (ตรวจสอบสลิปผ่านอัตโนมัติแล้ว) → นับเป็นยอดขาย/กำไรจริง
+//   - flagged:   สถานะขึ้นต้นด้วย "⚠" (แจ้งจ่ายแล้วแต่ตรวจสลิปไม่ผ่าน) → แยกไว้เตือนให้ร้านตรวจเองด่วน
+//   - pending:   ที่เหลือทั้งหมด (ยังไม่แจ้งจ่าย/รอตรวจด้วยตนเอง) → นับเป็นยอดขายที่ "อาจจะ" เข้ามา ยังไม่ใช่กำไรจริง
+function buildDashboardSummary(ss) {
+  var empty = { timezone: ss.getSpreadsheetTimeZone(), months: [], totals: makeDashboardBucket() };
+  var sheet = ss.getSheetByName(ORDERS_SHEET_NAME);
+  if (!sheet) return empty;
+
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastRow < 2 || lastCol < 1) return empty;
+
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var colDate = findColumnIndex(headers, 'วันที่/เวลา');
+  var colTotal = findColumnIndexAny(headers, ORDER_COLUMN_ALIASES.total);
+  var colStatus = findColumnIndexAny(headers, ORDER_COLUMN_ALIASES.status);
+  var colCost = findColumnIndex(headers, 'ต้นทุนรวม (บาท)');
+  var colProfit = findColumnIndex(headers, 'กำไรสุทธิ (บาท)');
+  if (colDate === -1 || colTotal === -1) return empty; // ชีตเก่ามากๆ ที่ยังไม่มีคอลัมน์พื้นฐานพวกนี้เลย
+
+  var tz = ss.getSpreadsheetTimeZone();
+  var values = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  var monthMap = {}; // 'YYYY-MM' -> bucket
+  var totals = makeDashboardBucket();
+
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    var dateVal = row[colDate];
+    if (!(dateVal instanceof Date) || isNaN(dateVal.getTime())) continue; // ข้ามแถวว่าง/หัวข้อซ้ำ
+
+    var monthKey = Utilities.formatDate(dateVal, tz, 'yyyy-MM');
+    if (!monthMap[monthKey]) monthMap[monthKey] = makeDashboardBucket();
+    var bucket = monthMap[monthKey];
+
+    var revenue = Number(row[colTotal]) || 0;
+    var cost = colCost !== -1 ? (Number(row[colCost]) || 0) : 0;
+    var profit = colProfit !== -1 ? (Number(row[colProfit]) || 0) : (revenue - cost);
+    var status = colStatus !== -1 ? (row[colStatus] || '').toString().trim() : '';
+
+    var group;
+    if (status.indexOf('✓') === 0) group = 'confirmed';
+    else if (status.indexOf('⚠') === 0) group = 'flagged';
+    else if (status.indexOf('✕') === 0) group = 'cancelled'; // แอดมินตั้งเองจากหน้า dashboard.html เท่านั้น
+    else group = 'pending';
+
+    addToDashboardBucket(bucket, group, revenue, cost, profit);
+    addToDashboardBucket(totals, group, revenue, cost, profit);
+  }
+
+  var months = Object.keys(monthMap).sort().reverse().map(function (key) {
+    var b = monthMap[key];
+    b.month = key;
+    return b;
+  });
+
+  return { timezone: tz, months: months, totals: totals };
+}
+
+function makeDashboardBucket() {
+  return {
+    ordersConfirmed: 0, revenueConfirmed: 0, costConfirmed: 0, profitConfirmed: 0,
+    ordersPending: 0, revenuePending: 0,
+    ordersFlagged: 0, revenueFlagged: 0,
+    ordersCancelled: 0, revenueCancelled: 0
+  };
+}
+
+function addToDashboardBucket(bucket, group, revenue, cost, profit) {
+  if (group === 'confirmed') {
+    bucket.ordersConfirmed += 1;
+    bucket.revenueConfirmed += revenue;
+    bucket.costConfirmed += cost;
+    bucket.profitConfirmed += profit;
+  } else if (group === 'flagged') {
+    bucket.ordersFlagged += 1;
+    bucket.revenueFlagged += revenue;
+  } else if (group === 'cancelled') {
+    bucket.ordersCancelled += 1;
+    bucket.revenueCancelled += revenue;
+  } else {
+    bucket.ordersPending += 1;
+    bucket.revenuePending += revenue;
+  }
+}
+
+// ========== รายการคำสั่งซื้อสำหรับหน้า dashboard.html (แท็บ "ออเดอร์") ==========
+// อ่านทุกคอลัมน์ที่มีอยู่จริงในชีต Orders ตามชื่อหัวคอลัมน์ (ไม่ล็อกตำแหน่งคอลัมน์ตายตัว เพราะบางคอลัมน์
+// เช่นผลตรวจสอบสลิป SlipOK ถูกเพิ่มต่อท้ายแบบไดนามิกผ่าน ensureColumn() มาก่อนหน้านี้แล้ว ตำแหน่งอาจไม่ตรงกัน
+// ทุกชีต) คืนเป็น list ของ object {ชื่อคอลัมน์: ค่า} เรียงจากคำสั่งซื้อล่าสุดไปเก่าสุด จำกัดจำนวนด้วย limit
+function getAdminOrdersList(ss, limit) {
+  var sheet = ss.getSheetByName(ORDERS_SHEET_NAME);
+  if (!sheet) return [];
+
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastRow < 2 || lastCol < 1) return [];
+
+  var tz = ss.getSpreadsheetTimeZone();
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var values = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+
+  var list = [];
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    var obj = {};
+    for (var c = 0; c < headers.length; c++) {
+      var key = (headers[c] || '').toString().trim();
+      if (!key) continue;
+      var val = row[c];
+      if (val instanceof Date) val = Utilities.formatDate(val, tz, 'yyyy-MM-dd HH:mm');
+      obj[key] = val;
+    }
+    if (!obj['เลขที่คำสั่งซื้อ']) continue; // ข้ามแถวว่าง
+    list.push(obj);
+  }
+
+  list.reverse(); // ชีตเรียงเก่า -> ใหม่ตามลำดับที่เข้ามา สลับให้ล่าสุดขึ้นก่อน
+  if (limit) list = list.slice(0, limit);
+  return list;
+}
+
+// แก้ไข "สถานะการชำระเงิน" ของคำสั่งซื้อหนึ่งรายการด้วยมือจากหน้า dashboard.html — ใช้ตอนร้านตรวจสอบเองแล้ว
+// (เช่น ลูกค้าโอนผ่านธนาคารที่ SlipOK ตรวจไม่ได้ หรืออยากยกเลิกคำสั่งซื้อ) จับคู่ด้วยเลขที่คำสั่งซื้อ (คอลัมน์ B)
+function handleUpdateOrderStatus(ss, data) {
+  if (!isAdminPasswordValid(data.password)) {
+    return jsonOutput({ result: 'error', message: 'รหัสผ่านไม่ถูกต้อง' });
+  }
+  var orderCode = (data.orderCode || '').toString().trim();
+  var newStatus = (data.status || '').toString().trim();
+  if (!orderCode || !newStatus) {
+    return jsonOutput({ result: 'error', message: 'ข้อมูลไม่ครบ (orderCode/status)' });
+  }
+
+  var sheet = ss.getSheetByName(ORDERS_SHEET_NAME);
+  var found = sheet ? findOrderRowByCode(sheet, orderCode) : null;
+  if (!found) {
+    return jsonOutput({ result: 'error', message: 'ไม่พบคำสั่งซื้อเลขที่ ' + orderCode });
+  }
+
+  // หาคอลัมน์สถานะที่มีอยู่จริงก่อน (เผื่อชีตนี้ตั้งชื่อคอลัมน์ไว้ก่อนโค้ดเวอร์ชันนี้) ถ้าไม่เจอเลยจริงๆ
+  // ค่อยสร้างใหม่ด้วยชื่อมาตรฐาน — กันสร้างคอลัมน์ซ้ำซ้อนโดยไม่ได้ตั้งใจ
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var statusCol = findColumnIndexAny(headers, ORDER_COLUMN_ALIASES.status);
+  if (statusCol === -1) statusCol = ensureColumn(sheet, 'สถานะการชำระเงิน');
+  else statusCol = statusCol + 1; // findColumnIndexAny คืนค่าแบบ 0-based, getRange ต้องการ 1-based
+
+  sheet.getRange(found.sheetRow, statusCol).setValue(newStatus);
+
+  return jsonOutput({ result: 'success' });
+}
+
 // สร้างชีต Prices พร้อมราคาเริ่มต้น (ตรงกับราคาที่เคยฝังในโค้ดหน้าเว็บ) — แก้ไขราคาได้ที่คอลัมน์
 // "ชื่อที่แสดง" กับ "ราคา (บาท)" เท่านั้น ห้ามแก้คอลัมน์ "กลุ่ม" กับ "รหัสตัวเลือก" เพราะโค้ดใช้จับคู่
 // คอลัมน์ "คงเหลือ" (E) เป็นตัวเลือกเสริม: เว้นว่างไว้ = ไม่จำกัดสต๊อก, ใส่ 0 = สินค้าหมด (หน้าเว็บจะปิด
@@ -507,22 +942,22 @@ function computeServerSubtotal(ss, orderType, selections) {
 // (ต้องมาลดเองในชีต) — ใช้เป็นตัวช่วยเตือน ไม่ใช่ระบบสต๊อกเต็มรูปแบบ
 function createPricesSheet(ss) {
   var sheet = ss.insertSheet(PRICES_SHEET_NAME);
-  sheet.appendRow(['กลุ่ม (ห้ามแก้)', 'รหัสตัวเลือก (ห้ามแก้)', 'ชื่อที่แสดง (แก้ได้)', 'ราคา บาท (แก้ได้)', 'คงเหลือ (เว้นว่าง=ไม่จำกัด, 0=สินค้าหมด)']);
+  sheet.appendRow(['กลุ่ม (ห้ามแก้)', 'รหัสตัวเลือก (ห้ามแก้)', 'ชื่อที่แสดง (แก้ได้)', 'ราคา บาท (แก้ได้)', 'คงเหลือ (เว้นว่าง=ไม่จำกัด, 0=สินค้าหมด)', 'ต้นทุน บาท (แก้ได้)', 'เปิดขาย (เว้นว่าง=โชว์ปกติ, พิมพ์ ปิด=ซ่อนตัวเลือกนี้ทั้งแถวจากหน้าเว็บ)', 'ต้นทุนสูงสุด บาท (เว้นว่าง=ไม่ใช้ช่วง ใช้ค่าจากคอลัมน์ต้นทุนตรงๆ)']);
   var rows = [
-    ['pcb', 'suiovoi', 'SuiOvOi 8K', 2000, ''],
-    ['pcb', 'hyperstrike', 'Hyperstrike 8K', 2500, ''],
-    ['paddles', 'none', 'ไม่มี', 0, ''],
-    ['paddles', 'one', '1 ปุ่ม', 300, ''],
-    ['paddles', 'two', '2 ปุ่ม', 500, ''],
-    ['triggerBumper', 'none', 'ไม่เพิ่ม Trigger/Bumper Clicky', 0, ''],
-    ['triggerBumper', 'clicky', 'Trigger/Bumper Clicky', 550, ''],
-    ['faceButtons', 'dpad', 'D-pad Clicky Button', 350, ''],
-    ['faceButtons', 'fullface', 'Full Face Clicky Button', 600, ''],
-    ['stickModule', 'alps', 'ALPS', 200, ''],
-    ['stickModule', 'he', 'HE', 400, ''],
-    ['stickModule', 'tmr', 'TMR', 600, ''],
-    ['ps4shell', 'withController', 'ส่งจอยมาให้ทำ (มีคอนโทรลเลอร์ PS4 เอง)', 0, ''],
-    ['ps4shell', 'noController', 'ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)', 400, '']
+    ['pcb', 'suiovoi', 'SuiOvOi 8K', 2000, '', 1000],
+    ['pcb', 'hyperstrike', 'Hyperstrike 8K', 2500, '', 1200],
+    ['paddles', 'none', 'ไม่มี', 0, '', 0],
+    ['paddles', 'one', '1 ปุ่ม', 300, '', 100],
+    ['paddles', 'two', '2 ปุ่ม', 500, '', 150],
+    ['triggerBumper', 'none', 'ไม่เพิ่ม Trigger/Bumper Clicky', 0, '', 0],
+    ['triggerBumper', 'clicky', 'Trigger/Bumper Clicky', 550, '', 200],
+    ['faceButtons', 'dpad', 'D-pad Clicky Button', 350, '', 120],
+    ['faceButtons', 'fullface', 'Full Face Clicky Button', 600, '', 220],
+    ['stickModule', 'alps', 'ALPS', 200, '', 50],
+    ['stickModule', 'he', 'HE', 400, '', 120],
+    ['stickModule', 'tmr', 'TMR', 600, '', 180],
+    ['ps4shell', 'withController', 'ส่งจอยมาให้ทำ (มีคอนโทรลเลอร์ PS4 เอง)', 0, '', 0],
+    ['ps4shell', 'noController', 'ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)', 400, '', 150]
   ];
   rows.forEach(function(r){ sheet.appendRow(r); });
   sheet.setFrozenRows(1);
@@ -536,24 +971,47 @@ function getAnalogServiceMap(ss) {
   var sheet = ss.getSheetByName(ANALOG_SERVICE_SHEET_NAME);
   if (!sheet) sheet = createAnalogServiceSheet(ss);
 
+  // Self-healing: make sure Cost column exists at column 6
+  if (sheet.getLastColumn() < 6) {
+    sheet.getRange(1, 6).setValue('ต้นทุนต่อก้าน บาท (แก้ได้)');
+    
+    // Fill in default costs
+    var lastRow = sheet.getLastRow();
+    if (lastRow >= 2) {
+      var optCodes = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+      var defaultCosts = {
+        'alps': 30, 'he': 80, 'tmr': 120
+      };
+      var costValues = [];
+      for (var i = 0; i < optCodes.length; i++) {
+        var code = (optCodes[i][0] || '').toString().trim();
+        var cVal = (defaultCosts[code] !== undefined) ? defaultCosts[code] : '';
+        costValues.push([cVal]);
+      }
+      sheet.getRange(2, 6, optCodes.length, 1).setValues(costValues);
+    }
+  }
+
   var lastRow = sheet.getLastRow();
   var map = {};
   if (lastRow < 2) return map;
 
-  // รหัส | ชื่อที่แสดง | ราคาอะไหล่ต่อก้าน | ค่าแรงต่อก้าน | คงเหลือ
-  var values = sheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  // รหัส | ชื่อที่แสดง | ราคาอะไหล่ต่อก้าน | ค่าแรงต่อก้าน | คงเหลือ | ต้นทุนต่อก้าน
+  var values = sheet.getRange(2, 1, lastRow - 1, 6).getValues();
   for (var i = 0; i < values.length; i++) {
     var code = (values[i][0] || '').toString().trim();
     if (!code) continue;
     var stockRaw = values[i][4];
     var stock = (stockRaw === '' || stockRaw === null || stockRaw === undefined) ? null : Number(stockRaw);
     if (stock !== null && isNaN(stock)) stock = null;
+    var cost = Number(values[i][5]) || 0;
 
     map[code] = {
       label: (values[i][1] || '').toString().trim(),
       partPrice: Number(values[i][2]) || 0,
       laborPrice: Number(values[i][3]) || 0,
-      stock: stock
+      stock: stock,
+      cost: cost
     };
   }
   return map;
@@ -564,11 +1022,11 @@ function getAnalogServiceMap(ss) {
 // ห้ามแก้คอลัมน์ "รหัส" (A) เพราะโค้ดหน้าเว็บ/แบ็กเอนด์ใช้จับคู่กับตัวเลือกที่ลูกค้าเลือก
 function createAnalogServiceSheet(ss) {
   var sheet = ss.insertSheet(ANALOG_SERVICE_SHEET_NAME);
-  sheet.appendRow(['รหัส (ห้ามแก้)', 'ชื่อที่แสดง (แก้ได้)', 'ราคาอะไหล่ต่อก้าน บาท (แก้ได้)', 'ค่าแรงต่อก้าน บาท (แก้ได้)', 'คงเหลือ (เว้นว่าง=ไม่จำกัด, 0=สินค้าหมด)']);
+  sheet.appendRow(['รหัส (ห้ามแก้)', 'ชื่อที่แสดง (แก้ได้)', 'ราคาอะไหล่ต่อก้าน บาท (แก้ได้)', 'ค่าแรงต่อก้าน บาท (แก้ได้)', 'คงเหลือ (เว้นว่าง=ไม่จำกัด, 0=สินค้าหมด)', 'ต้นทุนต่อก้าน บาท (แก้ได้)']);
   var rows = [
-    ['alps', 'ALPS', 100, 100, ''],
-    ['he', 'HE', 200, 100, ''],
-    ['tmr', 'TMR', 300, 100, '']
+    ['alps', 'ALPS', 100, 100, '', 30],
+    ['he', 'HE', 200, 100, '', 80],
+    ['tmr', 'TMR', 300, 100, '', 120]
   ];
   rows.forEach(function(r){ sheet.appendRow(r); });
   sheet.setFrozenRows(1);
@@ -589,13 +1047,24 @@ function getSettingsMap(ss) {
 
   // รหัสตั้งค่า | ค่า (TRUE/FALSE) | คำอธิบาย
   var values = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+  var hasPresetBuildsEnabled = false;
   for (var i = 0; i < values.length; i++) {
     var key = (values[i][0] || '').toString().trim();
+    if (key === 'presetBuildsEnabled') {
+      hasPresetBuildsEnabled = true;
+    }
     if (!key) continue;
     var raw = values[i][1];
     // เว้นว่าง/พิมพ์อะไรมาก็ตามที่ไม่ใช่ FALSE ชัดเจน ถือว่า "เปิด" ไว้ก่อน กันเผลอปิดร้านทั้งเว็บเพราะพิมพ์ผิด
-    map[key] = !(raw === false || String(raw).trim().toUpperCase() === 'FALSE');
+    map[key] = isRowEnabled(raw);
   }
+
+  // Self-healing: ถ้ายังไม่มีคีย์ presetBuildsEnabled ในชีต ให้เขียนแถวใหม่ลงไปอัตโนมัติเพื่อให้ผู้ใช้เห็นและแก้ไขได้
+  if (!hasPresetBuildsEnabled) {
+    sheet.appendRow(['presetBuildsEnabled', true, 'เปิด/ปิดการแสดงผลหัวข้อ 00 เลือกแพ็กเกจสำเร็จรูป (Component 00) บนหน้าเว็บ']);
+    map['presetBuildsEnabled'] = true;
+  }
+
   return map;
 }
 
@@ -606,8 +1075,22 @@ function createSettingsSheet(ss) {
   sheet.appendRow(['รหัสตั้งค่า (ห้ามแก้)', 'ค่า (TRUE=เปิด / FALSE=ปิด)', 'คำอธิบาย']);
   sheet.appendRow(['customBuildEnabled', true, 'เปิด/ปิดรับออเดอร์โหมด Custom Build (การ์ดบนหน้าแรกของเว็บ)']);
   sheet.appendRow(['analogOnlyEnabled', true, 'เปิด/ปิดรับออเดอร์โหมด เปลี่ยนอนาล็อกอย่างเดียว (การ์ดบนหน้าแรกของเว็บ)']);
+  sheet.appendRow(['presetBuildsEnabled', true, 'เปิด/ปิดการแสดงผลหัวข้อ 00 เลือกแพ็กเกจสำเร็จรูป (Component 00) บนหน้าเว็บ']);
   sheet.setFrozenRows(1);
   return sheet;
+}
+
+// ฟังก์ชันช่วยเช็คสถานะการเปิดใช้งานแถว/การตั้งค่าจากชีต
+// รองรับค่าที่เป็นเท็จ/ปิด: false, 'false', 'off', 'no', '0', 'ปิด' (case-insensitive)
+// นอกเหนือจากนี้ หรือหากเว้นว่างไว้ จะถือว่าเป็น TRUE (เปิดใช้งาน) เสมอ
+function isRowEnabled(rawVal) {
+  if (rawVal === false) return false;
+  if (rawVal === null || rawVal === undefined) return true;
+  var str = String(rawVal).trim().toLowerCase();
+  if (str === 'false' || str === 'off' || str === 'no' || str === '0' || str === 'ปิด') {
+    return false;
+  }
+  return true;
 }
 
 // ========== แพ็กเกจสำเร็จรูป (ชีต "Presets" — แก้ไข/เพิ่ม/ลบแพ็กเกจได้จากในชีตเลย ไม่ต้องแตะ HTML) ==========
@@ -621,13 +1104,28 @@ function getPresetsList(ss) {
   var list = [];
   if (lastRow < 2) return list;
 
-  // ลำดับ | รหัส | ไอคอน | ชื่อแพ็กเกจ | คำอธิบาย | PCB | ปุ่มหลัง | ด้านปุ่มหลัง | Trigger/Face | Stick Module | PS4 Shell | เปิดใช้งาน
-  var values = sheet.getRange(2, 1, lastRow - 1, 12).getValues();
+  var lastCol = sheet.getLastColumn();
+  var headers = lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0] : [];
+  var hasHeightCol = false;
+  for (var i = 0; i < headers.length; i++) {
+    if (headers[i].toString().indexOf('ความสูงปุ่มหลัง') > -1) {
+      hasHeightCol = true;
+      break;
+    }
+  }
+  if (!hasHeightCol && lastCol >= 8) {
+    sheet.insertColumnAfter(8);
+    sheet.getRange(1, 9).setValue('ความสูงปุ่มหลัง (standard/medium/high)');
+    lastCol = sheet.getLastColumn();
+  }
+
+  // ลำดับ | รหัส | ไอคอน | ชื่อแพ็กเกจ | คำอธิบาย | PCB | ปุ่มหลัง | ด้านปุ่มหลัง | ความสูงปุ่มหลัง | Trigger/Face | Stick Module | PS4 Shell | เปิดใช้งาน
+  var values = sheet.getRange(2, 1, lastRow - 1, 13).getValues();
   for (var i = 0; i < values.length; i++) {
     var key = (values[i][1] || '').toString().trim();
     if (!key) continue;
-    var enabledRaw = values[i][11];
-    var enabled = !(enabledRaw === false || String(enabledRaw).trim().toUpperCase() === 'FALSE');
+    var enabledRaw = values[i][12];
+    var enabled = isRowEnabled(enabledRaw);
     if (!enabled) continue;
 
     list.push({
@@ -639,9 +1137,10 @@ function getPresetsList(ss) {
       pcb: (values[i][5] || '').toString().trim(),
       paddles: (values[i][6] || '').toString().trim(),
       paddleSide: (values[i][7] || '').toString().trim(),
-      triggerFace: (values[i][8] || '').toString().trim(),
-      stickModule: (values[i][9] || '').toString().trim(),
-      ps4shell: (values[i][10] || '').toString().trim()
+      paddleHeight: (values[i][8] || '').toString().trim(),
+      triggerFace: (values[i][9] || '').toString().trim(),
+      stickModule: (values[i][10] || '').toString().trim(),
+      ps4shell: (values[i][11] || '').toString().trim()
     });
   }
   list.sort(function(a, b){ return a.order - b.order; });
@@ -662,13 +1161,14 @@ function createPresetsSheet(ss) {
   sheet.appendRow([
     'ลำดับ', 'รหัส (ห้ามซ้ำ)', 'ไอคอน', 'ชื่อแพ็กเกจ', 'คำอธิบาย',
     'PCB (suiovoi/hyperstrike)', 'ปุ่มหลัง (none/one/two)', 'ด้านปุ่มหลัง (left/right)',
-    'Trigger/Face (none/clicky/full)', 'Stick Module (alps/he/tmr)', 'PS4 Shell (withController/noController)',
-    'เปิดใช้งาน (TRUE/FALSE)'
+    'ความสูงปุ่มหลัง (standard/medium/high)', 'Trigger/Face (none/clicky/full)',
+    'Stick Module (alps/he/tmr)', 'PS4 Shell (withController/noController)',
+    'เปิดใช้งาน (TRUE/FALSE หรือ ON/OFF)'
   ]);
   var rows = [
-    [1, 'starter', '🎮', 'Starter', 'เซ็ตพื้นฐาน คุ้มค่าที่สุด เหมาะมือใหม่หรืองบจำกัด', 'suiovoi', 'none', '', 'none', 'alps', 'withController', true],
-    [2, 'balanced', '🎯', 'Balanced', 'อัปเกรดกลางๆ คุ้มค่า เพิ่มปุ่มหลัง 1 ปุ่ม + HE Stick', 'suiovoi', 'one', 'right', 'clicky', 'he', 'withController', true],
-    [3, 'apex', '⚡', 'Apex / FPS Pro', 'สเปกสูงสุด ปุ่มหลัง 2 ปุ่ม + TMR Stick + Full Face Clicky', 'hyperstrike', 'two', '', 'full', 'tmr', 'withController', true]
+    [1, 'starter', '🎮', 'Starter', 'เซ็ตพื้นฐาน คุ้มค่าที่สุด เหมาะมือใหม่หรืองบจำกัด', 'suiovoi', 'none', '', '', 'none', 'alps', 'withController', 'off'],
+    [2, 'balanced', '🎯', 'Balanced', 'อัปเกรดกลางๆ คุ้มค่า เพิ่มปุ่มหลัง 1 ปุ่ม + HE Stick', 'suiovoi', 'one', 'right', 'standard', 'clicky', 'he', 'withController', true],
+    [3, 'apex', '⚡', 'Apex / FPS Pro', 'สเปกสูงสุด ปุ่มหลัง 2 ปุ่ม + TMR Stick + Full Face Clicky', 'hyperstrike', 'two', '', 'medium', 'full', 'tmr', 'withController', true]
   ];
   rows.forEach(function(r){ sheet.appendRow(r); });
   sheet.setFrozenRows(1);
@@ -1008,7 +1508,7 @@ function testDoPost() {
         hpWebsite: '', // honeypot ต้องว่างเสมอ (จำลองคนกรอกจริง) — ถ้าใส่ค่าจะโดนระบบกันสแปมบล็อกทันที
         formRenderedAt: Date.now() - 10000, // จำลองว่าเปิดหน้าเว็บมาแล้ว 10 วิ ก่อนกดยืนยัน ผ่านเกณฑ์ MIN_FORM_FILL_MS
         selections: {
-          pcb: 'suiovoi', paddles: 'none', triggerBumper: 'none',
+          pcb: 'suiovoi', paddles: 'none', paddleSide: 'na', paddleHeight: 'na', triggerBumper: 'none',
           faceButtons: 'dpad', stickModule: 'alps', ps4shell: 'withController'
         } // รวมแล้วควรได้ 2,550 บาท — ถ้าคอลัมน์ "ราคารวมก่อนลด" ในชีตออกมาเป็น 2550 (ไม่ใช่ 999) แปลว่าทำงานถูกต้อง
       })
