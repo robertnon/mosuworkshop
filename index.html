@@ -490,6 +490,10 @@
       gap: 10px;
     }
 
+    .pcb-col[hidden] {
+      display: none;
+    }
+
     .pcb-preview-box {
       display: flex;
       align-items: center;
@@ -522,6 +526,10 @@
       background: var(--panel);
       cursor: pointer;
       transition: border-color .15s ease, background .15s ease;
+    }
+
+    .option[hidden] {
+      display: none;
     }
 
     .option:hover {
@@ -599,6 +607,85 @@
       color: var(--required);
       font-weight: 600;
       font-size: 11.5px;
+    }
+
+    /* ---------- Shell color swatches (ไม่มีจอย ให้เลือกสี) ---------- */
+    .shell-color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .shell-color-swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 92px;
+      padding: 8px 6px 10px;
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      cursor: pointer;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+      font-family: var(--sans);
+      color: var(--silk-dim);
+    }
+
+    .shell-color-swatch:hover {
+      border-color: var(--copper-dim);
+    }
+
+    .shell-color-swatch.selected {
+      border-color: var(--copper);
+      background: var(--panel-2);
+      box-shadow: 0 0 0 1px var(--copper), 0 0 14px rgba(198, 255, 0, 0.25);
+    }
+
+    .shell-color-swatch:focus-visible {
+      outline: 2px solid var(--copper-bright);
+      outline-offset: 2px;
+    }
+
+    .shell-color-swatch img {
+      width: 100%;
+      height: 58px;
+      object-fit: contain;
+      display: block;
+      background: #EEF1E6;
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .shell-color-swatch-name {
+      font-size: 10.5px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .shell-color-swatch.selected .shell-color-swatch-name {
+      color: var(--copper-text);
+    }
+
+    @media (max-width:560px) {
+      .shell-color-options {
+        gap: 8px;
+      }
+
+      .shell-color-swatch {
+        width: calc(33.333% - 6px);
+        padding: 6px 4px 8px;
+      }
+
+      .shell-color-swatch img {
+        height: 46px;
+      }
+
+      .shell-color-swatch-name {
+        font-size: 9.5px;
+      }
     }
 
     .field-note {
@@ -1810,6 +1897,13 @@
     .preview-img.paddles-preview {
       margin-left: 12px;
     }
+    .preview-img.shell-preview {
+      max-width: 30%;
+      margin-left: 12px;
+      background: radial-gradient(circle at 50% 45%, #F4F6EE 0%, #E4E8D8 100%);
+      border-radius: 6px;
+      padding: 4px;
+    }
     @keyframes previewFadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
@@ -2451,7 +2545,7 @@
       <div class="wizard-layout">
         <!-- Main Wizard Column -->
         <div class="wizard-main-col">
-          <form class="form-col" id="orderForm">
+          <form class="form-col" id="orderForm" autocomplete="off">
 
           <!-- Honeypot กันบอท: ช่องนี้ต้องว่างเสมอสำหรับคนจริง ซ่อนด้วย CSS (ไม่ใช้ display:none เพราะบอทบางตัว
            เช็ค computed style แล้วข้ามช่องที่ display:none แต่ยังกรอกช่องที่แค่ขยับออกจออยู่) ห้ามลบ/แก้ id
@@ -2669,12 +2763,53 @@
                 <label class="option">
                   <input type="radio" name="ps4shell" value="noController">
                   <span class="option-text">
-                    <span class="option-title">ไม่มีจอย PS4</span>
-                    <span class="option-sub" data-th="ทางร้านจัดหากรอบ/ตัวเครื่องให้" data-en="Shop provides the PS4 shell/housing — no controller needed from you">ทางร้านจัดหากรอบ/ตัวเครื่องให้</span>
+                    <span class="option-title">ไม่มีจอย ให้เลือกสี</span>
+                    <span class="option-sub" data-th="ทางร้านจัดหากรอบ/ตัวเครื่องให้ — เลือกสีที่ต้องการด้านล่าง" data-en="Shop provides the PS4 shell/housing — pick your color below">ทางร้านจัดหากรอบ/ตัวเครื่องให้ — เลือกสีที่ต้องการด้านล่าง</span>
                   </span>
                   <span class="option-price">+฿400</span>
                 </label>
               </div>
+
+              <div class="dropdown-frame nested" id="shellColorFrame" hidden>
+                <label class="dropdown-label">สีกรอบคอนโทรลเลอร์: <span id="shellColorSelectedName">ยังไม่เลือก</span></label>
+                <div class="shell-color-options" role="radiogroup" aria-label="เลือกสีกรอบคอนโทรลเลอร์ PS4">
+                  <button type="button" class="shell-color-swatch" data-color="white" data-label="White">
+                    <img src="DS4%20COLOR/white_norm.png" alt="White">
+                    <span class="shell-color-swatch-name">White</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="crystal" data-label="Crystal">
+                    <img src="DS4%20COLOR/crystal_norm.png" alt="Crystal">
+                    <span class="shell-color-swatch-name">Crystal</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="titaniumBlue" data-label="Titanium Blue">
+                    <img src="DS4%20COLOR/titanium_blue_norm.png" alt="Titanium Blue">
+                    <span class="shell-color-swatch-name">Titanium Blue</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="berryBlue" data-label="Berry Blue">
+                    <img src="DS4%20COLOR/berry_blue_norm.png" alt="Berry Blue">
+                    <span class="shell-color-swatch-name">Berry Blue</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="alpineGreen" data-label="Alpine Green">
+                    <img src="DS4%20COLOR/alpine_green_norm.png" alt="Alpine Green">
+                    <span class="shell-color-swatch-name">Alpine Green</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="purple" data-label="Purple">
+                    <img src="DS4%20COLOR/purple_norm.png" alt="Purple">
+                    <span class="shell-color-swatch-name">Purple</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="roseGold" data-label="Rose Gold">
+                    <img src="DS4%20COLOR/rose_gold_norm.png" alt="Rose Gold">
+                    <span class="shell-color-swatch-name">Rose Gold</span>
+                  </button>
+                  <button type="button" class="shell-color-swatch" data-color="sunsetOrange" data-label="Sunset Orange">
+                    <img src="DS4%20COLOR/sunset_orange_norm.png" alt="Sunset Orange">
+                    <span class="shell-color-swatch-name">Sunset Orange</span>
+                  </button>
+                </div>
+                <input type="hidden" name="ps4shellColor" id="ps4shellColorInput" value="">
+                <p class="error-msg" id="shellColorError" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกสีกรอบคอนโทรลเลอร์</p>
+              </div>
+
               <p class="field-note">※หากเลือก "ส่งจอยมาให้ทำ" กรุณาแนบคอนโทรลเลอร์ PS4 มาพร้อมพัสดุที่จัดส่ง</p>
               <p class="error-msg" role="alert"><span aria-hidden="true">⚠</span> กรุณาเลือกตัวเลือกกรอบคอนโทรลเลอร์ PS4
               </p>
@@ -3334,6 +3469,7 @@
               </div>
               <img class="preview-img pcb-preview" id="previewPcb" src="" alt="PCB Board" hidden>
               <img class="preview-img paddles-preview" id="previewPaddles" src="" alt="Paddles" hidden>
+              <img class="preview-img shell-preview" id="previewShell" src="" alt="Shell Color" hidden>
             </div>
             <div class="preview-labels" id="previewLabels"></div>
           </div>
@@ -3651,7 +3787,7 @@
         },
         ps4shell: {
           withController: { label: 'ส่งจอยมาให้ทำ (มีคอนโทรลเลอร์ PS4 เอง)', price: 0 },
-          noController: { label: 'ไม่มีจอย PS4 (ทางร้านจัดหากรอบให้)', price: 400 }
+          noController: { label: 'ไม่มีจอย ให้เลือกสี (ทางร้านจัดหากรอบให้)', price: 400 }
         }
       };
 
@@ -3870,7 +4006,12 @@
           const val = getSelected(group);
           if (val) {
             const d = priceData[group][val];
-            items.push({ name: d.label, price: d.price });
+            let label = d.label;
+            if (group === 'ps4shell' && val === 'noController') {
+              const colorLabel = getShellColorLabel();
+              if (colorLabel) label += ' — สี ' + colorLabel;
+            }
+            items.push({ name: label, price: d.price });
             total += d.price;
           } else {
             items.push({ name: null, price: null });
@@ -4173,6 +4314,25 @@
           previewPaddles.style.display = 'none';
         }
 
+        // อัปเดตพรีวิวสีกรอบ PS4 (เฉพาะตอนเลือก "ไม่มีจอย" + เลือกสีแล้ว)
+        const previewShell = document.getElementById('previewShell');
+        const shellVal = getSelected('ps4shell');
+        const shellColorVal = (typeof getShellColorValue === 'function') ? getShellColorValue() : null;
+        const shellColorLabel = (typeof getShellColorLabel === 'function') ? getShellColorLabel() : null;
+        const shellSwatchImg = (shellVal === 'noController' && shellColorVal)
+          ? document.querySelector('.shell-color-swatch[data-color="' + shellColorVal + '"] img')
+          : null;
+        if (shellSwatchImg) {
+          previewShell.src = shellSwatchImg.getAttribute('src');
+          previewShell.hidden = false;
+          previewShell.style.display = 'block';
+          hasContent = true;
+          labelsHtml += '<span class="preview-badge">สี: ' + shellColorLabel + '</span>';
+        } else {
+          previewShell.hidden = true;
+          previewShell.style.display = 'none';
+        }
+
         if (hasContent) {
           previewPlaceholder.hidden = true;
           previewPlaceholder.style.display = 'none';
@@ -4336,6 +4496,43 @@
           paddleHeightSelect.value = '';
         }
         updatePaddleHeightPreview();
+      });
+
+      // ===== ช่อง 05 (กรอบคอนโทรลเลอร์ PS4) — เลือกสีเมื่อกด "ไม่มีจอย ให้เลือกสี" =====
+      const shellColorFrame = document.getElementById('shellColorFrame');
+      const shellColorInput = document.getElementById('ps4shellColorInput');
+      const shellColorSelectedName = document.getElementById('shellColorSelectedName');
+      const shellColorError = document.getElementById('shellColorError');
+      const shellColorSwatches = document.querySelectorAll('.shell-color-swatch');
+      const ps4shellFieldEl = document.getElementById('field-ps4shell');
+
+      function getShellColorValue() {
+        return (shellColorInput && shellColorInput.value) ? shellColorInput.value : null;
+      }
+
+      function getShellColorLabel() {
+        return (shellColorInput && shellColorInput.value && shellColorSelectedName) ? shellColorSelectedName.textContent : null;
+      }
+
+      function setShellColor(btn) {
+        shellColorSwatches.forEach(function (b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        shellColorInput.value = btn.dataset.color;
+        if (shellColorSelectedName) shellColorSelectedName.textContent = btn.dataset.label;
+        if (shellColorError) shellColorError.style.display = 'none';
+        if (ps4shellFieldEl) ps4shellFieldEl.classList.remove('invalid');
+        rerender();
+      }
+
+      shellColorSwatches.forEach(function (btn) {
+        btn.addEventListener('click', function () { setShellColor(btn); });
+      });
+
+      form.querySelectorAll('input[name="ps4shell"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+          const showColor = input.value === 'noController' && input.checked;
+          if (shellColorFrame) shellColorFrame.hidden = !showColor;
+        });
       });
 
       // ช่อง 03 — dropdown เดียวที่รวม Trigger/Bumper + Face Buttons เข้าด้วยกัน แสดงหมายเหตุตามตัวเลือกที่เลือก
@@ -4840,6 +5037,17 @@
             }
           });
 
+          // Field 05 — ถ้าเลือก "ไม่มีจอย ให้เลือกสี" ต้องเลือกสีกรอบด้วย
+          const shellFieldEl = document.getElementById('field-ps4shell');
+          if (getSelected('ps4shell') === 'noController' && !getShellColorValue()) {
+            if (shellColorError) shellColorError.style.display = 'flex';
+            shellFieldEl.classList.add('invalid');
+            allValid = false;
+            if (!firstInvalid) firstInvalid = shellFieldEl;
+          } else if (shellColorError) {
+            shellColorError.style.display = 'none';
+          }
+
           // Field 02 has three conditions: paddle count, side (only when count = 1), and height (only when count = 1 or 2)
           const paddlesFieldEl = document.getElementById('field-paddles');
           const paddlesCountError = document.getElementById('paddlesCountError');
@@ -5128,7 +5336,9 @@
         // Update footer buttons
         function updateFooter() {
           if (!wzBtnBack || !wzBtnNext) return;
-          wzBtnBack.hidden = (currentStep === 1);
+          wzBtnBack.hidden = false;
+          // ขั้นที่ 1 ไม่มีขั้นก่อนหน้าในวิซาร์ดให้ย้อนกลับ ปุ่มนี้เลยกลับไปหน้าหลัก (เลือกโหมด) แทน
+          wzBtnBack.textContent = (currentStep === 1) ? '← กลับหน้าหลัก' : '← ย้อนกลับ';
           if (currentStep === TOTAL_STEPS) {
             wzBtnNext.hidden = true;
           } else {
@@ -5141,6 +5351,16 @@
         function validateStep(stepNum) {
           var valid = true;
           var stepData = WIZARD_STEPS[stepNum - 1];
+          var firstInvalidEl = null;
+
+          function markInvalid(fieldEl) {
+            if (!fieldEl) return;
+            fieldEl.classList.add('invalid');
+            fieldEl.classList.add('shake-invalid');
+            setTimeout(function() { fieldEl.classList.remove('shake-invalid'); }, 400);
+            if (!firstInvalidEl) firstInvalidEl = fieldEl;
+            valid = false;
+          }
 
           if (stepNum === 4) { // Contact step
             ['customerEmail', 'customerAddress'].forEach(function(id) {
@@ -5155,15 +5375,68 @@
           } else if (stepNum === 2) {
             // PCB is required
             var pcbChecked = form.querySelector('input[name="pcb"]:checked');
+            var pcbField = document.getElementById('field-pcb');
             if (!pcbChecked) {
-              var pcbField = document.getElementById('field-pcb');
-              if (pcbField) {
-                pcbField.classList.add('shake-invalid');
-                setTimeout(function() { pcbField.classList.remove('shake-invalid'); }, 400);
+              markInvalid(pcbField);
+            } else if (pcbField) {
+              pcbField.classList.remove('invalid');
+            }
+
+            // Paddles: count required, side (only if 1 ปุ่ม), height (only if 1 หรือ 2 ปุ่ม)
+            var paddlesFieldEl = document.getElementById('field-paddles');
+            var paddlesCountErrorEl = document.getElementById('paddlesCountError');
+            var paddlesSideErrorEl = document.getElementById('paddlesSideError');
+            var paddlesHeightErrorEl = document.getElementById('paddlesHeightError');
+            var countVal = getPaddlesValue();
+            var sideVal = getPaddleSideValue();
+            var heightVal = getPaddleHeightValue();
+            var paddlesOk = true;
+
+            if (!countVal) { paddlesCountErrorEl.style.display = 'flex'; paddlesOk = false; }
+            else { paddlesCountErrorEl.style.display = 'none'; }
+
+            if (sideVal === null) { paddlesSideErrorEl.style.display = 'flex'; paddlesOk = false; }
+            else { paddlesSideErrorEl.style.display = 'none'; }
+
+            if (heightVal === null) { paddlesHeightErrorEl.style.display = 'flex'; paddlesOk = false; }
+            else { paddlesHeightErrorEl.style.display = 'none'; }
+
+            if (!paddlesOk) {
+              markInvalid(paddlesFieldEl);
+            } else if (paddlesFieldEl) {
+              paddlesFieldEl.classList.remove('invalid');
+            }
+          } else if (stepNum === 3) {
+            // Trigger/Bumper & Face Buttons, Stick Module, กรอบ PS4
+            [
+              { fieldId: 'field-trigger-face', getValue: getTriggerFaceValue },
+              { fieldId: 'field-stickModule', getValue: function () { return getSelected('stickModule'); } },
+              { fieldId: 'field-ps4shell', getValue: function () { return getSelected('ps4shell'); } }
+            ].forEach(function (g) {
+              var val = g.getValue();
+              var fieldEl = document.getElementById(g.fieldId);
+              if (!val) {
+                markInvalid(fieldEl);
+              } else if (fieldEl) {
+                fieldEl.classList.remove('invalid');
               }
-              valid = false;
+            });
+
+            // ถ้าเลือก "ไม่มีจอย ให้เลือกสี" ต้องเลือกสีกรอบด้วย
+            var shellField = document.getElementById('field-ps4shell');
+            var shellColorErrorEl = document.getElementById('shellColorError');
+            if (getSelected('ps4shell') === 'noController' && !getShellColorValue()) {
+              if (shellColorErrorEl) shellColorErrorEl.style.display = 'flex';
+              markInvalid(shellField);
+            } else if (shellColorErrorEl) {
+              shellColorErrorEl.style.display = 'none';
             }
           }
+
+          if (!valid && firstInvalidEl) {
+            firstInvalidEl.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
+          }
+
           return valid;
         }
 
@@ -5188,6 +5461,14 @@
         }
         if (wzBtnBack) {
           wzBtnBack.addEventListener('click', function() {
+            if (currentStep === 1) {
+              if (!confirm('กลับไปหน้าหลักจะล้างตัวเลือกที่กรอกไว้ในฟอร์มปัจจุบัน ต้องการดำเนินการต่อหรือไม่?')) return;
+              currentMode = null;
+              mainApp.hidden = true;
+              modeSelectScreen.hidden = false;
+              window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+              return;
+            }
             goToStep(currentStep - 1, 'back');
             // Remove summary view when going back from step 5
             var sv = document.getElementById('wizardSummaryView');
@@ -5266,18 +5547,16 @@
       // SVG INTERACTIVE PREVIEW ENGINE
       // =====================================================================
       (function initSvgPreview() {
-        // Shell color palette mapping (value → [baseColor, darkerColor, label])
+        // Shell color palette mapping — คีย์ตรงกับ data-color ของปุ่มเลือกสีกรอบ (ช่อง 05)
         var shellColorMap = {
-          'white':    { body: '#E8E8E8', grip: '#D0D0D0', label: 'White' },
-          'black':    { body: '#2a2d33', grip: '#1e2126', label: 'Black' },
-          'red':      { body: '#8B1A1A', grip: '#6B1010', label: 'Red' },
-          'blue':     { body: '#1A3A8B', grip: '#102060', label: 'Blue' },
-          'midnight': { body: '#1c2030', grip: '#13161f', label: 'Midnight Blue' },
-          'purple':   { body: '#4A1A8B', grip: '#301060', label: 'Purple' },
-          'pink':     { body: '#C84A8A', grip: '#A03070', label: 'Pink' },
-          'orange':   { body: '#C86A1A', grip: '#A04A10', label: 'Orange' },
-          'green':    { body: '#1A8B4A', grip: '#106030', label: 'Green' },
-          'clear':    { body: 'rgba(200,220,240,0.35)', grip: 'rgba(180,200,220,0.25)', label: 'Clear/Transparent' }
+          'white':        { body: '#EDEDED', grip: '#D4D4D4', label: 'White' },
+          'crystal':      { body: 'rgba(210,225,235,0.35)', grip: 'rgba(190,205,215,0.28)', label: 'Crystal' },
+          'titaniumBlue': { body: '#7C93AD', grip: '#5D7390', label: 'Titanium Blue' },
+          'berryBlue':    { body: '#5FC2BA', grip: '#3F9992', label: 'Berry Blue' },
+          'alpineGreen':  { body: '#3F6B4F', grip: '#2C4E38', label: 'Alpine Green' },
+          'purple':       { body: '#6B3FA0', grip: '#4E2D77', label: 'Purple' },
+          'roseGold':     { body: '#D9A8A0', grip: '#C08880', label: 'Rose Gold' },
+          'sunsetOrange': { body: '#E0703C', grip: '#C65A2B', label: 'Sunset Orange' }
         };
 
         // Analog color palette mapping
@@ -5341,22 +5620,30 @@
           if (currentMode === 'analogOnly') return;
 
           // 1) Shell color
-          var shellVal = getSelected('ps4shell');
-          var shellDef = shellVal && shellColorMap[shellVal];
+          var ps4shellVal = getSelected('ps4shell');
+          var shellDef = null;
+          var shellLabel = 'Shell: ยังไม่เลือก';
+          if (ps4shellVal === 'withController') {
+            shellLabel = 'Shell: ใช้กรอบเดิมของคุณ';
+          } else if (ps4shellVal === 'noController') {
+            var colorVal = (typeof getShellColorValue === 'function') ? getShellColorValue() : null;
+            shellDef = colorVal && shellColorMap[colorVal];
+            shellLabel = shellDef ? ('Shell: ' + shellDef.label) : 'Shell: ยังไม่เลือกสี';
+          }
           if (shellDef) {
             if (gradStop0) { gradStop0.setAttribute('stop-color', shellDef.body); }
             if (gradStop1) { gradStop1.setAttribute('stop-color', shellDef.grip); }
             setSvgColor(svgGripL, shellDef.grip);
             setSvgColor(svgGripR, shellDef.grip);
             if (legendDotBody) legendDotBody.style.background = shellDef.body;
-            if (legendLabelBody) legendLabelBody.textContent = 'Shell: ' + shellDef.label;
+            if (legendLabelBody) legendLabelBody.textContent = shellLabel;
           } else {
             if (gradStop0) gradStop0.setAttribute('stop-color', '#3a3d43');
             if (gradStop1) gradStop1.setAttribute('stop-color', '#1e2126');
             setSvgColor(svgGripL, '#2e3035');
             setSvgColor(svgGripR, '#2e3035');
             if (legendDotBody) legendDotBody.style.background = '#3a3d43';
-            if (legendLabelBody) legendLabelBody.textContent = 'Shell: ยังไม่เลือก';
+            if (legendLabelBody) legendLabelBody.textContent = shellLabel;
           }
 
           // 2) Stick module color (analogType for analogOnly, stickModule for custom)
@@ -5795,6 +6082,9 @@
             if (!input) return;
             const optionEl = input.closest('.option');
             if (!optionEl) return;
+            // PCB มีรูปพรีวิวห่อรวมกับ .option อยู่ใน .pcb-col — ต้องซ่อนทั้งคอลัมน์ (รูป+หัวข้อ) ไปด้วยกัน
+            // ไม่งั้นรูปจะค้างอยู่ทั้งที่หัวข้อหายไปแล้ว กลุ่มอื่นไม่มี wrapper นี้เลยซ่อนแค่ .option ก็พอ
+            const gridItem = optionEl.closest('.pcb-col') || optionEl;
             const titleEl = optionEl.querySelector('.option-title');
             const badge = optionEl.querySelector('.option-price');
             const price = groupData[key].price;
@@ -5803,6 +6093,15 @@
             // ถ้าเป็น 0 พอดี = สินค้าหมด ปิดตัวเลือกนี้ในหน้าเว็บอัตโนมัติ
             const stock = groupData[key].stock;
             const soldOut = (stock === 0);
+            // เปิดขาย=ปิด ในชีต → ซ่อนตัวเลือกนี้ออกจากหน้าเว็บไปเลยทั้งหัวข้อ (ต่างจาก stock=0 ที่ยังโชว์
+            // แต่ขึ้น "สินค้าหมด") ใช้ตอนอยากงดขายชั่วคราวโดยยังไม่อยากลบโค้ด/แถวออก — ซ่อนทั้งคอลัมน์แล้ว grid
+            // (auto-fit) จะยุบเหลือคอลัมน์เดียวเต็มความกว้างให้เองอัตโนมัติ ไม่เหลือช่องว่างเบี้ยวๆ
+            const isHidden = (groupData[key].visible === false);
+            gridItem.hidden = isHidden;
+            if (isHidden) {
+              if (input.checked) { input.checked = false; }
+              return;
+            }
 
             // อัปเดตชื่อเฉพาะตอนชีตมีค่า "ชื่อที่แสดง" จริงๆ — ถ้าเว้นว่างไว้ในชีต จะคงข้อความเดิม
             // ในไฟล์ HTML ไว้ก่อน กันชื่อตัวเลือกหายไปเฉยๆ เพราะลืมกรอกในชีต
@@ -5829,6 +6128,12 @@
           Array.prototype.forEach.call(paddlesSelect.options, function (opt) {
             const d = priceData.paddles[opt.value];
             if (!d) return;
+            const isHidden = (d.visible === false);
+            opt.hidden = isHidden;
+            if (isHidden) {
+              if (opt.value === currentVal) currentSoldOut = true; // ใช้ path เดิม (เคลียร์ค่าที่เลือกไว้) ร่วมกับสินค้าหมด
+              return;
+            }
             const soldOut = (d.stock === 0);
             opt.disabled = soldOut;
             opt.textContent = d.label + (soldOut ? ' — สินค้าหมด' : ' — ' + currencyDelta(d.price));
@@ -5857,6 +6162,12 @@
             if (!opt.value) return; // ข้าม placeholder "เลือกตัวเลือก..."
             const triggerD = priceData.triggerBumper[triggerBumperKeyFromMerged(opt.value)];
             const faceD = priceData.faceButtons[faceButtonsKeyFromMerged(opt.value)];
+            const isHidden = (triggerD && triggerD.visible === false) || (faceD && faceD.visible === false);
+            opt.hidden = isHidden;
+            if (isHidden) {
+              if (opt.value === currentTfVal) currentTfSoldOut = true; // ใช้ path เดิม (เคลียร์ค่าที่เลือกไว้) ร่วมกับสินค้าหมด
+              return;
+            }
             const price = (triggerD ? triggerD.price : 0) + (faceD ? faceD.price : 0);
             const soldOut = (triggerD && triggerD.stock === 0) || (faceD && faceD.stock === 0);
             opt.disabled = soldOut;
