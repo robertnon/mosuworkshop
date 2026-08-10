@@ -164,6 +164,12 @@ var PRICES_SHEET_NAME = 'Prices';
 var PRESETS_SHEET_NAME = 'Presets';
 var ANALOG_SERVICE_SHEET_NAME = 'AnalogService';
 var SETTINGS_SHEET_NAME = 'Settings';
+var USERS_SHEET_NAME = 'Users'; // บัญชีลูกค้า (ระบบ login ดูประวัติคำสั่งซื้อของตัวเอง)
+var SESSIONS_SHEET_NAME = 'Sessions'; // เก็บ session token หลัง login/สมัครสมาชิกสำเร็จ (หมดอายุอัตโนมัติตาม SESSION_TTL_DAYS)
+var PASSWORD_RESETS_SHEET_NAME = 'PasswordResets'; // เก็บ reset token สำหรับลืมรหัสผ่าน (หมดอายุใน 1 ชั่วโมง)
+var SESSION_TTL_DAYS = 30;
+var RESET_TOKEN_TTL_HOURS = 1; // reset token หมดอายุใน 1 ชั่วโมง
+var SITE_URL = ''; // ใส่ URL จริงของ index.html (เช่น https://yourname.github.io/project/index.html) ถ้าเว้นว่าง email จะไม่มีลิงก์คลิก
 var SLIPS_FOLDER_NAME = 'Payment Slips - คำสั่งซื้อ'; // โฟลเดอร์ใน Google Drive ที่จะเก็บรูปสลิปโอนเงิน
 
 // ========== ตรวจสอบสลิปโอนเงินจริงกับธนาคาร (SlipOK API) ==========
@@ -203,6 +209,24 @@ function doPost(e) {
     }
     if (data.action === 'updateOrderStatus') {
       return handleUpdateOrderStatus(ss, data);
+    }
+
+    // ========== ระบบ login ลูกค้า (สมัครสมาชิก/เข้าสู่ระบบ/ออกจากระบบ) ==========
+    // ไม่บังคับต้อง login ก่อนสั่งซื้อ — ใช้แค่ตอนอยากดู "คำสั่งซื้อของฉัน" (ผูกกับอีเมลที่กรอกตอนสั่งซื้อ)
+    if (data.action === 'register') {
+      return handleRegister(ss, data);
+    }
+    if (data.action === 'login') {
+      return handleLogin(ss, data);
+    }
+    if (data.action === 'logout') {
+      return handleLogout(ss, data);
+    }
+    if (data.action === 'forgotPassword') {
+      return handleForgotPassword(ss, data);
+    }
+    if (data.action === 'resetPassword') {
+      return handleResetPassword(ss, data);
     }
 
     // ========== กันสแปม/บอทยิง endpoint ตรงๆ (ข้ามหน้าเว็บ) ==========
@@ -423,6 +447,19 @@ function doGet(e) {
     var ssAdminOrders = SpreadsheetApp.getActiveSpreadsheet();
     var limit = Number(e.parameter.limit) || 300;
     return jsonOutput({ result: 'success', orders: getAdminOrdersList(ssAdminOrders, limit) });
+  }
+
+  // หน้าเว็บลูกค้าเรียกหลัง login สำเร็จ (แนบ email + session token ที่ได้จาก action=login/register)
+  // เพื่อดึงประวัติ/สถานะคำสั่งซื้อทั้งหมดของอีเมลนั้น (จับคู่กับคอลัมน์ "อีเมล" ในชีต Orders ตรงๆ —
+  // รวมออเดอร์เก่าที่เคยสั่งแบบ guest ไว้ก่อนสมัครสมาชิกด้วย ถ้ากรอกอีเมลเดียวกัน)
+  if (action === 'getMyOrders') {
+    var ssMyOrders = SpreadsheetApp.getActiveSpreadsheet();
+    var myEmail = String(e.parameter.email || '').trim();
+    var myToken = String(e.parameter.token || '');
+    if (!myEmail || !isSessionValid(ssMyOrders, myEmail, myToken)) {
+      return jsonOutput({ result: 'error', code: 'session_invalid', message: 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่อีกครั้ง' });
+    }
+    return jsonOutput({ result: 'success', orders: getMyOrdersList(ssMyOrders, myEmail) });
   }
 
   return ContentService
@@ -933,6 +970,269 @@ function handleUpdateOrderStatus(ss, data) {
   sheet.getRange(found.sheetRow, statusCol).setValue(newStatus);
 
   return jsonOutput({ result: 'success' });
+}
+
+// ========== ระบบ login ลูกค้า (ชีต "Users" + "Sessions") ==========
+// เก็บรหัสผ่านแบบแฮช (SHA-256 + salt ต่อคน) ไม่เก็บรหัสผ่านจริงในชีตเด็ดขาด — ยังไม่ใช่ระดับความปลอดภัย
+// เทียบเท่าระบบ auth มาตรฐานอุตสาหกรรม (ไม่มี rate-limit/2FA) แต่เพียงพอสำหรับร้านขนาดนี้ที่ไม่ได้เก็บ
+// ข้อมูลอ่อนไหวมาก (แค่ชื่อ/อีเมล/ที่อยู่จัดส่งที่ลูกค้ากรอกตอนสั่งซื้ออยู่แล้ว)
+function getUsersSheet(ss) {
+  var sheet = ss.getSheetByName(USERS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(USERS_SHEET_NAME);
+    sheet.appendRow(['อีเมล (ห้ามซ้ำ)', 'ชื่อ', 'รหัสผ่าน (แฮชแล้ว — ห้ามแก้มือ)', 'Salt (ห้ามแก้มือ)', 'วันที่สมัคร']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function findUserRowByEmail(sheet, email) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return null;
+  var norm = email.toString().trim().toLowerCase();
+  var values = sheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  for (var i = 0; i < values.length; i++) {
+    if ((values[i][0] || '').toString().trim().toLowerCase() === norm) {
+      return { sheetRow: i + 2, email: values[i][0], name: values[i][1], hash: values[i][2], salt: values[i][3] };
+    }
+  }
+  return null;
+}
+
+function makeSalt() {
+  return Utilities.getUuid().replace(/-/g, '').slice(0, 16);
+}
+
+function hashPassword(password, salt) {
+  var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password + ':' + salt);
+  return bytes.map(function (b) { return ('0' + (b & 0xFF).toString(16)).slice(-2); }).join('');
+}
+
+var EMAIL_PATTERN_AUTH = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function handleRegister(ss, data) {
+  var email = (data.email || '').toString().trim();
+  var password = (data.password || '').toString();
+  var name = (data.name || '').toString().trim();
+  if (!EMAIL_PATTERN_AUTH.test(email)) return jsonOutput({ result: 'error', message: 'อีเมลไม่ถูกต้อง' });
+  if (password.length < 4) return jsonOutput({ result: 'error', message: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร' });
+  if (!name) return jsonOutput({ result: 'error', message: 'กรุณากรอกชื่อ' });
+
+  var sheet = getUsersSheet(ss);
+  if (findUserRowByEmail(sheet, email)) {
+    return jsonOutput({ result: 'error', message: 'อีเมลนี้สมัครสมาชิกไว้แล้ว กรุณาเข้าสู่ระบบแทน' });
+  }
+  var salt = makeSalt();
+  sheet.appendRow([email, name, hashPassword(password, salt), salt, new Date()]);
+
+  return jsonOutput({ result: 'success', name: name, email: email, token: createSession(ss, email) });
+}
+
+function handleLogin(ss, data) {
+  var email = (data.email || '').toString().trim();
+  var password = (data.password || '').toString();
+  var found = findUserRowByEmail(getUsersSheet(ss), email);
+  if (!found) return jsonOutput({ result: 'error', message: 'ไม่พบบัญชีนี้ กรุณาสมัครสมาชิกก่อน' });
+  if (hashPassword(password, found.salt) !== found.hash) {
+    return jsonOutput({ result: 'error', message: 'รหัสผ่านไม่ถูกต้อง' });
+  }
+  return jsonOutput({ result: 'success', name: found.name, email: found.email, token: createSession(ss, found.email) });
+}
+
+function getSessionsSheet(ss) {
+  var sheet = ss.getSheetByName(SESSIONS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SESSIONS_SHEET_NAME);
+    sheet.appendRow(['Token', 'อีเมล', 'สร้างเมื่อ']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function createSession(ss, email) {
+  var token = Utilities.getUuid();
+  getSessionsSheet(ss).appendRow([token, email, new Date()]);
+  return token;
+}
+
+// เช็ค session token ว่ายังใช้ได้อยู่ไหม (ตรงกับอีเมลที่อ้าง + ยังไม่หมดอายุตาม SESSION_TTL_DAYS)
+function isSessionValid(ss, email, token) {
+  if (!email || !token) return false;
+  var sheet = getSessionsSheet(ss);
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return false;
+  var values = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+  var norm = email.toString().trim().toLowerCase();
+  var cutoff = new Date(Date.now() - SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
+  for (var i = 0; i < values.length; i++) {
+    if (values[i][0] === token && (values[i][1] || '').toString().trim().toLowerCase() === norm) {
+      var createdAt = values[i][2];
+      return !(createdAt instanceof Date && createdAt < cutoff);
+    }
+  }
+  return false;
+}
+
+function handleLogout(ss, data) {
+  var token = (data.token || '').toString();
+  var sheet = getSessionsSheet(ss);
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2 && token) {
+    var tokens = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (var i = 0; i < tokens.length; i++) {
+      if (tokens[i][0] === token) { sheet.deleteRow(i + 2); break; }
+    }
+  }
+  return jsonOutput({ result: 'success' });
+}
+
+// ========== ลืมรหัสผ่าน: ส่ง reset token ทางอีเมล ==========
+function getPasswordResetsSheet(ss) {
+  var sheet = ss.getSheetByName(PASSWORD_RESETS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(PASSWORD_RESETS_SHEET_NAME);
+    sheet.appendRow(['Token', 'อีเมล', 'สร้างเมื่อ', 'หมดอายุเมื่อ', 'ใช้แล้ว (TRUE/FALSE)']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function handleForgotPassword(ss, data) {
+  var email = (data.email || '').toString().trim().toLowerCase();
+  var EMAIL_PATTERN_RESET = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_PATTERN_RESET.test(email)) {
+    // ไม่บอกว่าอีเมลไม่ถูกต้องหรือไม่พบบัญชี กันการ enumerate อีเมลในระบบ
+    return jsonOutput({ result: 'success', message: 'ถ้าอีเมลนี้มีบัญชีอยู่ในระบบ คุณจะได้รับอีเมลภายในไม่กี่นาที' });
+  }
+
+  // ถ้าไม่มีบัญชี ก็ตอบ success เหมือนกัน (security: ไม่บอกว่าไม่มีบัญชี)
+  var usersSheet = getUsersSheet(ss);
+  var found = findUserRowByEmail(usersSheet, email);
+  if (!found) {
+    return jsonOutput({ result: 'success', message: 'ถ้าอีเมลนี้มีบัญชีอยู่ในระบบ คุณจะได้รับอีเมลภายในไม่กี่นาที' });
+  }
+
+  // สร้าง reset token
+  var token = Utilities.getUuid();
+  var now = new Date();
+  var expires = new Date(now.getTime() + RESET_TOKEN_TTL_HOURS * 60 * 60 * 1000);
+  getPasswordResetsSheet(ss).appendRow([token, email, now, expires, false]);
+
+  // ส่งอีเมล
+  var resetLink = SITE_URL ? (SITE_URL + '?resetToken=' + token) : '';
+  var subject = 'รีเซ็ตรหัสผ่าน — Controller Mod by Mosu';
+  var body = 'สวัสดีคุณ ' + (found.name || email) + ',\n\n' +
+    'เราได้รับคำขอรีเซ็ตรหัสผ่านสำหรับบัญชีของคุณ\n\n' +
+    (resetLink
+      ? 'คลิกลิงก์นี้เพื่อตั้งรหัสผ่านใหม่ (ลิงก์หมดอายุใน ' + RESET_TOKEN_TTL_HOURS + ' ชั่วโมง):\n' + resetLink
+      : 'Reset Token ของคุณ: ' + token + '\n(Token หมดอายุใน ' + RESET_TOKEN_TTL_HOURS + ' ชั่วโมง)') +
+    '\n\nถ้าคุณไม่ได้ขอรีเซ็ตรหัสผ่าน ไม่ต้องทำอะไร — รหัสผ่านเดิมยังใช้ได้ตามปกติ\n\n— Controller Mod by Mosu';
+
+  try {
+    MailApp.sendEmail({ to: email, subject: subject, body: body });
+  } catch (mailErr) {
+    Logger.log('forgotPassword: ส่งอีเมลไม่สำเร็จ — ' + mailErr.message);
+    // ไม่แจ้ง error กลับ เพื่อไม่เปิดเผยว่าอีเมลนี้มีบัญชีอยู่หรือไม่
+  }
+
+  return jsonOutput({ result: 'success', message: 'ถ้าอีเมลนี้มีบัญชีอยู่ในระบบ คุณจะได้รับอีเมลภายในไม่กี่นาที' });
+}
+
+function handleResetPassword(ss, data) {
+  var token = (data.resetToken || '').toString().trim();
+  var newPassword = (data.newPassword || '').toString();
+  if (!token) return jsonOutput({ result: 'error', message: 'Reset token ไม่ถูกต้อง' });
+  if (newPassword.length < 4) return jsonOutput({ result: 'error', message: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร' });
+
+  var resetsSheet = getPasswordResetsSheet(ss);
+  var lastRow = resetsSheet.getLastRow();
+  if (lastRow < 2) return jsonOutput({ result: 'error', message: 'Reset token ไม่ถูกต้องหรือหมดอายุแล้ว' });
+
+  var rows = resetsSheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  var foundReset = null;
+  var foundSheetRow = -1;
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i][0] === token) {
+      foundReset = rows[i]; // [token, email, createdAt, expiresAt, used]
+      foundSheetRow = i + 2;
+      break;
+    }
+  }
+
+  if (!foundReset) return jsonOutput({ result: 'error', message: 'Reset token ไม่ถูกต้องหรือหมดอายุแล้ว' });
+
+  // เช็คหมดอายุ
+  var expiresAt = foundReset[3];
+  if (expiresAt instanceof Date && expiresAt < new Date()) {
+    return jsonOutput({ result: 'error', message: 'Reset token หมดอายุแล้ว กรุณาขอ reset ใหม่อีกครั้ง' });
+  }
+
+  // เช็คว่าใช้แล้ว
+  if (foundReset[4] === true || foundReset[4] === 'TRUE') {
+    return jsonOutput({ result: 'error', message: 'Reset token นี้ถูกใช้ไปแล้ว กรุณาขอ reset ใหม่อีกครั้ง' });
+  }
+
+  // มาร์คว่าใช้แล้ว
+  resetsSheet.getRange(foundSheetRow, 5).setValue(true);
+
+  // อัปเดตรหัสผ่านในชีต Users
+  var email = (foundReset[1] || '').toString().trim();
+  var usersSheet = getUsersSheet(ss);
+  var userFound = findUserRowByEmail(usersSheet, email);
+  if (!userFound) return jsonOutput({ result: 'error', message: 'ไม่พบบัญชีนี้' });
+
+  var newSalt = makeSalt();
+  var newHash = hashPassword(newPassword, newSalt);
+  usersSheet.getRange(userFound.sheetRow, 3).setValue(newHash);
+  usersSheet.getRange(userFound.sheetRow, 4).setValue(newSalt);
+
+  return jsonOutput({ result: 'success', message: 'รีเซ็ตรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่' });
+}
+
+// ดึงประวัติคำสั่งซื้อของอีเมลหนึ่งจากชีต Orders (ล่าสุดก่อน) — ใช้คอลัมน์ "อีเมล" ที่บันทึกไว้ตอนสั่งซื้อ
+// ทุกครั้งอยู่แล้ว จึงรวมออเดอร์เก่าที่เคยสั่งแบบ guest (ก่อนสมัครสมาชิก) ให้อัตโนมัติถ้าใช้อีเมลเดียวกัน
+function getMyOrdersList(ss, email) {
+  var sheet = ss.getSheetByName(ORDERS_SHEET_NAME);
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastRow < 2 || lastCol < 1) return [];
+
+  var tz = ss.getSpreadsheetTimeZone();
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var colDate = findColumnIndex(headers, 'วันที่/เวลา');
+  var colCode = findColumnIndex(headers, 'เลขที่คำสั่งซื้อ');
+  var colItems = findColumnIndex(headers, 'รายการ');
+  var colTotal = findColumnIndexAny(headers, ORDER_COLUMN_ALIASES.total);
+  var colStatus = findColumnIndexAny(headers, ORDER_COLUMN_ALIASES.status);
+  var colEmail = findColumnIndex(headers, 'อีเมล');
+  if (colEmail === -1) return [];
+
+  var norm = email.toString().trim().toLowerCase();
+  var values = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  var list = [];
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    if ((row[colEmail] || '').toString().trim().toLowerCase() !== norm) continue;
+    var dateVal = row[colDate];
+    var status = colStatus !== -1 ? (row[colStatus] || '').toString().trim() : '';
+    var group = 'pending';
+    if (status.indexOf('✓') === 0) group = 'confirmed';
+    else if (status.indexOf('⚠') === 0) group = 'review';
+    else if (status.indexOf('✕') === 0) group = 'cancelled';
+    list.push({
+      code: colCode !== -1 ? row[colCode] : '',
+      date: (dateVal instanceof Date) ? Utilities.formatDate(dateVal, tz, 'dd/MM/yyyy HH:mm') : '',
+      items: colItems !== -1 ? row[colItems] : '',
+      total: colTotal !== -1 ? (Number(row[colTotal]) || 0) : 0,
+      statusText: status,
+      statusGroup: group,
+      _sortMs: (dateVal instanceof Date) ? dateVal.getTime() : 0
+    });
+  }
+  list.sort(function (a, b) { return b._sortMs - a._sortMs; });
+  list.forEach(function (o) { delete o._sortMs; });
+  return list;
 }
 
 // สร้างชีต Prices พร้อมราคาเริ่มต้น (ตรงกับราคาที่เคยฝังในโค้ดหน้าเว็บ) — แก้ไขราคาได้ที่คอลัมน์

@@ -1888,32 +1888,6 @@
       text-decoration: underline;
       padding: 0;
     }
-    .forgot-link {
-      background: none;
-      border: none;
-      padding: 0;
-      color: var(--copper-text);
-      font-family: var(--sans);
-      font-size: 13px;
-      cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      display: inline-block;
-      margin-top: 8px;
-      opacity: 0.85;
-      transition: opacity 0.15s;
-    }
-    .forgot-link:hover { opacity: 1; }
-    .forgot-success-msg {
-      background: rgba(110,231,201,0.10);
-      border: 1px solid rgba(110,231,201,0.30);
-      border-radius: 10px;
-      padding: 16px 20px;
-      color: var(--ok);
-      font-size: 14px;
-      line-height: 1.6;
-      margin-top: 16px;
-    }
     .orders-sub { color: var(--silk-dim); font-size: 13.5px; margin: 0 0 8px; }
     .order-list { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
     .order-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
@@ -1924,15 +1898,12 @@
     .order-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 10px; }
     .order-total { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--silk); }
     .order-badge {
-      display: inline-flex;
-      align-items: center;
       font-family: var(--mono);
       font-size: 11px;
       font-weight: 700;
       padding: 5px 10px;
       border-radius: 999px;
       white-space: nowrap;
-      letter-spacing: 0.04em;
     }
     .order-badge.confirmed { color: var(--ok); background: rgba(110,231,201,0.12); }
     .order-badge.review { color: #FFC44D; background: rgba(255,196,77,0.12); }
@@ -3070,9 +3041,6 @@
           <input type="password" class="text-input" id="authPassword" placeholder="อย่างน้อย 4 ตัวอักษร" autocomplete="current-password">
         </div>
         <p class="error-msg" id="authError" role="alert" hidden><span aria-hidden="true">⚠</span> <span id="authErrorText">เกิดข้อผิดพลาด</span></p>
-        <div id="authForgotArea" style="margin-top:2px;">
-          <button type="button" class="forgot-link" id="authForgotBtn">ลืมรหัสผ่าน?</button>
-        </div>
         <button type="submit" class="account-submit-btn" id="authSubmitBtn">เข้าสู่ระบบ</button>
       </form>
 
@@ -7025,10 +6993,7 @@
           customerAddress: customerAddress.value.trim(),
           selections: getCurrentSelections(),
           hpWebsite: hpWebsiteInput ? hpWebsiteInput.value.trim() : '',
-          formRenderedAt: formRenderedAt,
-          // ถ้า login อยู่ ให้แนบ email+token ไปด้วย backend จะผูกออเดอร์นี้เข้ากับบัญชีลูกค้าอัตโนมัติ
-          authEmail: authState ? authState.email : '',
-          authToken: authState ? authState.token : ''
+          formRenderedAt: formRenderedAt
         };
         fetch(ORDER_WEBHOOK_URL, {
           method: 'POST',
@@ -7412,8 +7377,6 @@
         authNameField.hidden = mode !== 'signup';
         authSubmitBtn.textContent = mode === 'signup' ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
         authError.hidden = true;
-        var forgotArea = document.getElementById('authForgotArea');
-        if (forgotArea) forgotArea.hidden = (mode !== 'signin');
       }
 
       function showAuthError(message) {
@@ -7550,178 +7513,7 @@
       authBackBtn.addEventListener('click', showModeSelectScreen);
       ordersBackBtn.addEventListener('click', showModeSelectScreen);
 
-      // ===== Forgot / Reset Password =====
-      const forgotScreen = document.getElementById('forgotScreen');
-      const resetScreen = document.getElementById('resetScreen');
-      const forgotForm = document.getElementById('forgotForm');
-      const resetForm = document.getElementById('resetForm');
-      const forgotEmail = document.getElementById('forgotEmail');
-      const forgotError = document.getElementById('forgotError');
-      const forgotErrorText = document.getElementById('forgotErrorText');
-      const forgotSuccessMsg = document.getElementById('forgotSuccessMsg');
-      const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
-      const forgotBackBtn = document.getElementById('forgotBackBtn');
-      const resetPassword = document.getElementById('resetPassword');
-      const resetPasswordConfirm = document.getElementById('resetPasswordConfirm');
-      const resetError = document.getElementById('resetError');
-      const resetErrorText = document.getElementById('resetErrorText');
-      const resetSuccessMsg = document.getElementById('resetSuccessMsg');
-      const resetSubmitBtn = document.getElementById('resetSubmitBtn');
-      const resetBackBtn = document.getElementById('resetBackBtn');
-      const resetGoLoginBtn = document.getElementById('resetGoLoginBtn');
-      let pendingResetToken = null;
-
-      function showForgotScreen() {
-        hideTopScreens();
-        if (forgotScreen) forgotScreen.hidden = false;
-        if (forgotError) forgotError.hidden = true;
-        if (forgotSuccessMsg) forgotSuccessMsg.hidden = true;
-        if (forgotForm) forgotForm.reset();
-        window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-      }
-
-      function showResetScreen(token) {
-        pendingResetToken = token;
-        hideTopScreens();
-        if (resetScreen) resetScreen.hidden = false;
-        if (resetError) resetError.hidden = true;
-        if (resetSuccessMsg) resetSuccessMsg.hidden = true;
-        if (resetForm) resetForm.reset();
-        window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-      }
-
-      // ตรวจ URL param ?resetToken= ตอนโหลดหน้า (ได้รับลิงก์จาก email)
-      (function checkResetTokenInUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const rToken = urlParams.get('resetToken');
-        if (rToken) {
-          // ลบ param ออกจาก URL โดยไม่ reload หน้า
-          var newUrl = window.location.pathname + (window.location.hash || '');
-          history.replaceState({}, '', newUrl);
-          showResetScreen(rToken);
-        }
-      })();
-
-      if (document.getElementById('authForgotBtn')) {
-        document.getElementById('authForgotBtn').addEventListener('click', function () {
-          // ใส่อีเมลที่กรอกไว้ไปด้วยถ้ามี
-          if (forgotEmail && authEmail && authEmail.value) {
-            forgotEmail.value = authEmail.value;
-          }
-          showForgotScreen();
-        });
-      }
-
-      if (forgotBackBtn) {
-        forgotBackBtn.addEventListener('click', function () {
-          showAuthScreen();
-          setAuthMode('signin');
-        });
-      }
-
-      if (forgotForm) {
-        forgotForm.addEventListener('submit', function (ev) {
-          ev.preventDefault();
-          if (!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0) {
-            forgotErrorText.textContent = 'ยังไม่ได้เชื่อมต่อกับระบบ';
-            forgotError.hidden = false;
-            return;
-          }
-          const email = forgotEmail.value.trim();
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            forgotErrorText.textContent = 'กรุณากรอกอีเมลให้ถูกต้อง';
-            forgotError.hidden = false;
-            return;
-          }
-          forgotSubmitBtn.disabled = true;
-          forgotSubmitBtn.textContent = 'กำลังดำเนินการ…';
-          forgotError.hidden = true;
-          fetch(ORDER_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'forgotPassword', email: email })
-          })
-            .then(function (res) { return res.json(); })
-            .then(function (result) {
-              // แสดง success เสมอ (security: ไม่บอกว่า email นี้มีบัญชีอยู่หรือไม่)
-              forgotSuccessMsg.hidden = false;
-              forgotForm.querySelector('input').disabled = true;
-              forgotSubmitBtn.disabled = true;
-            })
-            .catch(function () {
-              forgotErrorText.textContent = 'เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่';
-              forgotError.hidden = false;
-            })
-            .finally(function () {
-              if (!forgotSuccessMsg.hidden) return;
-              forgotSubmitBtn.disabled = false;
-              forgotSubmitBtn.textContent = 'ส่งลิงก์รีเซ็ตรหัสผ่าน';
-            });
-        });
-      }
-
-      if (resetBackBtn) {
-        resetBackBtn.addEventListener('click', function () {
-          showAuthScreen();
-          setAuthMode('signin');
-        });
-      }
-      if (resetGoLoginBtn) {
-        resetGoLoginBtn.addEventListener('click', function () {
-          showAuthScreen();
-          setAuthMode('signin');
-        });
-      }
-
-      if (resetForm) {
-        resetForm.addEventListener('submit', function (ev) {
-          ev.preventDefault();
-          const pw = resetPassword.value;
-          const pw2 = resetPasswordConfirm.value;
-          if (pw.length < 4) { resetErrorText.textContent = 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร'; resetError.hidden = false; return; }
-          if (pw !== pw2) { resetErrorText.textContent = 'รหัสผ่านไม่ตรงกัน'; resetError.hidden = false; return; }
-          if (!pendingResetToken) { resetErrorText.textContent = 'Reset token ไม่ถูกต้อง'; resetError.hidden = false; return; }
-          if (!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0) {
-            resetErrorText.textContent = 'ยังไม่ได้เชื่อมต่อกับระบบ'; resetError.hidden = false; return;
-          }
-          resetSubmitBtn.disabled = true;
-          resetSubmitBtn.textContent = 'กำลังดำเนินการ…';
-          resetError.hidden = true;
-          fetch(ORDER_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'resetPassword', resetToken: pendingResetToken, newPassword: pw })
-          })
-            .then(function (res) { return res.json(); })
-            .then(function (result) {
-              if (result && result.result === 'success') {
-                resetSuccessMsg.hidden = false;
-                resetSubmitBtn.hidden = true;
-              } else {
-                resetErrorText.textContent = (result && result.message) || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-                resetError.hidden = false;
-              }
-            })
-            .catch(function () {
-              resetErrorText.textContent = 'เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่';
-              resetError.hidden = false;
-            })
-            .finally(function () {
-              if (!resetSuccessMsg.hidden) return;
-              resetSubmitBtn.disabled = false;
-              resetSubmitBtn.textContent = 'ตั้งรหัสผ่านใหม่';
-            });
-        });
-      }
-
       restoreAuthFromStorage();
-      // ตรวจ hideTopScreens ว่าครอบหน้าใหม่ด้วย (patch hideTopScreens)
-      var origHideTopScreens = hideTopScreens;
-      hideTopScreens = function () {
-        origHideTopScreens();
-        if (forgotScreen) forgotScreen.hidden = true;
-        if (resetScreen) resetScreen.hidden = true;
-      };
 
     })();
   </script>
