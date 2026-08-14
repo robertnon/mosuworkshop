@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แบบฟอร์มสั่งคัสตอมคอนโทรลเลอร์</title>
+  <link rel="icon" type="image/svg+xml" href="brand/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
@@ -38,6 +39,12 @@
 
     * {
       box-sizing: border-box;
+    }
+
+    /* กัน attribute hidden โดนทับ — คลาสที่ตั้ง display (เช่น .preview-frame-stick { display:flex })
+       จะชนะกฎ [hidden] ของเบราว์เซอร์ ทำให้กล่องที่สั่งซ่อนไว้โผล่มาเอง */
+    [hidden] {
+      display: none !important;
     }
 
     html,
@@ -635,6 +642,7 @@
       height: 44px;
       margin-bottom: 4px;
     }
+    .platform-name {
       font-family: var(--mono);
       font-size: 20px;
       font-weight: 700;
@@ -788,38 +796,82 @@
       font-size: 11.5px;
     }
 
-    /* ---------- Shell color swatches (ไม่มีจอย ให้เลือกสี) ---------- */
+    /* ---------- Shell color swatches (ไม่มีจอย ให้เลือกสี) ----------
+       การ์ดแต่ละใบพก "สีจริง" ของกรอบไว้ในตัวแปร --sw (ตั้งค่าตาม data-color ด้านล่าง)
+       ใช้กับแถบสีบนหัวการ์ด + ขอบตอนเลือก เพื่อให้ดูออกทันทีว่าสีไหนเป็นสีไหน */
     .shell-color-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 4px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 10px;
     }
 
     .shell-color-swatch {
+      --sw: var(--copper);
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      width: 92px;
-      padding: 8px 6px 10px;
-      border: 2px solid var(--line);
-      border-radius: 10px;
+      gap: 9px;
+      padding: 12px 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
       background: var(--panel);
       cursor: pointer;
-      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+      overflow: hidden;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
       font-family: var(--sans);
       color: var(--silk-dim);
     }
 
+    /* แถบสีจริงบางๆ พาดหัวการ์ด */
+    .shell-color-swatch::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: var(--sw);
+      opacity: .5;
+      transition: opacity .18s ease;
+    }
+
     .shell-color-swatch:hover {
-      border-color: var(--copper-dim);
+      border-color: var(--sw);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, .45);
+    }
+
+    .shell-color-swatch:hover::before {
+      opacity: 1;
     }
 
     .shell-color-swatch.selected {
-      border-color: var(--copper);
+      border-color: var(--sw);
       background: var(--panel-2);
-      box-shadow: 0 0 0 1px var(--copper), 0 0 14px rgba(198, 255, 0, 0.25);
+      box-shadow: 0 0 0 1px var(--sw), 0 8px 24px rgba(0, 0, 0, .5);
+    }
+
+    .shell-color-swatch.selected::before {
+      opacity: 1;
+    }
+
+    /* ติ๊กถูกใช้สีแบรนด์เสมอ (ไม่ใช่ --sw) เพราะสีกรอบบางสีเข้มจนอ่านไม่ออก */
+    .shell-color-swatch.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--copper);
+      color: #0B0D08;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .55);
     }
 
     .shell-color-swatch:focus-visible {
@@ -827,43 +879,58 @@
       outline-offset: 2px;
     }
 
+    /* พื้นหลังรูปเป็นไล่เฉดนุ่มๆ แทนแผ่นสีเรียบ ทำให้รูปสินค้าดูเหมือนวางในตู้โชว์ */
     .shell-color-swatch img {
       width: 100%;
-      height: 58px;
+      height: 74px;
       object-fit: contain;
       display: block;
-      background: #EEF1E6;
-      border-radius: 6px;
-      padding: 4px;
+      border-radius: 10px;
+      padding: 8px;
+      background: radial-gradient(120% 95% at 50% 0%, #FDFEFB 0%, #E9EDE0 55%, #CDD5C1 100%);
+      transition: transform .18s ease;
+    }
+
+    .shell-color-swatch:hover img {
+      transform: scale(1.04);
     }
 
     .shell-color-swatch-name {
-      font-size: 10.5px;
+      font-size: 11.5px;
       font-weight: 600;
       text-align: center;
-      line-height: 1.25;
+      line-height: 1.3;
+      letter-spacing: .2px;
     }
 
     .shell-color-swatch.selected .shell-color-swatch-name {
       color: var(--copper-text);
     }
 
+    /* สีจริงของแต่ละกรอบ (ใช้แค่ตกแต่ง ไม่กระทบ data-color ที่ส่งไป backend) */
+    .shell-color-swatch[data-color="white"]        { --sw: #E8EBE2; }
+    .shell-color-swatch[data-color="crystal"]      { --sw: #A9BCCB; }
+    .shell-color-swatch[data-color="titaniumBlue"] { --sw: #5E86A8; }
+    .shell-color-swatch[data-color="berryBlue"]    { --sw: #3E5FC0; }
+    .shell-color-swatch[data-color="alpineGreen"]  { --sw: #6E9A6B; }
+    .shell-color-swatch[data-color="purple"]       { --sw: #8E6DBF; }
+    .shell-color-swatch[data-color="roseGold"]     { --sw: #E0A79F; }
+    .shell-color-swatch[data-color="sunsetOrange"] { --sw: #F0824F; }
+
+    @media (max-width:760px) {
+      .shell-color-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
     @media (max-width:560px) {
       .shell-color-options {
-        gap: 8px;
-      }
-
-      .shell-color-swatch {
-        width: calc(33.333% - 6px);
-        padding: 6px 4px 8px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
       }
 
       .shell-color-swatch img {
-        height: 46px;
-      }
-
-      .shell-color-swatch-name {
-        font-size: 9.5px;
+        height: 62px;
       }
     }
 
@@ -1811,6 +1878,10 @@
       background: rgba(203, 178, 106, 1);
       box-shadow: 0 0 6px rgba(203, 178, 106, 0.5);
     }
+    body.carbon-theme .theme-toggle-dot {
+      transform: translateX(18px);
+      background: #4FD8E8;
+      box-shadow: 0 0 6px rgba(79, 216, 232, 0.55);
     }
 
     /* ---------- Account / Login / My Orders ---------- */
@@ -1826,6 +1897,8 @@
       font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
     }
     .account-hello { font-family: var(--mono); font-size: 12.5px; color: var(--silk-dim); }
     .account-link-btn {
@@ -2128,6 +2201,36 @@
       background-size: 28px 28px;
       background-position: center center;
       animation: gridMove 25s linear infinite;
+    }
+
+    /* ---------- ธีม Carbon & Ice ----------
+       ฐานสีเทาถ่านกลางๆ (ไม่อมเขียวมะกอกเหมือนธีมเดิม) ทำให้รูปสินค้าเด่นขึ้น
+       คงไลม์ #C6FF00 เป็นสีแบรนด์ไว้ และเพิ่มฟ้า #4FD8E8 ไว้เน้นตัวเลขราคารวม */
+    body.carbon-theme {
+      --bg: #090A0C;            /* เทาถ่านเกือบดำ โทนกลาง */
+      --panel: #14171C;         /* พาเนลยกจากพื้นเล็กน้อย */
+      --panel-2: #1C2027;       /* พาเนลชั้นที่สอง */
+      --line: #262B33;          /* เส้นขอบเทาเย็น แทนเขียวมะกอก */
+      --copper: #C6FF00;        /* สีแบรนด์ คงเดิม */
+      --copper-dim: #39414D;    /* เส้นขอบตอน hover */
+      --copper-text: #D8FF63;   /* ข้อความสีเน้น */
+      --copper-bright: #E3FF8C; /* ไฮไลต์ */
+      --silk: #F0F3F6;          /* ข้อความหลัก ขาวอมฟ้าจางๆ */
+      --silk-dim: #858E9B;      /* ข้อความรอง */
+      --required: #FF4D6D;
+      --ok: #6EE7C9;
+
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.055) 2px, transparent 2px);
+      background-size: 28px 28px;
+      background-position: center center;
+      animation: gridMove 25s linear infinite;
+    }
+
+    /* ตัวเลขราคารวมใช้สีฟ้าให้เด้งออกจากไลม์ที่ใช้ทั่วหน้า */
+    body.carbon-theme .float-summary-total,
+    body.carbon-theme .wizard-summary-total-value {
+      color: #4FD8E8;
     }
     body.gold-theme .preview-stage {
       background: rgba(20, 17, 10, 0.7);
@@ -2992,7 +3095,6 @@
       </button>
       <nav class="site-nav">
         <button type="button" class="site-nav-link" id="navHomeBtn">หน้าแรก</button>
-        <button type="button" class="site-nav-link" id="navOrdersBtn" hidden>คำสั่งซื้อของฉัน</button>
       </nav>
       <div class="site-header-right">
         <div class="lang-switch">
@@ -3002,13 +3104,8 @@
         <button type="button" class="theme-toggle-switch" id="themeToggleBtn" aria-label="สลับธีม">
           <span class="theme-toggle-dot"></span>
         </button>
-        <div class="account-area" id="accountGuestArea">
-          <button type="button" class="account-btn" id="accountLoginBtn">เข้าสู่ระบบ</button>
-        </div>
-        <div class="account-area" id="accountUserArea" hidden>
-          <span class="account-hello">สวัสดี, <strong id="accountUserName">-</strong></span>
-          <button type="button" class="account-link-btn" id="accountOrdersBtn">คำสั่งซื้อของฉัน</button>
-          <button type="button" class="account-link-btn" id="accountLogoutBtn">ออกจากระบบ</button>
+        <div class="account-area">
+          <a class="account-btn" href="my-orders.html">ตรวจสอบคำสั่งซื้อ</a>
         </div>
       </div>
     </div>
@@ -3022,7 +3119,7 @@
       <div class="mode-grid">
         <div class="mode-card-frame">
           <div class="mode-card-media" data-mode="custom" id="modeCardCustomMedia" role="button" tabindex="0">
-            <img class="mode-card-photo" src="DS4 COLOR/ds4_rosegold_lineart.svg" alt="รูปคอนโทรลเลอร์ — Custom Build">
+            <img class="mode-card-photo" src="SVGDS4/blerryblue.svg" alt="รูปคอนโทรลเลอร์ — Custom Build">
           </div>
           <button type="button" class="mode-card" data-mode="custom" id="modeCardCustom">
             <span class="mode-card-tag">โหมด A · เต็มรูปแบบ</span>
@@ -3034,7 +3131,7 @@
 
         <div class="mode-card-frame">
           <div class="mode-card-media" data-mode="analogOnly" id="modeCardAnalogMedia" role="button" tabindex="0">
-            <img class="mode-card-photo" src="joystick_x5_lineart_min-ef7bc823.svg" alt="รูปอนาล็อกสติ๊ก — เปลี่ยนอนาล็อก">
+            <img class="mode-card-photo" src="SVGDS4/joystick_x5_lineart_min.svg" alt="รูปอนาล็อกสติ๊ก — เปลี่ยนอนาล็อก">
           </div>
           <button type="button" class="mode-card" data-mode="analogOnly" id="modeCardAnalog">
             <span class="mode-card-tag">โหมด B · เร็ว/สั้น</span>
@@ -3044,52 +3141,6 @@
           </button>
         </div>
       </div>
-    </div>
-
-    <!-- ===== เข้าสู่ระบบ / สมัครสมาชิก ===== -->
-    <div class="auth-screen" id="authScreen" hidden>
-      <span class="hero-eyebrow">Account</span>
-      <h1 class="auth-title">เข้าสู่ระบบ</h1>
-
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab active" id="authTabSignin" data-tab="signin">เข้าสู่ระบบ</button>
-        <button type="button" class="auth-tab" id="authTabSignup" data-tab="signup">สมัครสมาชิก</button>
-      </div>
-
-      <form id="authForm">
-        <div class="text-field" id="authNameField" hidden>
-          <label class="dropdown-label" for="authName">ชื่อ-นามสกุล</label>
-          <input type="text" class="text-input" id="authName" placeholder="ระบุชื่อ-นามสกุล" autocomplete="name">
-        </div>
-        <div class="text-field">
-          <label class="dropdown-label" for="authEmail">อีเมล</label>
-          <input type="email" class="text-input" id="authEmail" placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="text-field">
-          <label class="dropdown-label" for="authPassword">รหัสผ่าน</label>
-          <input type="password" class="text-input" id="authPassword" placeholder="อย่างน้อย 4 ตัวอักษร" autocomplete="current-password">
-        </div>
-        <p class="error-msg" id="authError" role="alert" hidden><span aria-hidden="true">⚠</span> <span id="authErrorText">เกิดข้อผิดพลาด</span></p>
-        <div id="authForgotArea" style="margin-top:2px;">
-          <button type="button" class="forgot-link" id="authForgotBtn">ลืมรหัสผ่าน?</button>
-        </div>
-        <button type="submit" class="account-submit-btn" id="authSubmitBtn">เข้าสู่ระบบ</button>
-      </form>
-
-      <p class="auth-guest-note">สั่งซื้อได้ตามปกติโดยไม่ต้องเข้าสู่ระบบ — เข้าสู่ระบบเฉพาะตอนอยากดูประวัติ/สถานะคำสั่งซื้อของตัวเอง</p>
-      <button type="button" class="back-to-home-link" id="authBackBtn">← กลับหน้าหลัก</button>
-    </div>
-
-    <!-- ===== คำสั่งซื้อของฉัน ===== -->
-    <div class="orders-screen" id="ordersScreen" hidden>
-      <span class="hero-eyebrow">My Account</span>
-      <h1 class="auth-title">คำสั่งซื้อของฉัน</h1>
-      <p class="orders-sub">ประวัติและสถานะคำสั่งซื้อทั้งหมดของ <strong id="ordersEmailLabel">-</strong></p>
-      <button type="button" class="back-to-home-link" id="ordersBackBtn">← กลับหน้าหลัก</button>
-      <div class="order-list" id="orderList"></div>
-      <p class="orders-empty" id="ordersEmptyMsg" hidden>ยังไม่มีประวัติคำสั่งซื้อ</p>
-      <p class="orders-loading" id="ordersLoadingMsg">กำลังโหลด…</p>
-      <p class="orders-error" id="ordersErrorMsg" hidden>โหลดประวัติไม่สำเร็จ กรุณาเข้าสู่ระบบใหม่อีกครั้ง</p>
     </div>
 
     <!-- ===== ฟอร์มจริง: ซ่อนไว้ก่อนจนกว่าจะเลือกโหมด ===== -->
@@ -3386,35 +3437,35 @@
                 <label class="dropdown-label">สีกรอบคอนโทรลเลอร์: <span id="shellColorSelectedName">ยังไม่เลือก</span></label>
                 <div class="shell-color-options" role="radiogroup" aria-label="เลือกสีกรอบคอนโทรลเลอร์ PS4">
                   <button type="button" class="shell-color-swatch" data-color="white" data-label="White">
-                    <img src="DS4 COLOR/white_norm.png" alt="White">
+                    <img src="DS4-COLOR/white_norm.png" alt="White">
                     <span class="shell-color-swatch-name">White</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="crystal" data-label="Crystal">
-                    <img src="DS4 COLOR/crystal_norm.png" alt="Crystal">
+                    <img src="DS4-COLOR/crystal_norm.png" alt="Crystal">
                     <span class="shell-color-swatch-name">Crystal</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="titaniumBlue" data-label="Titanium Blue">
-                    <img src="DS4 COLOR/titanium_blue_norm.png" alt="Titanium Blue">
+                    <img src="DS4-COLOR/titanium_blue_norm.png" alt="Titanium Blue">
                     <span class="shell-color-swatch-name">Titanium Blue</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="berryBlue" data-label="Berry Blue">
-                    <img src="DS4 COLOR/berry_blue_norm.png" alt="Berry Blue">
+                    <img src="DS4-COLOR/berry_blue_norm.png" alt="Berry Blue">
                     <span class="shell-color-swatch-name">Berry Blue</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="alpineGreen" data-label="Alpine Green">
-                    <img src="DS4 COLOR/alpine_green_norm.png" alt="Alpine Green">
+                    <img src="DS4-COLOR/alpine_green_norm.png" alt="Alpine Green">
                     <span class="shell-color-swatch-name">Alpine Green</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="purple" data-label="Purple">
-                    <img src="DS4 COLOR/purple_norm.png" alt="Purple">
+                    <img src="DS4-COLOR/purple_norm.png" alt="Purple">
                     <span class="shell-color-swatch-name">Purple</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="roseGold" data-label="Rose Gold">
-                    <img src="DS4 COLOR/rose_gold_norm.png" alt="Rose Gold">
+                    <img src="DS4-COLOR/rose_gold_norm.png" alt="Rose Gold">
                     <span class="shell-color-swatch-name">Rose Gold</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="sunsetOrange" data-label="Sunset Orange">
-                    <img src="DS4 COLOR/sunset_orange_norm.png" alt="Sunset Orange">
+                    <img src="DS4-COLOR/sunset_orange_norm.png" alt="Sunset Orange">
                     <span class="shell-color-swatch-name">Sunset Orange</span>
                   </button>
                 </div>
@@ -3666,7 +3717,7 @@
         <aside class="summary-col" id="summaryCol">
           <div class="preview-frame-placeholder">
             <span class="preview-frame-placeholder-label">Controller Preview</span>
-            <img src="DS4 COLOR/ds4_rosegold_lineart.svg" alt="Controller Preview — Rose Gold" class="preview-frame-img">
+            <img src="svg/Dualshock_4_RoseGold.svg" alt="Controller Preview" class="preview-frame-img" id="framePreviewShellImg">
             <div class="preview-frame-stick" id="framePreviewStick" hidden>
               <span class="preview-frame-stick-label" id="framePreviewStickLabel">Stick Module</span>
               <img class="preview-frame-stick-img" id="framePreviewStickImg" alt="ก้านอนาล็อกที่เลือก">
@@ -4388,16 +4439,29 @@
         rerender();
       }
 
-      function toggleTheme() {
+      // สลับระหว่างธีมเดิม (dark) กับ Carbon & Ice — จำค่าไว้ใน localStorage
+      // ใช้คีย์ 'mosuTheme' ร่วมกับ my-orders.html เพื่อให้ลูกค้าเห็นธีมเดียวกันทั้งสองหน้า
+      const THEME_KEY = 'mosuTheme';
+
+      function applyTheme(name) {
         const body = document.body;
-        if (currentTheme === 'dark') {
-          body.classList.add('gold-theme');
-          currentTheme = 'gold';
-        } else {
-          body.classList.remove('gold-theme');
-          currentTheme = 'dark';
-        }
+        body.classList.remove('gold-theme', 'carbon-theme');
+        if (name === 'carbon') body.classList.add('carbon-theme');
+        else if (name === 'gold') body.classList.add('gold-theme');
+        currentTheme = name;
       }
+
+      function toggleTheme() {
+        const next = currentTheme === 'carbon' ? 'dark' : 'carbon';
+        applyTheme(next);
+        try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* โหมดส่วนตัวเขียนไม่ได้ ข้ามไป */ }
+      }
+
+      (function restoreTheme() {
+        var saved = null;
+        try { saved = localStorage.getItem(THEME_KEY); } catch (e) { /* ไม่มีสิทธิ์อ่าน ใช้ธีมเริ่มต้น */ }
+        if (saved === 'carbon' || saved === 'gold') applyTheme(saved);
+      })();
 
 
       // เก็บ timestamp ตอนสคริปต์เริ่มทำงาน (หน้าเว็บโหลดเสร็จ) ไว้ส่งไปให้ Apps Script เช็คว่ากรอกฟอร์มเร็ว
@@ -4408,10 +4472,6 @@
       // วางลิงก์ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่ได้จากขั้นตอน Deploy
       // ถ้ายังไม่ใส่ ระบบจะยังใช้งานได้ปกติ แค่จะไม่ส่งข้อมูลเข้า Google Sheets อัตโนมัติ
       const ORDER_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw02swDWMJ4e-xb1CT4zzRZ27CYtfQVGbULpVMkTyLOTDO2ysgKG9ijBUum7wy2oQ4/exec';
-
-      // ==== ระบบ login ลูกค้า (ไม่บังคับต้อง login ก่อนสั่งซื้อ — ใช้เฉพาะตอนดู "คำสั่งซื้อของฉัน") ====
-      const AUTH_STORAGE_KEY = 'mosuAuth'; // { email, name, token } เก็บใน localStorage หลัง login/สมัครสำเร็จ
-      let authState = null; // null = guest, มิฉะนั้น = { email, name, token }
 
       // รายการสำรอง — ใช้เฉพาะตอนที่ยังไม่ได้ใส่ ORDER_WEBHOOK_URL ด้านบน (เช่น ทดสอบหน้าเว็บเฉยๆ)
       // เมื่อเชื่อมต่อ Google Sheets แล้ว โค้ดส่วนลดจริงทั้งหมดจะถูกอ่านจากแท็บ "Discounts"
@@ -4822,6 +4882,7 @@
         if (typeof updateStickModulePreview === 'function') updateStickModulePreview();
         if (typeof updateAnalogTypePreview === 'function') updateAnalogTypePreview();
         if (typeof updateFrameTriggerPreview === 'function') updateFrameTriggerPreview();
+        if (typeof updateFrameShellPreview === 'function') updateFrameShellPreview();
       }
 
       form.querySelectorAll('input, select').forEach(function (el) {
@@ -5175,8 +5236,8 @@
         updatePaddleHeightPreview();
       });
 
-      // รูปตัวอย่างก้านอนาล็อก — ตอนนี้มีแค่ TMR (joystick_x5-a39b9a53.svg) เพิ่ม ALPS/HE ได้ทีหลังโดยเติมคีย์ในนี้
-      const stickModuleImages = { tmr: 'joystick_x5-a39b9a53.svg' };
+      // รูปตัวอย่างก้านอนาล็อก — ตอนนี้มีแค่ TMR เพิ่ม ALPS/HE ได้ทีหลังโดยเติมคีย์ในนี้
+      const stickModuleImages = { tmr: 'SVGDS4/joystick_x5_lineart_min.svg' };
       const stickModuleImageLabels = { tmr: 'Stick Module · TMR' };
 
       // หัวข้อ Trigger / Bumper ในกรอบ Controller Preview — อ่านจากช่อง 03 (รวม trigger + face ไว้ด้วยกัน)
@@ -5271,6 +5332,39 @@
         return (shellColorInput && shellColorInput.value && shellColorSelectedName) ? shellColorSelectedName.textContent : null;
       }
 
+      // รูปคอนโทรลเลอร์เต็มตัวในกรอบ Controller Preview แยกไฟล์ตามสีกรอบที่เลือก
+      // (ชื่อไฟล์บางอันสะกดไม่ตรงกับชื่อสี เพราะตั้งไว้แต่แรก — อย่าไปแก้ชื่อไฟล์ ให้แมปเอา)
+      // ประกาศเป็น var + หา element ในฟังก์ชัน เพราะ rerender() อาจเรียกฟังก์ชันนี้
+      // ก่อนบรรทัดนี้จะทำงาน (function declaration ถูก hoist แต่ const/let ไม่ถูก)
+      var SHELL_PREVIEW_SVG = {
+        white:        'SVGDS4/white.svg',
+        crystal:      'SVGDS4/crystal.svg',
+        titaniumBlue: 'SVGDS4/titanium-blue.svg',
+        berryBlue:    'SVGDS4/blerryblue.svg',
+        alpineGreen:  'SVGDS4/aplinegreen.svg',
+        purple:       'SVGDS4/purple.svg',
+        roseGold:     'svg/Dualshock_4_RoseGold.svg',
+        sunsetOrange: 'SVGDS4/sunset.svg'
+      };
+      var SHELL_PREVIEW_DEFAULT = 'svg/Dualshock_4_RoseGold.svg';
+
+      function updateFrameShellPreview() {
+        var img = document.getElementById('framePreviewShellImg');
+        if (!img || !SHELL_PREVIEW_SVG) return;
+        // โชว์สีที่เลือกเฉพาะตอนเลือก "ไม่มีจอย ให้เลือกสี" เท่านั้น
+        // ถ้าลูกค้าส่งจอยมาเอง ยังไม่รู้ว่าสีอะไร ให้กลับไปใช้รูปเริ่มต้น
+        var shellVal = getSelected('ps4shell');
+        var colorVal = getShellColorValue();
+        var src = (shellVal === 'noController' && colorVal && SHELL_PREVIEW_SVG[colorVal])
+          ? SHELL_PREVIEW_SVG[colorVal]
+          : SHELL_PREVIEW_DEFAULT;
+        if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+        var label = getShellColorLabel();
+        img.alt = (shellVal === 'noController' && label)
+          ? 'Controller Preview — ' + label
+          : 'Controller Preview';
+      }
+
       function setShellColor(btn) {
         shellColorSwatches.forEach(function (b) { b.classList.remove('selected'); });
         btn.classList.add('selected');
@@ -5278,6 +5372,7 @@
         if (shellColorSelectedName) shellColorSelectedName.textContent = btn.dataset.label;
         if (shellColorError) shellColorError.style.display = 'none';
         if (ps4shellFieldEl) ps4shellFieldEl.classList.remove('invalid');
+        updateFrameShellPreview();
         rerender();
       }
 
@@ -5289,6 +5384,7 @@
         input.addEventListener('change', function () {
           const showColor = input.value === 'noController' && input.checked;
           if (shellColorFrame) shellColorFrame.hidden = !showColor;
+          updateFrameShellPreview();
         });
       });
 
@@ -5401,11 +5497,11 @@
           analogCta.textContent = enabled ? 'เริ่มเปลี่ยนอนาล็อก →' : 'ปิดรับชั่วคราว';
           analogCta.classList.toggle('soldout', !enabled);
         }
-        const presetField = document.getElementById('field-preset');
-        if (presetField) {
-          const enabled = modeSettings.presetBuildsEnabled !== false;
-          presetField.hidden = !enabled;
-          presetField.style.display = enabled ? '' : 'none';
+        // ปิดแพ็กเกจสำเร็จรูป = ซ่อน "เฉพาะตารางแพ็กเกจ" เท่านั้น ห้ามซ่อนทั้ง fieldset
+        // เพราะปุ่มเลือกรุ่น PS4/PS5 อยู่ใน fieldset เดียวกัน ถ้าซ่อนทั้งก้อนขั้นที่ 1 จะว่างเปล่า
+        const presetGridEl = document.getElementById('presetGrid');
+        if (presetGridEl) {
+          presetGridEl.hidden = (modeSettings.presetBuildsEnabled === false);
         }
       }
 
@@ -5482,7 +5578,14 @@
         platformChosenLabel.textContent = platform === 'ps5' ? 'PS5 (DualSense)' : 'PS4 (DualShock 4)';
         platformSelectEl.hidden = true;
         presetStepAfterPlatform.hidden = false;
-        if (presetFieldTitle) presetFieldTitle.textContent = 'เลือกแพ็กเกจสำเร็จรูป (ไม่บังคับ)';
+        // ถ้าตารางแพ็กเกจถูกซ่อน (ปิดจากชีต Settings หรือไม่มีแพ็กเกจ) อย่าตั้งหัวข้อว่าให้เลือกแพ็กเกจ
+        var gridEl = document.getElementById('presetGrid');
+        var hasPresets = gridEl && !gridEl.hidden;
+        if (presetFieldTitle) {
+          presetFieldTitle.textContent = hasPresets
+            ? 'เลือกแพ็กเกจสำเร็จรูป (ไม่บังคับ)'
+            : 'รุ่นคอนโทรลเลอร์';
+        }
       }
 
       document.querySelectorAll('.platform-card').forEach(function (btn) {
@@ -5651,12 +5754,9 @@
         if (!grid) return;
 
         const activePresets = PRESETS_LIST.filter(function (p) { return p.key !== 'reset'; });
-        const presetField = document.getElementById('field-preset');
-        if (presetField) {
-          const enabled = (modeSettings.presetBuildsEnabled !== false) && (activePresets.length > 0);
-          presetField.hidden = !enabled;
-          presetField.style.display = enabled ? '' : 'none';
-        }
+        // ซ่อนเฉพาะตารางแพ็กเกจ (ไม่ใช่ทั้ง fieldset) — ปุ่มเลือกรุ่น PS4/PS5 ต้องอยู่ต่อเสมอ
+        const presetsAvailable = (modeSettings.presetBuildsEnabled !== false) && (activePresets.length > 0);
+        grid.hidden = !presetsAvailable;
 
         const resetBtn = grid.querySelector('.preset-reset');
         grid.querySelectorAll('.preset-card:not(.preset-reset)').forEach(function (el) { el.remove(); });
@@ -6194,7 +6294,7 @@
           var swatch     = document.querySelector('.shell-color-swatch.selected');
           var colorLabel = swatch ? (swatch.getAttribute('data-label') || '') : '';
           var swatchImg  = swatch ? swatch.querySelector('img') : null;
-          var itemImgSrc = swatchImg ? swatchImg.getAttribute('src') : 'DS4 COLOR/ds4_rosegold_lineart.svg';
+          var itemImgSrc = swatchImg ? swatchImg.getAttribute('src') : 'svg/Dualshock_4_RoseGold.svg';
 
           var nameVal    = fieldVal('customerName');
           var phoneVal   = fieldVal('customerPhone');
@@ -7025,10 +7125,7 @@
           customerAddress: customerAddress.value.trim(),
           selections: getCurrentSelections(),
           hpWebsite: hpWebsiteInput ? hpWebsiteInput.value.trim() : '',
-          formRenderedAt: formRenderedAt,
-          // ถ้า login อยู่ ให้แนบ email+token ไปด้วย backend จะผูกออเดอร์นี้เข้ากับบัญชีลูกค้าอัตโนมัติ
-          authEmail: authState ? authState.email : '',
-          authToken: authState ? authState.token : ''
+          formRenderedAt: formRenderedAt
         };
         fetch(ORDER_WEBHOOK_URL, {
           method: 'POST',
@@ -7318,43 +7415,9 @@
         themeBtn.addEventListener('click', toggleTheme);
       }
 
-      // ==================================================================
-      // ระบบ login ลูกค้า + คำสั่งซื้อของฉัน (ไม่บังคับต้อง login ก่อนสั่งซื้อ)
-      // ==================================================================
-      const accountGuestArea = document.getElementById('accountGuestArea');
-      const accountUserArea = document.getElementById('accountUserArea');
-      const accountUserName = document.getElementById('accountUserName');
-      const accountLoginBtn = document.getElementById('accountLoginBtn');
-      const accountOrdersBtn = document.getElementById('accountOrdersBtn');
-      const accountLogoutBtn = document.getElementById('accountLogoutBtn');
-
-      const authScreen = document.getElementById('authScreen');
-      const authTabSignin = document.getElementById('authTabSignin');
-      const authTabSignup = document.getElementById('authTabSignup');
-      const authNameField = document.getElementById('authNameField');
-      const authName = document.getElementById('authName');
-      const authEmail = document.getElementById('authEmail');
-      const authPassword = document.getElementById('authPassword');
-      const authError = document.getElementById('authError');
-      const authErrorText = document.getElementById('authErrorText');
-      const authSubmitBtn = document.getElementById('authSubmitBtn');
-      const authForm = document.getElementById('authForm');
-      const authBackBtn = document.getElementById('authBackBtn');
-      let authMode = 'signin';
-
-      const ordersScreen = document.getElementById('ordersScreen');
-      const ordersBackBtn = document.getElementById('ordersBackBtn');
-      const ordersEmailLabel = document.getElementById('ordersEmailLabel');
-      const orderList = document.getElementById('orderList');
-      const ordersEmptyMsg = document.getElementById('ordersEmptyMsg');
-      const ordersLoadingMsg = document.getElementById('ordersLoadingMsg');
-      const ordersErrorMsg = document.getElementById('ordersErrorMsg');
-
       function hideTopScreens() {
         modeSelectScreen.hidden = true;
         mainApp.hidden = true;
-        authScreen.hidden = true;
-        ordersScreen.hidden = true;
       }
 
       function showModeSelectScreen() {
@@ -7363,370 +7426,16 @@
         window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
       }
 
-      function showAuthScreen() {
-        hideTopScreens();
-        authScreen.hidden = false;
-        authError.hidden = true;
-        window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-      }
-
-      function showOrdersScreen() {
-        hideTopScreens();
-        ordersScreen.hidden = false;
-        ordersEmailLabel.textContent = authState ? authState.email : '-';
-        window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-        fetchMyOrders();
-      }
-
-      function updateAccountHeaderUI() {
-        var navOrdersBtnEl = document.getElementById('navOrdersBtn');
-        if (authState) {
-          accountGuestArea.hidden = true;
-          accountUserArea.hidden = false;
-          accountUserName.textContent = authState.name || authState.email;
-          navOrdersBtnEl.hidden = false;
-        } else {
-          accountGuestArea.hidden = false;
-          accountUserArea.hidden = true;
-          navOrdersBtnEl.hidden = true;
-        }
-      }
-
-      function restoreAuthFromStorage() {
-        try {
-          const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-          if (raw) authState = JSON.parse(raw);
-        } catch (err) { authState = null; }
-        updateAccountHeaderUI();
-      }
-
-      function persistAuth() {
-        if (authState) localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
-        else localStorage.removeItem(AUTH_STORAGE_KEY);
-      }
-
-      function setAuthMode(mode) {
-        authMode = mode;
-        authTabSignin.classList.toggle('active', mode === 'signin');
-        authTabSignup.classList.toggle('active', mode === 'signup');
-        authNameField.hidden = mode !== 'signup';
-        authSubmitBtn.textContent = mode === 'signup' ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
-        authError.hidden = true;
-        var forgotArea = document.getElementById('authForgotArea');
-        if (forgotArea) forgotArea.hidden = (mode !== 'signin');
-      }
-
-      function showAuthError(message) {
-        authErrorText.textContent = message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-        authError.hidden = false;
-      }
-
-      function handleAuthSubmit(ev) {
-        ev.preventDefault();
-        if (!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0) {
-          showAuthError('ยังไม่ได้เชื่อมต่อกับระบบ login (ORDER_WEBHOOK_URL)');
-          return;
-        }
-        const email = authEmail.value.trim();
-        const password = authPassword.value;
-        const name = authName.value.trim();
-        const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!EMAIL_PATTERN.test(email)) { showAuthError('กรุณากรอกอีเมลให้ถูกต้อง'); return; }
-        if (password.length < 4) { showAuthError('รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร'); return; }
-        if (authMode === 'signup' && !name) { showAuthError('กรุณากรอกชื่อ'); return; }
-
-        authSubmitBtn.disabled = true;
-        authSubmitBtn.textContent = 'กำลังดำเนินการ…';
-        fetch(ORDER_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: authMode === 'signup' ? 'register' : 'login', email: email, password: password, name: name })
-        })
-          .then(function (res) { return res.json(); })
-          .then(function (result) {
-            if (result && result.result === 'success') {
-              authState = { email: result.email, name: result.name, token: result.token };
-              persistAuth();
-              updateAccountHeaderUI();
-              authForm.reset();
-              showOrdersScreen();
-            } else {
-              showAuthError(result && result.message);
-            }
-          })
-          .catch(function () { showAuthError('เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่'); })
-          .finally(function () {
-            authSubmitBtn.disabled = false;
-            setAuthMode(authMode);
-          });
-      }
-
-      function doAccountLogout() {
-        if (authState && ORDER_WEBHOOK_URL && ORDER_WEBHOOK_URL.indexOf('https://script.google.com') === 0) {
-          fetch(ORDER_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'logout', token: authState.token })
-          }).catch(function () {});
-        }
-        authState = null;
-        persistAuth();
-        updateAccountHeaderUI();
-        showModeSelectScreen();
-      }
-
-      function fetchMyOrders() {
-        ordersLoadingMsg.hidden = false;
-        ordersErrorMsg.hidden = true;
-        ordersEmptyMsg.hidden = true;
-        orderList.innerHTML = '';
-        if (!authState) { ordersLoadingMsg.hidden = true; ordersErrorMsg.hidden = false; return; }
-        if (!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0) {
-          ordersLoadingMsg.hidden = true;
-          ordersErrorMsg.hidden = false;
-          return;
-        }
-        const url = ORDER_WEBHOOK_URL + '?action=getMyOrders&email=' + encodeURIComponent(authState.email) + '&token=' + encodeURIComponent(authState.token);
-        fetch(url)
-          .then(function (res) { return res.json(); })
-          .then(function (result) {
-            ordersLoadingMsg.hidden = true;
-            if (!result || result.result !== 'success') {
-              if (result && result.code === 'session_invalid') {
-                authState = null;
-                persistAuth();
-                updateAccountHeaderUI();
-                showAuthScreen();
-                return;
-              }
-              ordersErrorMsg.hidden = false;
-              return;
-            }
-            renderMyOrders(result.orders || []);
-          })
-          .catch(function () {
-            ordersLoadingMsg.hidden = true;
-            ordersErrorMsg.hidden = false;
-          });
-      }
-
-      const ORDER_STATUS_META = {
-        confirmed: { label: 'ยืนยันแล้ว', cls: 'confirmed' },
-        review: { label: 'ต้องตรวจสอบ', cls: 'review' },
-        cancelled: { label: 'ยกเลิก', cls: 'cancelled' },
-        pending: { label: 'รอชำระ', cls: 'pending' }
-      };
-
-      function renderMyOrders(orders) {
-        if (!orders.length) { ordersEmptyMsg.hidden = false; return; }
-        orderList.innerHTML = orders.map(function (o) {
-          const meta = ORDER_STATUS_META[o.statusGroup] || ORDER_STATUS_META.pending;
-          const total = '฿' + (Number(o.total) || 0).toLocaleString('th-TH');
-          return '<div class="order-card">' +
-            '<div class="order-card-head">' +
-              '<div><div class="order-code">' + escapeHtml(o.code || '') + '</div>' +
-              '<div class="order-date">' + escapeHtml(o.date || '') + '</div></div>' +
-              '<span class="order-badge ' + meta.cls + '">' + meta.label + '</span>' +
-            '</div>' +
-            '<p class="order-items">' + escapeHtml(o.items || '') + '</p>' +
-            '<div class="order-foot"><span style="font-size:12px;color:var(--silk-dim);">ยอดรวม</span>' +
-            '<span class="order-total">' + total + '</span></div>' +
-          '</div>';
-        }).join('');
-      }
-
-      // Bind account/auth/orders UI
-      accountLoginBtn.addEventListener('click', showAuthScreen);
-      accountOrdersBtn.addEventListener('click', showOrdersScreen);
-      accountLogoutBtn.addEventListener('click', doAccountLogout);
       document.getElementById('siteLogoHomeBtn').addEventListener('click', showModeSelectScreen);
       document.getElementById('navHomeBtn').addEventListener('click', showModeSelectScreen);
-      document.getElementById('navOrdersBtn').addEventListener('click', function () {
-        if (authState) showOrdersScreen(); else showAuthScreen();
-      });
-      authTabSignin.addEventListener('click', function () { setAuthMode('signin'); });
-      authTabSignup.addEventListener('click', function () { setAuthMode('signup'); });
-      authForm.addEventListener('submit', handleAuthSubmit);
-      authBackBtn.addEventListener('click', showModeSelectScreen);
-      ordersBackBtn.addEventListener('click', showModeSelectScreen);
-
-      // ===== Forgot / Reset Password =====
-      const forgotScreen = document.getElementById('forgotScreen');
-      const resetScreen = document.getElementById('resetScreen');
-      const forgotForm = document.getElementById('forgotForm');
-      const resetForm = document.getElementById('resetForm');
-      const forgotEmail = document.getElementById('forgotEmail');
-      const forgotError = document.getElementById('forgotError');
-      const forgotErrorText = document.getElementById('forgotErrorText');
-      const forgotSuccessMsg = document.getElementById('forgotSuccessMsg');
-      const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
-      const forgotBackBtn = document.getElementById('forgotBackBtn');
-      const resetPassword = document.getElementById('resetPassword');
-      const resetPasswordConfirm = document.getElementById('resetPasswordConfirm');
-      const resetError = document.getElementById('resetError');
-      const resetErrorText = document.getElementById('resetErrorText');
-      const resetSuccessMsg = document.getElementById('resetSuccessMsg');
-      const resetSubmitBtn = document.getElementById('resetSubmitBtn');
-      const resetBackBtn = document.getElementById('resetBackBtn');
-      const resetGoLoginBtn = document.getElementById('resetGoLoginBtn');
-      let pendingResetToken = null;
-
-      function showForgotScreen() {
-        hideTopScreens();
-        if (forgotScreen) forgotScreen.hidden = false;
-        if (forgotError) forgotError.hidden = true;
-        if (forgotSuccessMsg) forgotSuccessMsg.hidden = true;
-        if (forgotForm) forgotForm.reset();
-        window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-      }
-
-      function showResetScreen(token) {
-        pendingResetToken = token;
-        hideTopScreens();
-        if (resetScreen) resetScreen.hidden = false;
-        if (resetError) resetError.hidden = true;
-        if (resetSuccessMsg) resetSuccessMsg.hidden = true;
-        if (resetForm) resetForm.reset();
-        window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
-      }
-
-      // ตรวจ URL param ?resetToken= ตอนโหลดหน้า (ได้รับลิงก์จาก email)
-      (function checkResetTokenInUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const rToken = urlParams.get('resetToken');
-        if (rToken) {
-          // ลบ param ออกจาก URL โดยไม่ reload หน้า
-          var newUrl = window.location.pathname + (window.location.hash || '');
-          history.replaceState({}, '', newUrl);
-          showResetScreen(rToken);
-        }
-      })();
-
-      if (document.getElementById('authForgotBtn')) {
-        document.getElementById('authForgotBtn').addEventListener('click', function () {
-          // ใส่อีเมลที่กรอกไว้ไปด้วยถ้ามี
-          if (forgotEmail && authEmail && authEmail.value) {
-            forgotEmail.value = authEmail.value;
-          }
-          showForgotScreen();
-        });
-      }
-
-      if (forgotBackBtn) {
-        forgotBackBtn.addEventListener('click', function () {
-          showAuthScreen();
-          setAuthMode('signin');
-        });
-      }
-
-      if (forgotForm) {
-        forgotForm.addEventListener('submit', function (ev) {
-          ev.preventDefault();
-          if (!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0) {
-            forgotErrorText.textContent = 'ยังไม่ได้เชื่อมต่อกับระบบ';
-            forgotError.hidden = false;
-            return;
-          }
-          const email = forgotEmail.value.trim();
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            forgotErrorText.textContent = 'กรุณากรอกอีเมลให้ถูกต้อง';
-            forgotError.hidden = false;
-            return;
-          }
-          forgotSubmitBtn.disabled = true;
-          forgotSubmitBtn.textContent = 'กำลังดำเนินการ…';
-          forgotError.hidden = true;
-          fetch(ORDER_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'forgotPassword', email: email })
-          })
-            .then(function (res) { return res.json(); })
-            .then(function (result) {
-              // แสดง success เสมอ (security: ไม่บอกว่า email นี้มีบัญชีอยู่หรือไม่)
-              forgotSuccessMsg.hidden = false;
-              forgotForm.querySelector('input').disabled = true;
-              forgotSubmitBtn.disabled = true;
-            })
-            .catch(function () {
-              forgotErrorText.textContent = 'เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่';
-              forgotError.hidden = false;
-            })
-            .finally(function () {
-              if (!forgotSuccessMsg.hidden) return;
-              forgotSubmitBtn.disabled = false;
-              forgotSubmitBtn.textContent = 'ส่งลิงก์รีเซ็ตรหัสผ่าน';
-            });
-        });
-      }
-
-      if (resetBackBtn) {
-        resetBackBtn.addEventListener('click', function () {
-          showAuthScreen();
-          setAuthMode('signin');
-        });
-      }
-      if (resetGoLoginBtn) {
-        resetGoLoginBtn.addEventListener('click', function () {
-          showAuthScreen();
-          setAuthMode('signin');
-        });
-      }
-
-      if (resetForm) {
-        resetForm.addEventListener('submit', function (ev) {
-          ev.preventDefault();
-          const pw = resetPassword.value;
-          const pw2 = resetPasswordConfirm.value;
-          if (pw.length < 4) { resetErrorText.textContent = 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร'; resetError.hidden = false; return; }
-          if (pw !== pw2) { resetErrorText.textContent = 'รหัสผ่านไม่ตรงกัน'; resetError.hidden = false; return; }
-          if (!pendingResetToken) { resetErrorText.textContent = 'Reset token ไม่ถูกต้อง'; resetError.hidden = false; return; }
-          if (!ORDER_WEBHOOK_URL || ORDER_WEBHOOK_URL.indexOf('https://script.google.com') !== 0) {
-            resetErrorText.textContent = 'ยังไม่ได้เชื่อมต่อกับระบบ'; resetError.hidden = false; return;
-          }
-          resetSubmitBtn.disabled = true;
-          resetSubmitBtn.textContent = 'กำลังดำเนินการ…';
-          resetError.hidden = true;
-          fetch(ORDER_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'resetPassword', resetToken: pendingResetToken, newPassword: pw })
-          })
-            .then(function (res) { return res.json(); })
-            .then(function (result) {
-              if (result && result.result === 'success') {
-                resetSuccessMsg.hidden = false;
-                resetSubmitBtn.hidden = true;
-              } else {
-                resetErrorText.textContent = (result && result.message) || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-                resetError.hidden = false;
-              }
-            })
-            .catch(function () {
-              resetErrorText.textContent = 'เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่';
-              resetError.hidden = false;
-            })
-            .finally(function () {
-              if (!resetSuccessMsg.hidden) return;
-              resetSubmitBtn.disabled = false;
-              resetSubmitBtn.textContent = 'ตั้งรหัสผ่านใหม่';
-            });
-        });
-      }
-
-      restoreAuthFromStorage();
-      // ตรวจ hideTopScreens ว่าครอบหน้าใหม่ด้วย (patch hideTopScreens)
-      var origHideTopScreens = hideTopScreens;
-      hideTopScreens = function () {
-        origHideTopScreens();
-        if (forgotScreen) forgotScreen.hidden = true;
-        if (resetScreen) resetScreen.hidden = true;
-      };
 
     })();
   </script>
 
-  <div id="glowSliderWidget" style="position:fixed;top:983px;left:33px;z-index:80;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-family:var(--sans);">
+  <!-- เครื่องมือปรับแสง/เงาสำหรับเจ้าของร้านเท่านั้น — ซ่อนจากลูกค้า เปิดด้วย index.html?tune=1
+       ค่าที่ปรับเก็บใน localStorage ของเครื่องที่ปรับเท่านั้น ลูกค้าไม่เห็นผล ถ้าถูกใจค่าไหนแล้ว
+       ให้ก๊อปบรรทัด CSS ที่แผงแสดงไว้ด้านล่าง ไปวางทับใน :root ด้านบนไฟล์นี้ ถึงจะมีผลกับทุกคน -->
+  <div id="glowSliderWidget" hidden style="position:fixed;bottom:20px;left:20px;z-index:80;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-family:var(--sans);box-shadow:0 12px 32px rgba(0,0,0,.55);">
     <div style="display:flex;align-items:center;gap:10px;">
       <span style="font-size:11.5px;color:var(--silk-dim);white-space:nowrap;width:100px;">ความสว่างแสง</span>
       <input type="range" id="cornerGlowSlider" min="0" max="0.5" step="0.01" value="0.20" style="accent-color:#C6FF00;">
@@ -7759,9 +7468,21 @@
       <span style="font-size:11.5px;color:var(--silk-dim);white-space:nowrap;width:100px;">ขอบเขตแสงขวาบน</span>
       <input type="range" id="cornerGlowTRRadiusSlider" min="200" max="900" step="10" value="480" style="accent-color:#C6FF00;">
     </div>
+    <p style="margin:2px 0 0;font-size:10.5px;line-height:1.5;color:var(--silk-dim);max-width:270px;">
+      ก๊อป CSS ข้างล่างไปวางทับใน <code>:root</code> เพื่อให้ลูกค้าเห็นค่านี้ด้วย
+    </p>
+    <textarea id="glowSliderCss" readonly rows="4" style="width:270px;font-family:var(--mono);font-size:10px;line-height:1.5;background:var(--bg);color:var(--copper-text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;resize:vertical;"></textarea>
   </div>
   <script>
     (function () {
+      // เปิดแผงเฉพาะตอนต่อท้าย URL ด้วย ?tune=1 เท่านั้น
+      // ถ้าไม่ใช่โหมดปรับแต่ง ให้จบตรงนี้เลย ไม่ดึงค่าจาก localStorage มาทับ —
+      // เจ้าของร้านจะได้เห็นหน้าเว็บ "แบบเดียวกับที่ลูกค้าเห็น" ไม่ใช่เวอร์ชันที่ตัวเองปรับไว้
+      if (!/[?&]tune=1(&|$)/.test(location.search)) return;
+
+      var widget = document.getElementById('glowSliderWidget');
+      widget.hidden = false;
+
       var root = document.documentElement;
       var slider = document.getElementById('cornerGlowSlider');
       var radiusSlider = document.getElementById('cornerGlowRadiusSlider');
@@ -7838,6 +7559,30 @@
         root.style.setProperty('--corner-glow-tr-r', trRadiusSlider.value + 'px');
         localStorage.setItem(TRRKEY, trRadiusSlider.value);
       });
+
+      // สร้างข้อความ CSS ตามค่าสไลเดอร์ปัจจุบัน ให้ก๊อปไปวางทับใน :root ได้เลย
+      var cssBox = document.getElementById('glowSliderCss');
+      var cssMap = [
+        ['--corner-glow-a', slider, ''],
+        ['--corner-glow-r', radiusSlider, 'px'],
+        ['--corner-glow-tr-a', trSlider, ''],
+        ['--corner-glow-tr-r', trRadiusSlider, 'px'],
+        ['--header-line-a', headerLineSlider, ''],
+        ['--card-glow-border', cardBorderSlider, ''],
+        ['--card-glow-shadow', cardShadowSlider, ''],
+        ['--card-media-tint', tintSlider, '']
+      ];
+
+      function refreshCssBox() {
+        cssBox.value = cssMap.map(function (row) {
+          return '      ' + row[0] + ': ' + row[1].value + row[2] + ';';
+        }).join('\n');
+      }
+
+      cssMap.forEach(function (row) {
+        row[1].addEventListener('input', refreshCssBox);
+      });
+      refreshCssBox();
     })();
   </script>
 </body>
