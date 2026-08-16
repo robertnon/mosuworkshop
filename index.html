@@ -941,6 +941,16 @@
       color: var(--silk-dim);
     }
 
+    /* ช่องที่ไม่เหลือตัวเลือกขายได้เลย (ชีตยังไม่ได้ตั้งราคากลุ่มนั้นสำหรับรุ่นที่เลือก) */
+    .group-empty-note {
+      margin-top: 4px;
+      padding: 12px 14px;
+      border: 1px dashed rgba(255, 176, 32, .45);
+      border-radius: 10px;
+      background: rgba(255, 176, 32, .07);
+      color: #ffc866;
+    }
+
     /* ---------- Toggle + dropdown reveal ---------- */
     .toggle-row {
       margin-bottom: 0;
@@ -3223,7 +3233,7 @@
                 <button type="button" class="platform-card" data-platform="ps5">
                   <image-slot id="platformIconPs5" shape="rect" fit="contain" class="platform-icon" placeholder="ไอคอน PS5"></image-slot>
                   <span class="platform-name">PS5</span>
-                  <span class="platform-desc">DualSense — เร็วๆ นี้</span>
+                  <span class="platform-desc">DualSense</span>
                 </button>
               </div>
 
@@ -3333,6 +3343,14 @@
                 </div>
               </div>
 
+              <!-- รูปแบบปุ่มหลังเป็นของเสริมที่แยกจาก "จำนวนปุ่ม" — ติ๊กได้เลยโดยไม่ต้องเลือกจำนวนก่อน
+                   ตัวเลือกข้างในสร้างจากชีต Prices กลุ่ม paddleType อัตโนมัติ (ดู renderPaddleTypeOptions)
+                   เพิ่มแถวใหม่ในชีต = มีตัวเลือกใหม่ขึ้นเอง ไม่ต้องแก้ HTML -->
+              <div class="dropdown-frame" id="paddleTypeFrame" hidden>
+                <label class="dropdown-label">รูปแบบปุ่มหลังเพิ่มเติม (ไม่บังคับ · เลือกได้หลายแบบ คิดราคาแยกแต่ละแบบ)</label>
+                <div class="options" id="paddleTypeOptions"></div>
+              </div>
+
               <p class="field-note">※ฝาหลังของคอนโทรลเลอร์ที่ส่งมาจะถูกเปลี่ยนตามจำนวนปุ่มที่เลือก
                 โดยไม่ขึ้นกับสภาพเดิมก่อนส่ง</p>
               <p class="error-msg" id="paddlesCountError" role="alert"><span aria-hidden="true">⚠</span>
@@ -3437,35 +3455,35 @@
                 <label class="dropdown-label">สีกรอบคอนโทรลเลอร์: <span id="shellColorSelectedName">ยังไม่เลือก</span></label>
                 <div class="shell-color-options" role="radiogroup" aria-label="เลือกสีกรอบคอนโทรลเลอร์ PS4">
                   <button type="button" class="shell-color-swatch" data-color="white" data-label="White">
-                    <img src="DS4-COLOR/white_norm.png" alt="White">
+                    <img src="DS4-COLOR/white_norm.webp" alt="White">
                     <span class="shell-color-swatch-name">White</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="crystal" data-label="Crystal">
-                    <img src="DS4-COLOR/crystal_norm.png" alt="Crystal">
+                    <img src="DS4-COLOR/crystal_norm.webp" alt="Crystal">
                     <span class="shell-color-swatch-name">Crystal</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="titaniumBlue" data-label="Titanium Blue">
-                    <img src="DS4-COLOR/titanium_blue_norm.png" alt="Titanium Blue">
+                    <img src="DS4-COLOR/titanium_blue_norm.webp" alt="Titanium Blue">
                     <span class="shell-color-swatch-name">Titanium Blue</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="berryBlue" data-label="Berry Blue">
-                    <img src="DS4-COLOR/berry_blue_norm.png" alt="Berry Blue">
+                    <img src="DS4-COLOR/berry_blue_norm.webp" alt="Berry Blue">
                     <span class="shell-color-swatch-name">Berry Blue</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="alpineGreen" data-label="Alpine Green">
-                    <img src="DS4-COLOR/alpine_green_norm.png" alt="Alpine Green">
+                    <img src="DS4-COLOR/alpine_green_norm.webp" alt="Alpine Green">
                     <span class="shell-color-swatch-name">Alpine Green</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="purple" data-label="Purple">
-                    <img src="DS4-COLOR/purple_norm.png" alt="Purple">
+                    <img src="DS4-COLOR/purple_norm.webp" alt="Purple">
                     <span class="shell-color-swatch-name">Purple</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="roseGold" data-label="Rose Gold">
-                    <img src="DS4-COLOR/rose_gold_norm.png" alt="Rose Gold">
+                    <img src="DS4-COLOR/rose_gold_norm.webp" alt="Rose Gold">
                     <span class="shell-color-swatch-name">Rose Gold</span>
                   </button>
                   <button type="button" class="shell-color-swatch" data-color="sunsetOrange" data-label="Sunset Orange">
-                    <img src="DS4-COLOR/sunset_orange_norm.png" alt="Sunset Orange">
+                    <img src="DS4-COLOR/sunset_orange_norm.webp" alt="Sunset Orange">
                     <span class="shell-color-swatch-name">Sunset Orange</span>
                   </button>
                 </div>
@@ -3717,7 +3735,7 @@
         <aside class="summary-col" id="summaryCol">
           <div class="preview-frame-placeholder">
             <span class="preview-frame-placeholder-label">Controller Preview</span>
-            <img src="svg/Dualshock_4_RoseGold.svg" alt="Controller Preview" class="preview-frame-img" id="framePreviewShellImg">
+            <img src="SVGDS4/white.svg" alt="Controller Preview" class="preview-frame-img" id="framePreviewShellImg">
             <div class="preview-frame-stick" id="framePreviewStick" hidden>
               <span class="preview-frame-stick-label" id="framePreviewStickLabel">Stick Module</span>
               <img class="preview-frame-stick-img" id="framePreviewStickImg" alt="ก้านอนาล็อกที่เลือก">
@@ -4506,6 +4524,11 @@
           one: { label: '1 ปุ่ม', price: 300 },
           two: { label: '2 ปุ่ม', price: 500 }
         },
+        // รูปแบบตัวปุ่มหลัง (แยกจากจำนวน) — แสดงเฉพาะตอนเลือกมีปุ่มหลัง
+        paddleType: {
+          standard: { label: 'แบบมาตรฐาน', price: 0 },
+          edge: { label: 'แบบ DualSense Edge', price: 400 }
+        },
         triggerBumper: {
           none: { label: 'ไม่เพิ่ม Trigger/Bumper Clicky', price: 0 },
           clicky: { label: 'Trigger/Bumper Clicky', price: 550 }
@@ -4603,6 +4626,72 @@
         return sideSel && sideSel.value ? sideSel.value : null;
       }
 
+      // กลุ่ม paddleType มีราคาในชีตแล้วหรือยัง — ถ้ายังไม่มี จะไม่เปิดให้ลูกค้าเลือกเลย
+      // (loadPrices ทำ priceData = result.prices ทับทั้งก้อน ค่า fallback จึงหายไปเมื่อชีตโหลดสำเร็จ
+      //  ถ้าปล่อยให้เลือกได้ทั้งที่ไม่มีราคา ลูกค้าจะได้ปุ่มแบบ Edge ฟรี — จงใจปิดไว้ก่อนดีกว่า)
+      function isPaddleTypeAvailable() {
+        const ptGroup = getGroupForPlatform('paddleType');
+        return !!(priceData && priceData[ptGroup] && Object.keys(priceData[ptGroup]).length > 0);
+      }
+
+      // รูปแบบตัวปุ่มหลัง — เลือกได้มากกว่า 1 แบบ คิดราคาแยกแต่ละแบบ
+      // คืนค่าเป็น "อาเรย์ของรูปแบบที่ติ๊กไว้" / 'na' เมื่อไม่ต้องเลือก / null เมื่อต้องเลือกแต่ยังไม่ติ๊ก
+      // ของเสริมที่ไม่ผูกกับจำนวนปุ่มหลัง — ติ๊กได้ตั้งแต่แรกโดยไม่ต้องเลือกจำนวนก่อน
+      // และไม่บังคับติ๊ก (คืนอาเรย์ว่างได้)
+      function getPaddleTypeValues() {
+        if (!isPaddleTypeAvailable()) return 'na';
+        return Array.prototype.slice
+          .call(document.querySelectorAll('.paddle-type-cb:checked'))
+          .map(function (cb) { return cb.value; });
+      }
+
+      // สร้าง checkbox ของรูปแบบปุ่มหลังจากชีต Prices กลุ่ม paddleType
+      // เพิ่ม/ลบแถวในชีต = ตัวเลือกเปลี่ยนตามทันที ไม่ต้องแก้ HTML
+      // (เก็บค่าที่ติ๊กไว้ข้ามการ re-render ด้วย เพราะฟังก์ชันนี้ถูกเรียกซ้ำทุกครั้งที่โหลดราคาใหม่)
+      function renderPaddleTypeOptions() {
+        const box = document.getElementById('paddleTypeOptions');
+        const frame = document.getElementById('paddleTypeFrame');
+        if (!box) return;
+
+        const prev = Array.prototype.slice
+          .call(box.querySelectorAll('.paddle-type-cb:checked'))
+          .map(function (cb) { return cb.value; });
+
+        const ptGroup = getGroupForPlatform('paddleType');
+        const group = (priceData && priceData[ptGroup]) ? priceData[ptGroup] : {};
+        const keys = Object.keys(group).filter(function (k) { return group[k].visible !== false; });
+
+        // ไม่มีตัวเลือกที่ขายอยู่เลย → ซ่อนทั้งกรอบ (กันขายของที่ยังไม่ได้ตั้งราคา)
+        if (frame) frame.hidden = !keys.length;
+
+        if (!keys.length) {
+          box.innerHTML = '';
+          return;
+        }
+
+        box.innerHTML = keys.map(function (k) {
+          const d = group[k];
+          const soldOut = (d.stock === 0);
+          return '<label class="option">' +
+            '<input type="checkbox" class="paddle-type-cb" value="' + escapeHtml(k) + '"' +
+              (soldOut ? ' disabled' : '') +
+              (!soldOut && prev.indexOf(k) !== -1 ? ' checked' : '') + '>' +
+            '<span class="option-text">' +
+              '<span class="option-title">' + escapeHtml(d.label || k) + '</span>' +
+            '</span>' +
+            '<span class="option-price">' + (soldOut ? 'สินค้าหมด' : currencyDelta(d.price)) + '</span>' +
+            '</label>';
+        }).join('');
+      }
+
+      // ส่งไป backend เป็นข้อความคั่นด้วยจุลภาค (เช่น 'dsepaddle,xxx') เพื่อให้เก็บลงชีตได้ตรงๆ
+      function getPaddleTypeValue() {
+        const v = getPaddleTypeValues();
+        if (v === 'na') return 'na';
+        if (!v) return null;
+        return v.join(',');
+      }
+
       function getPaddleHeightValue() {
         const sel = document.getElementById('paddlesSelect');
         if (!sel || (sel.value !== 'one' && sel.value !== 'two')) return 'na';
@@ -4686,45 +4775,64 @@
 
         const pcbVal = getSelected('pcb');
         if (pcbVal) {
-          const d = priceData.pcb[pcbVal];
-          items.push({ name: d.label, price: d.price });
-          total += d.price;
+          const pcbGroup = priceData[getGroupForPlatform('pcb')];
+          const d = pcbGroup && pcbGroup[pcbVal];
+          if (d) { items.push({ name: d.label, price: d.price }); total += d.price; }
+          else items.push({ name: null, price: null });
         } else {
           items.push({ name: null, price: null });
         }
 
         const paddlesVal = getPaddlesValue();
         if (paddlesVal) {
-          const d = priceData.paddles[paddlesVal];
-          let paddlesLabel = d.label;
-          if (paddlesVal === 'one') {
-            const sideVal = getPaddleSideValue();
-            if (sideVal && sideVal !== 'na') {
-              paddlesLabel += sideVal === 'left' ? ' (ด้านซ้าย)' : ' (ด้านขวา)';
+          const paddlesGroup = priceData[getGroupForPlatform('paddles')];
+          const d = paddlesGroup && paddlesGroup[paddlesVal];
+          if (d) {
+            let paddlesLabel = d.label;
+            if (paddlesVal === 'one') {
+              const sideVal = getPaddleSideValue();
+              if (sideVal && sideVal !== 'na') {
+                paddlesLabel += sideVal === 'left' ? ' (ด้านซ้าย)' : ' (ด้านขวา)';
+              }
             }
-          }
-          if (paddlesVal === 'one' || paddlesVal === 'two') {
-            const heightVal = getPaddleHeightValue();
-            if (heightVal && heightVal !== 'na') {
-              let hLabel = '';
-              if (heightVal === 'standard') hLabel = 'มาตรฐาน';
-              else if (heightVal === 'medium') hLabel = 'ต่ำ';
-              else if (heightVal === 'high') hLabel = 'สูง';
-              if (hLabel) paddlesLabel += ' [ความสูง: ' + hLabel + ']';
+            if (paddlesVal === 'one' || paddlesVal === 'two') {
+              const heightVal = getPaddleHeightValue();
+              if (heightVal && heightVal !== 'na') {
+                let hLabel = '';
+                if (heightVal === 'standard') hLabel = 'มาตรฐาน';
+                else if (heightVal === 'medium') hLabel = 'ต่ำ';
+                else if (heightVal === 'high') hLabel = 'สูง';
+                if (hLabel) paddlesLabel += ' [ความสูง: ' + hLabel + ']';
+              }
             }
-          }
-          items.push({ name: paddlesLabel, price: d.price });
-          total += d.price;
+            items.push({ name: paddlesLabel, price: d.price });
+            total += d.price;
+          } else items.push({ name: null, price: null });
         } else {
           items.push({ name: null, price: null });
+        }
+
+        // รูปแบบปุ่มหลัง — ของเสริมที่ไม่ผูกกับจำนวนปุ่ม ติ๊กได้หลายแบบ
+        // แต่ละแบบขึ้นเป็นรายการของตัวเองและคิดราคาแยกกัน (อยู่นอกบล็อกจำนวนปุ่มโดยตั้งใจ)
+        const typeVals = getPaddleTypeValues();
+        const ptGroupData = priceData[getGroupForPlatform('paddleType')];
+        if (Array.isArray(typeVals) && ptGroupData) {
+          typeVals.forEach(function (tv) {
+            const t = ptGroupData[tv];
+            if (!t) return;
+            items.push({ name: 'รูปแบบปุ่มหลัง: ' + t.label, price: t.price });
+            total += t.price;
+          });
         }
 
         const triggerFaceVal = getTriggerFaceValue();
         if (triggerFaceVal) {
           const triggerKey = triggerBumperKeyFromMerged(triggerFaceVal);
           const faceKey = faceButtonsKeyFromMerged(triggerFaceVal);
-          const triggerD = priceData.triggerBumper[triggerKey];
-          const faceD = priceData.faceButtons[faceKey];
+          const trigGroupData = priceData[getGroupForPlatform('triggerBumper')];
+          const faceGroupData = priceData[getGroupForPlatform('faceButtons')];
+          const triggerD = trigGroupData && trigGroupData[triggerKey];
+          const faceD = faceGroupData && faceGroupData[faceKey];
           const price = (triggerD ? triggerD.price : 0) + (faceD ? faceD.price : 0);
           let label;
           if (triggerFaceVal === 'none') label = 'ไม่เปลี่ยนของเดิมจากโรงงาน (Trigger/Bumper & Face Buttons)';
@@ -4736,20 +4844,23 @@
           items.push({ name: null, price: null });
         }
 
-        ['stickModule', 'ps4shell'].forEach(function (group) {
-          const val = getSelected(group);
-          if (val) {
-            const d = priceData[group][val];
-            let label = d.label;
-            if (group === 'ps4shell' && val === 'noController') {
-              const colorLabel = getShellColorLabel();
-              if (colorLabel) label += ' — สี ' + colorLabel;
+        ['stickModule', 'ps4shell'].forEach(function (formGroup) {
+          const val = getSelected(formGroup);
+          const priceGroup = priceData[getGroupForPlatform(formGroup)];
+          if (val && priceGroup) {
+            const d = priceGroup[val];
+            if (d) {
+              let label = d.label;
+              if (formGroup === 'ps4shell' && val === 'noController') {
+                const colorLabel = getShellColorLabel();
+                if (colorLabel) label += ' — สี ' + colorLabel;
+              }
+              items.push({ name: label, price: d.price });
+              total += d.price;
+              return;
             }
-            items.push({ name: label, price: d.price });
-            total += d.price;
-          } else {
-            items.push({ name: null, price: null });
           }
+          items.push({ name: null, price: null });
         });
 
         lastItems = items;
@@ -4888,6 +4999,15 @@
       form.querySelectorAll('input, select').forEach(function (el) {
         el.addEventListener('change', function () { rerender(); });
       });
+
+      // checkbox รูปแบบปุ่มหลังถูกสร้างทีหลัง (จากชีต) จึงไม่ได้ผูก listener ในลูปด้านบน
+      // ผูกที่กล่องครอบแบบ delegation แทน — กล่องนี้อยู่ถาวร เปลี่ยนแค่ innerHTML ข้างใน
+      var paddleTypeBox = document.getElementById('paddleTypeOptions');
+      if (paddleTypeBox) {
+        paddleTypeBox.addEventListener('change', function (e) {
+          if (e.target && e.target.classList.contains('paddle-type-cb')) rerender();
+        });
+      }
 
       // ========== อัปเดตความคืบหน้าทีละขั้นตอน (Step Progress Tracker) ==========
       function updateStepTracker() {
@@ -5128,6 +5248,10 @@
           function rebuildOptions() {
             optionsContainer.innerHTML = '';
             Array.prototype.forEach.call(select.options, function (opt) {
+              // ข้ามตัวเลือกที่ถูกซ่อนไว้ (ชีตตั้ง "เปิดขาย"=ปิด หรือกลุ่มของแพลตฟอร์มที่เลือกไม่มีแถวนี้)
+              // dropdown นี้วาด div เองไม่ได้ใช้ <option> จริง ถ้าไม่เช็ค opt.hidden ตรงนี้ ตัวเลือกที่ปิดขายไปแล้ว
+              // จะยังโผล่ให้ลูกค้ากดได้ตามปกติ ทั้งที่ <option> ต้นทางซ่อนไปแล้ว
+              if (opt.hidden) return;
               const optionDiv = document.createElement('div');
               optionDiv.className = 'custom-select-option';
               optionDiv.textContent = opt.textContent;
@@ -5199,9 +5323,9 @@
       const paddleHeightPreviewImg = document.getElementById('paddleHeightPreviewImg');
 
       const heightImages = {
-        'standard': 'standard-paddles.png',
-        'medium': 'low-paddles.png',
-        'high': 'high-paddles.png'
+        'standard': 'standard-paddles.webp',
+        'medium': 'low-paddles.webp',
+        'high': 'high-paddles.webp'
       };
 
       function updatePaddleHeightPreview() {
@@ -5228,9 +5352,13 @@
         paddleSideFrame.hidden = !showSide;
         if (!showSide) { paddleSideSelect.value = ''; }
 
-        const showHeight = paddlesSelect.value === 'one' || paddlesSelect.value === 'two';
-        paddleHeightFrame.hidden = !showHeight;
-        if (!showHeight) {
+        const hasPaddles = paddlesSelect.value === 'one' || paddlesSelect.value === 'two';
+
+        // รูปแบบปุ่มหลังไม่ผูกกับจำนวนปุ่มแล้ว จึงไม่ต้องแตะตรงนี้
+        // (การแสดง/ซ่อนขึ้นกับว่ามีราคาในชีตไหมอย่างเดียว — จัดการใน renderPaddleTypeOptions)
+
+        paddleHeightFrame.hidden = !hasPaddles;
+        if (!hasPaddles) {
           paddleHeightSelect.value = '';
         }
         updatePaddleHeightPreview();
@@ -5346,7 +5474,7 @@
         roseGold:     'svg/Dualshock_4_RoseGold.svg',
         sunsetOrange: 'SVGDS4/sunset.svg'
       };
-      var SHELL_PREVIEW_DEFAULT = 'svg/Dualshock_4_RoseGold.svg';
+      var SHELL_PREVIEW_DEFAULT = 'SVGDS4/white.svg';
 
       function updateFrameShellPreview() {
         var img = document.getElementById('framePreviewShellImg');
@@ -5560,9 +5688,7 @@
           .finally(function () { applyAnalogPriceDataToDom(); });
       }
 
-      // ==== เลือกรุ่นคอนโทรลเลอร์ (PS4 / PS5) — ขั้นแรกก่อนเจอ preset ====
-      // ตอนนี้สินค้า/ราคา/ตัวเลือกทั้งหมดในระบบยังเป็น PS4 เท่านั้น การเลือก PS5 เป็นแค่ UI เผื่อไว้
-      // (ยังไม่ผูก logic แยกราคา/ชิ้นส่วนสำหรับ PS5 จริง)
+      // ==== เลือกรุ่นคอนโทรลเลอร์ (PS4 / PS5) ====
       const platformSelectEl = document.getElementById('platformSelect');
       const presetStepAfterPlatform = document.getElementById('presetStepAfterPlatform');
       const platformChosenLabel = document.getElementById('platformChosenLabel');
@@ -5570,7 +5696,20 @@
       const presetFieldTitle = document.getElementById('presetFieldTitle');
       let selectedPlatform = null;
 
+      // แมปชื่อกลุ่ม PS4 → PS5 — ใช้ใน getGroupForPlatform() เท่านั้น
+      const PS5_GROUP_MAP = {
+        pcb: 'pcb-ps5', paddles: 'paddles-ps5',
+        triggerBumper: 'triggerBumper-ps5', faceButtons: 'faceButtons-ps5',
+        stickModule: 'stickModule-ps5', ps4shell: 'ps5shell',
+        paddleType: 'paddleType-ps5'
+      };
+      // คืนชื่อกลุ่มจริงใน priceData ตามแพลตฟอร์มที่เลือกอยู่
+      function getGroupForPlatform(base) {
+        return (selectedPlatform === 'ps5' && PS5_GROUP_MAP[base]) ? PS5_GROUP_MAP[base] : base;
+      }
+
       function choosePlatform(platform) {
+        var prevPlatform = selectedPlatform;
         selectedPlatform = platform;
         document.querySelectorAll('.platform-card').forEach(function (el) {
           el.classList.toggle('active', el.dataset.platform === platform);
@@ -5578,13 +5717,74 @@
         platformChosenLabel.textContent = platform === 'ps5' ? 'PS5 (DualSense)' : 'PS4 (DualShock 4)';
         platformSelectEl.hidden = true;
         presetStepAfterPlatform.hidden = false;
-        // ถ้าตารางแพ็กเกจถูกซ่อน (ปิดจากชีต Settings หรือไม่มีแพ็กเกจ) อย่าตั้งหัวข้อว่าให้เลือกแพ็กเกจ
+
+        // Presets เป็น PS4-only — ซ่อนเมื่อเลือก PS5, คืนสภาพเดิมเมื่อกลับ PS4
         var gridEl = document.getElementById('presetGrid');
+        if (gridEl) {
+          if (platform === 'ps5') {
+            if (!gridEl.dataset.preHidden) gridEl.dataset.preHidden = gridEl.hidden ? '1' : '0';
+            gridEl.hidden = true;
+          } else {
+            gridEl.hidden = (gridEl.dataset.preHidden === '1');
+          }
+        }
         var hasPresets = gridEl && !gridEl.hidden;
         if (presetFieldTitle) {
-          presetFieldTitle.textContent = hasPresets
-            ? 'เลือกแพ็กเกจสำเร็จรูป (ไม่บังคับ)'
-            : 'รุ่นคอนโทรลเลอร์';
+          presetFieldTitle.textContent = (platform === 'ps5')
+            ? 'รุ่น PS5 (DualSense)'
+            : (hasPresets ? 'เลือกแพ็กเกจสำเร็จรูป (ไม่บังคับ)' : 'รุ่นคอนโทรลเลอร์');
+        }
+
+        // เมื่อสลับแพลตฟอร์ม — ล้างตัวเลือกเดิมทั้งหมดก่อน
+        if (prevPlatform !== null) {
+          resetAllSelections();
+          // resetAllSelections ไม่ล้าง shell color ให้ ต้องล้างแยก
+          var shellColorInputEl = document.getElementById('ps4shellColorInput');
+          if (shellColorInputEl) shellColorInputEl.value = '';
+          var shellColorFrameEl = document.getElementById('shellColorFrame');
+          if (shellColorFrameEl) shellColorFrameEl.hidden = true;
+        }
+
+        // อัปเดต label ฝั่ง shell fieldset ให้ตรงกับแพลตฟอร์ม
+        var isPS5 = (platform === 'ps5');
+        var shellEyebrow = document.querySelector('#field-ps4shell .field-eyebrow');
+        if (shellEyebrow) shellEyebrow.textContent = isPS5 ? 'Component 05 · PS5 Shell' : 'Component 05 · PS4 Shell';
+        var shellTitleEl = document.querySelector('#field-ps4shell .field-title');
+        if (shellTitleEl && shellTitleEl.firstChild && shellTitleEl.firstChild.nodeType === 3) {
+          shellTitleEl.firstChild.nodeValue = isPS5 ? 'กรอบคอนโทรลเลอร์ PS5' : 'กรอบคอนโทรลเลอร์ PS4';
+        }
+        var shellDot = document.querySelector('.step-dot[data-step="ps4shell"]');
+        if (shellDot) shellDot.title = isPS5 ? 'กรอบ PS5' : 'กรอบ PS4';
+        var withCtrlInput = form.querySelector('input[name="ps4shell"][value="withController"]');
+        if (withCtrlInput) {
+          var withCtrlTitle = withCtrlInput.closest('.option').querySelector('.option-title');
+          if (withCtrlTitle) withCtrlTitle.textContent = isPS5 ? 'ส่งจอยมาให้ทำ (DualSense)' : 'ส่งจอยมาให้ทำ';
+          var withCtrlSub = withCtrlInput.closest('.option').querySelector('.option-sub');
+          if (withCtrlSub) {
+            var wtxt = isPS5 ? 'มีคอนโทรลเลอร์ PS5 (DualSense) อยู่แล้ว ส่งเข้ามาประกอบ' : 'มีคอนโทรลเลอร์ PS4 อยู่แล้ว ส่งเข้ามาประกอบ';
+            withCtrlSub.setAttribute('data-th', wtxt);
+            withCtrlSub.textContent = wtxt;
+          }
+        }
+        var noCtrlInput = form.querySelector('input[name="ps4shell"][value="noController"]');
+        if (noCtrlInput) {
+          var noCtrlSub = noCtrlInput.closest('.option').querySelector('.option-sub');
+          if (noCtrlSub) {
+            var ntxt = isPS5 ? 'ทางร้านจัดหากรอบ/ตัวเครื่อง PS5 ให้ — เลือกสีที่ต้องการด้านล่าง' : 'ทางร้านจัดหากรอบ/ตัวเครื่องให้ — เลือกสีที่ต้องการด้านล่าง';
+            noCtrlSub.setAttribute('data-th', ntxt);
+            noCtrlSub.textContent = ntxt;
+          }
+        }
+        var shellNote = document.querySelector('#field-ps4shell .field-note');
+        if (shellNote) {
+          shellNote.textContent = isPS5
+            ? '※หากเลือก "ส่งจอยมาให้ทำ" กรุณาแนบคอนโทรลเลอร์ PS5 (DualSense) มาพร้อมพัสดุที่จัดส่ง'
+            : '※หากเลือก "ส่งจอยมาให้ทำ" กรุณาแนบคอนโทรลเลอร์ PS4 มาพร้อมพัสดุที่จัดส่ง';
+        }
+
+        if (pricesSettled) {
+          applyPriceDataToDom();
+          rerender();
         }
       }
 
@@ -5651,6 +5851,8 @@
         paddleSideSelect.value = '';
         paddleHeightFrame.hidden = true;
         paddleHeightSelect.value = '';
+        // ล้างเฉพาะค่าที่ติ๊กไว้ ไม่ต้องซ่อนกรอบ (กรอบขึ้นกับว่ามีของขายในชีตไหมอย่างเดียว)
+        document.querySelectorAll('.paddle-type-cb').forEach(function (cb) { cb.checked = false; });
         if (typeof updatePaddleHeightPreview === 'function') updatePaddleHeightPreview();
         triggerFaceSelect.value = '';
         updateTriggerFaceNotes();
@@ -5693,6 +5895,7 @@
           const showHeight = preset.paddles === 'one' || preset.paddles === 'two';
           paddleHeightFrame.hidden = !showHeight;
           paddleHeightSelect.value = (showHeight && preset.paddleHeight) ? preset.paddleHeight : (showHeight ? 'standard' : '');
+
         } else {
           paddlesSelect.value = '';
           paddleSideFrame.hidden = true;
@@ -5700,6 +5903,13 @@
           paddleHeightFrame.hidden = true;
           paddleHeightSelect.value = '';
         }
+
+        // รูปแบบปุ่มหลังเป็นของเสริมที่ไม่ผูกกับจำนวนปุ่ม — แพ็กเกจระบุมาก็ติ๊กให้ (รองรับหลายแบบ
+        // เช่น 'dsepaddle,xxx') ถ้าไม่ระบุถือว่าไม่เอา ไม่ต้องเดาแทนลูกค้า
+        var ptWanted = String(preset.paddleType || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        document.querySelectorAll('.paddle-type-cb').forEach(function (cb) {
+          cb.checked = !cb.disabled && ptWanted.indexOf(cb.value) !== -1;
+        });
         if (typeof updatePaddleHeightPreview === 'function') updatePaddleHeightPreview();
 
         rerender();
@@ -6294,7 +6504,7 @@
           var swatch     = document.querySelector('.shell-color-swatch.selected');
           var colorLabel = swatch ? (swatch.getAttribute('data-label') || '') : '';
           var swatchImg  = swatch ? swatch.querySelector('img') : null;
-          var itemImgSrc = swatchImg ? swatchImg.getAttribute('src') : 'svg/Dualshock_4_RoseGold.svg';
+          var itemImgSrc = swatchImg ? swatchImg.getAttribute('src') : 'DS4-COLOR/white_norm.webp';
 
           var nameVal    = fieldVal('customerName');
           var phoneVal   = fieldVal('customerPhone');
@@ -6527,6 +6737,8 @@
 
             if (heightVal === null) { paddlesHeightErrorEl.style.display = 'flex'; paddlesOk = false; }
             else { paddlesHeightErrorEl.style.display = 'none'; }
+
+            // รูปแบบปุ่มหลังเป็นของเสริม ไม่บังคับเลือก จึงไม่ต้องตรวจอะไรตรงนี้
 
             if (!paddlesOk) {
               markInvalid(paddlesFieldEl);
@@ -7238,35 +7450,63 @@
       // จากชีต Prices) — แก้ชื่อ/ราคาในชีตแล้วรีเฟรชหน้าเว็บ ก็เปลี่ยนตามทันที ไม่ต้องแก้ข้อความในไฟล์
       // HTML เองอีกต่อไป (หมายเหตุ: ใช้ได้กับ "รหัสตัวเลือก" ที่มี input อยู่แล้วในหน้าเว็บเท่านั้น ถ้าเพิ่ม
       // ตัวเลือกใหม่ทั้งแถวในชีต ยังต้องมาเพิ่ม input ในไฟล์ HTML เองอยู่ดี เพราะโครงสร้างฟอร์มเป็นแบบตายตัว)
+      // ขึ้นข้อความเตือนในช่องที่ไม่เหลือตัวเลือกขายได้เลยสำหรับแพลตฟอร์มที่เลือกอยู่ — เกิดตอนชีตยังไม่ได้
+      // ใส่ราคากลุ่มนั้น (เช่นเพิ่งเปิด PS5 แต่ยังไม่มีกลุ่ม stickModule-ps5) ถ้าไม่มีข้อความนี้ ช่องจะว่างเปล่า
+      // เฉยๆ ลูกค้าจะนึกว่าเว็บพัง และแอดมินจะไม่รู้ว่าลืมกรอกอะไรไป
+      function setGroupEmptyNote(fieldId, show) {
+        const fieldEl = fieldId ? document.getElementById(fieldId) : null;
+        if (!fieldEl) return;
+        let note = fieldEl.querySelector('.group-empty-note');
+        if (!show) {
+          if (note) note.hidden = true;
+          return;
+        }
+        if (!note) {
+          note = document.createElement('p');
+          note.className = 'field-note group-empty-note';
+          note.textContent = '⚠ ยังไม่เปิดขายตัวเลือกในหมวดนี้สำหรับรุ่นที่เลือก — ทักแชทร้านเพื่อสอบถามได้';
+          const anchor = fieldEl.querySelector('.options') || fieldEl.querySelector('.dropdown-frame');
+          if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(note, anchor.nextSibling);
+          else fieldEl.appendChild(note);
+        }
+        note.hidden = false;
+      }
+
       function applyPriceDataToDom() {
+        const FIELD_ID_BY_GROUP = { pcb: 'field-pcb', stickModule: 'field-stickModule', ps4shell: 'field-ps4shell' };
         ['pcb', 'stickModule', 'ps4shell'].forEach(function (group) {
-          const groupData = priceData[group];
-          if (!groupData) return;
-          Object.keys(groupData).forEach(function (key) {
-            const input = form.querySelector('input[name="' + group + '"][value="' + key + '"]');
-            if (!input) return;
+          // กลุ่มในชีตขึ้นกับแพลตฟอร์มที่เลือกอยู่ (PS5 = กลุ่มลงท้าย -ps5) — ถ้าชีตยังไม่มีกลุ่มนั้นเลย
+          // จะได้ {} แล้วตัวเลือกทั้งหมดถูกซ่อน ดีกว่าปล่อยราคา PS4 ค้างไว้ให้ลูกค้าสั่งผิด
+          const groupData = priceData[getGroupForPlatform(group)] || {};
+          let availableCount = 0;
+          // เดินจาก "ปุ่มที่มีอยู่จริงในหน้าเว็บ" ไม่ใช่ "คีย์ที่มีในชีต" — ถ้าเดินจากชีตแล้วรหัสตัวเลือกไม่ตรงกัน
+          // (เช่นชีต PS5 ตั้งรหัสเป็น hyperstrikeps5 แต่ HTML ใช้ hyperstrike) ปุ่มนั้นจะไม่ถูกแตะเลยสักครั้ง
+          // ทำให้ชื่อ/ราคา/สถานะเปิด-ปิดขายของ PS4 ค้างอยู่ในหน้า PS5 — เดินจาก DOM แล้วทุกปุ่มถูกตัดสินเสมอ
+          Array.prototype.forEach.call(form.querySelectorAll('input[name="' + group + '"]'), function (input) {
             const optionEl = input.closest('.option');
             if (!optionEl) return;
             // PCB มีรูปพรีวิวห่อรวมกับ .option อยู่ใน .pcb-col — ต้องซ่อนทั้งคอลัมน์ (รูป+หัวข้อ) ไปด้วยกัน
             // ไม่งั้นรูปจะค้างอยู่ทั้งที่หัวข้อหายไปแล้ว กลุ่มอื่นไม่มี wrapper นี้เลยซ่อนแค่ .option ก็พอ
             const gridItem = optionEl.closest('.pcb-col') || optionEl;
-            const titleEl = optionEl.querySelector('.option-title');
-            const badge = optionEl.querySelector('.option-price');
-            const price = groupData[key].price;
-            const label = (groupData[key].label || '').toString().trim();
-            // stock: จำนวนคงเหลือจากชีต Prices คอลัมน์ "คงเหลือ" — ถ้าเว้นว่างในชีต (undefined/null) = ไม่จำกัด
-            // ถ้าเป็น 0 พอดี = สินค้าหมด ปิดตัวเลือกนี้ในหน้าเว็บอัตโนมัติ
-            const stock = groupData[key].stock;
-            const soldOut = (stock === 0);
+            const d = groupData[input.value];
             // เปิดขาย=ปิด ในชีต → ซ่อนตัวเลือกนี้ออกจากหน้าเว็บไปเลยทั้งหัวข้อ (ต่างจาก stock=0 ที่ยังโชว์
             // แต่ขึ้น "สินค้าหมด") ใช้ตอนอยากงดขายชั่วคราวโดยยังไม่อยากลบโค้ด/แถวออก — ซ่อนทั้งคอลัมน์แล้ว grid
             // (auto-fit) จะยุบเหลือคอลัมน์เดียวเต็มความกว้างให้เองอัตโนมัติ ไม่เหลือช่องว่างเบี้ยวๆ
-            const isHidden = (groupData[key].visible === false);
+            // ไม่มี d = ชีตไม่มีแถวนี้ในกลุ่มของแพลตฟอร์มที่เลือก → ซ่อนด้วยเหตุผลเดียวกัน (ยังไม่ตั้งราคา = ยังไม่ขาย)
+            const isHidden = !d || (d.visible === false);
             gridItem.hidden = isHidden;
             if (isHidden) {
               if (input.checked) { input.checked = false; }
               return;
             }
+            availableCount++;
+            const titleEl = optionEl.querySelector('.option-title');
+            const badge = optionEl.querySelector('.option-price');
+            const price = d.price;
+            const label = (d.label || '').toString().trim();
+            // stock: จำนวนคงเหลือจากชีต Prices คอลัมน์ "คงเหลือ" — ถ้าเว้นว่างในชีต (undefined/null) = ไม่จำกัด
+            // ถ้าเป็น 0 พอดี = สินค้าหมด ปิดตัวเลือกนี้ในหน้าเว็บอัตโนมัติ
+            const soldOut = (d.stock === 0);
 
             // อัปเดตชื่อเฉพาะตอนชีตมีค่า "ชื่อที่แสดง" จริงๆ — ถ้าเว้นว่างไว้ในชีต จะคงข้อความเดิม
             // ในไฟล์ HTML ไว้ก่อน กันชื่อตัวเลือกหายไปเฉยๆ เพราะลืมกรอกในชีต
@@ -7284,38 +7524,53 @@
             // จะยกเลิกการเลือกให้ ฟิลด์นั้นจะกลับไปขึ้นว่าง "ยังไม่ได้เลือก" ให้ลูกค้าเลือกใหม่
             if (soldOut && input.checked) { input.checked = false; }
           });
+          setGroupEmptyNote(FIELD_ID_BY_GROUP[group], availableCount === 0);
         });
 
         const paddlesSelect = document.getElementById('paddlesSelect');
-        if (paddlesSelect && priceData.paddles) {
+        const paddlesGroupData = priceData[getGroupForPlatform('paddles')] || {};
+        if (paddlesSelect) {
           const currentVal = paddlesSelect.value;
           let currentSoldOut = false;
+          let paddlesAvailable = 0;
           Array.prototype.forEach.call(paddlesSelect.options, function (opt) {
-            const d = priceData.paddles[opt.value];
-            if (!d) return;
-            const isHidden = (d.visible === false);
+            if (!opt.value) return; // ข้าม placeholder "เลือกจำนวน..." (value="") ไม่ใช่ตัวเลือกสินค้า
+            const d = paddlesGroupData[opt.value];
+            // ไม่มี d = ชีตไม่มีแถวนี้ในกลุ่มของแพลตฟอร์มที่เลือก → ซ่อน กันตัวเลือก+ราคา PS4 ค้างอยู่ในหน้า PS5
+            const isHidden = !d || (d.visible === false);
             opt.hidden = isHidden;
             if (isHidden) {
+              opt.disabled = true;
               if (opt.value === currentVal) currentSoldOut = true; // ใช้ path เดิม (เคลียร์ค่าที่เลือกไว้) ร่วมกับสินค้าหมด
               return;
             }
+            paddlesAvailable++;
             const soldOut = (d.stock === 0);
             opt.disabled = soldOut;
             opt.textContent = d.label + (soldOut ? ' — สินค้าหมด' : ' — ' + currencyDelta(d.price));
             if (soldOut && opt.value === currentVal) currentSoldOut = true;
           });
+          setGroupEmptyNote('field-paddles', paddlesAvailable === 0);
           if (currentSoldOut) {
             paddlesSelect.value = '';
             const paddleSideFrameEl = document.getElementById('paddleSideFrame');
             if (paddleSideFrameEl) paddleSideFrameEl.hidden = true;
             const paddleHeightFrameEl = document.getElementById('paddleHeightFrame');
             if (paddleHeightFrameEl) paddleHeightFrameEl.hidden = true;
+            const paddleTypeFrameEl = document.getElementById('paddleTypeFrame');
+            if (paddleTypeFrameEl) paddleTypeFrameEl.hidden = true;
           }
         }
 
-        // ช่อง 03 (dropdown รวม trigger+face) — อัปเดตราคา/สต๊อกของทั้ง 3 ตัวเลือกจาก priceData.triggerBumper + faceButtons
+        // รูปแบบปุ่มหลัง (มาตรฐาน / DualSense Edge) — อัปเดตชื่อ+ราคาจากชีตกลุ่ม paddleType
+        // ถ้ายังไม่มีกลุ่มนี้ในชีต จะใช้ค่าจาก FALLBACK_PRICE_DATA ต่อไปเงียบๆ
+        renderPaddleTypeOptions();
+
+        // ช่อง 03 (dropdown รวม trigger+face) — อัปเดตราคา/สต๊อกของทั้ง 3 ตัวเลือก
         const triggerFaceSelectEl = document.getElementById('triggerFaceSelect');
-        if (triggerFaceSelectEl && priceData.triggerBumper && priceData.faceButtons) {
+        const trigGroupData = priceData[getGroupForPlatform('triggerBumper')] || {};
+        const faceGroupData = priceData[getGroupForPlatform('faceButtons')] || {};
+        if (triggerFaceSelectEl) {
           const labels = {
             none: '1. ไม่เปลี่ยนของเดิมจากโรงงาน',
             clicky: '2. Trigger/Bumper Clicky',
@@ -7323,22 +7578,28 @@
           };
           const currentTfVal = triggerFaceSelectEl.value;
           let currentTfSoldOut = false;
+          let tfAvailable = 0;
           Array.prototype.forEach.call(triggerFaceSelectEl.options, function (opt) {
             if (!opt.value) return; // ข้าม placeholder "เลือกตัวเลือก..."
-            const triggerD = priceData.triggerBumper[triggerBumperKeyFromMerged(opt.value)];
-            const faceD = priceData.faceButtons[faceButtonsKeyFromMerged(opt.value)];
-            const isHidden = (triggerD && triggerD.visible === false) || (faceD && faceD.visible === false);
+            // ตัวเลือกในช่องนี้ 1 อัน = ของ 2 กลุ่มในชีตรวมกัน (triggerBumper + faceButtons)
+            // ต้องมีครบทั้งคู่ถึงจะขายได้ ขาดข้างใดข้างหนึ่ง (ชีตไม่มีแถว หรือปิดขาย) = ซ่อนทั้งตัวเลือก
+            const triggerD = trigGroupData[triggerBumperKeyFromMerged(opt.value)];
+            const faceD = faceGroupData[faceButtonsKeyFromMerged(opt.value)];
+            const isHidden = !triggerD || !faceD || triggerD.visible === false || faceD.visible === false;
             opt.hidden = isHidden;
             if (isHidden) {
+              opt.disabled = true;
               if (opt.value === currentTfVal) currentTfSoldOut = true; // ใช้ path เดิม (เคลียร์ค่าที่เลือกไว้) ร่วมกับสินค้าหมด
               return;
             }
-            const price = (triggerD ? triggerD.price : 0) + (faceD ? faceD.price : 0);
-            const soldOut = (triggerD && triggerD.stock === 0) || (faceD && faceD.stock === 0);
+            tfAvailable++;
+            const price = triggerD.price + faceD.price;
+            const soldOut = (triggerD.stock === 0) || (faceD.stock === 0);
             opt.disabled = soldOut;
             opt.textContent = (labels[opt.value] || opt.textContent) + (soldOut ? ' — สินค้าหมด' : ' — ' + currencyDelta(price));
             if (soldOut && opt.value === currentTfVal) currentTfSoldOut = true;
           });
+          setGroupEmptyNote('field-trigger-face', tfAvailable === 0);
           if (currentTfSoldOut) {
             triggerFaceSelectEl.value = '';
             updateTriggerFaceNotes();
@@ -7353,22 +7614,28 @@
 
       // รวมตัวเลือกปัจจุบันของลูกค้าเป็นก้อนเดียว ส่งไปให้เซิร์ฟเวอร์ตรวจสอบราคาซ้ำตอนยืนยันคำสั่งซื้อ
       // แยกรูปแบบ selections ตามโหมด: 'analogOnly' ส่ง {analogType, quantity, side} ตรงๆ ตามที่ backend ตรวจสอบ
-      // ส่วนโหมด custom (ค่าเริ่มต้น) ยังคงส่งคีย์เดิมทุกประการ (triggerBumper/faceButtons แปลงกลับจาก dropdown ที่รวมช่อง 03 ไว้)
+      // ส่วนโหมด custom ส่งคีย์ที่ตรงกับกลุ่มในชีต — PS5 ใช้ suffix '-ps5' (เช่น 'pcb-ps5') เพื่อให้ backend
+      // ตรวจสอบกับแถวในชีต Prices กลุ่ม PS5 แยกจาก PS4
       function getCurrentSelections() {
         if (currentMode === 'analogOnly') {
           return getAnalogSelections();
         }
         const tfVal = getTriggerFaceValue();
-        return {
-          pcb: getSelected('pcb'),
-          paddles: getPaddlesValue(),
-          paddleSide: getPaddleSideValue(),
-          paddleHeight: getPaddleHeightValue(),
-          triggerBumper: tfVal ? triggerBumperKeyFromMerged(tfVal) : null,
-          faceButtons: tfVal ? faceButtonsKeyFromMerged(tfVal) : null,
-          stickModule: getSelected('stickModule'),
-          ps4shell: getSelected('ps4shell')
-        };
+        const isPS5 = (selectedPlatform === 'ps5');
+        const pfx = isPS5 ? '-ps5' : '';
+        const sel = {};
+        sel['pcb' + pfx] = getSelected('pcb');
+        sel['paddles' + pfx] = getPaddlesValue();
+        sel.paddleSide = getPaddleSideValue();
+        sel.paddleHeight = getPaddleHeightValue();
+        // 'na' = ไม่ได้เลือกปุ่มหลัง ฝั่งเซิร์ฟเวอร์จะข้ามกลุ่มนี้ไป ไม่คิดราคา
+        sel['paddleType' + pfx] = getPaddleTypeValue();
+        sel['triggerBumper' + pfx] = tfVal ? triggerBumperKeyFromMerged(tfVal) : null;
+        sel['faceButtons' + pfx] = tfVal ? faceButtonsKeyFromMerged(tfVal) : null;
+        sel['stickModule' + pfx] = getSelected('stickModule');
+        sel[isPS5 ? 'ps5shell' : 'ps4shell'] = getSelected('ps4shell');
+        sel.platform = selectedPlatform || 'ps4';
+        return sel;
       }
 
       function loadPrices() {
