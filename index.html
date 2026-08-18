@@ -3088,6 +3088,22 @@
       animation: fieldShake 0.35s ease;
     }
   </style>
+
+  <script>
+    // รูปสินค้าชุดเดียวกันถูกอัปโหลดคนละนามสกุลระหว่างเครื่องที่พัฒนา (.webp) กับโฮสต์จริง (.png)
+    // แทนที่จะไล่แก้ src ให้ตรงทุกครั้ง (เคยแก้แล้วพังอีกฝั่งมาแล้ว) ให้ลองสลับนามสกุลอัตโนมัติเมื่อโหลดไม่ได้
+    // ต้องใช้ capture phase เพราะ event 'error' ของ <img> ไม่ bubble ขึ้นมาถึง document
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (!img || img.tagName !== 'IMG' || img.dataset.extRetried) return;
+      const src = img.getAttribute('src') || '';
+      let swapped = src.replace(/\.png$/i, '.webp');
+      if (swapped === src) swapped = src.replace(/\.webp$/i, '.png');
+      if (swapped === src) return; // นามสกุลอื่น (svg/jpg) ไม่ต้องลองซ้ำ
+      img.dataset.extRetried = '1';
+      img.src = swapped;
+    }, true);
+  </script>
 </head>
 
 <body>
@@ -5323,9 +5339,9 @@
       const paddleHeightPreviewImg = document.getElementById('paddleHeightPreviewImg');
 
       const heightImages = {
-        'standard': 'standard-paddles.webp',
-        'medium': 'low-paddles.webp',
-        'high': 'high-paddles.webp'
+        'standard': 'standard-paddles.png',
+        'medium': 'low-paddles.png',
+        'high': 'high-paddles.png'
       };
 
       function updatePaddleHeightPreview() {
@@ -7511,6 +7527,15 @@
             // อัปเดตชื่อเฉพาะตอนชีตมีค่า "ชื่อที่แสดง" จริงๆ — ถ้าเว้นว่างไว้ในชีต จะคงข้อความเดิม
             // ในไฟล์ HTML ไว้ก่อน กันชื่อตัวเลือกหายไปเฉยๆ เพราะลืมกรอกในชีต
             if (titleEl && label) titleEl.textContent = label;
+
+            // คำอธิบายบรรทัดเล็กใต้ชื่อ (คอลัมน์ "คำอธิบาย" ในชีต) — เว้นว่างในชีต = คงข้อความเดิมใน HTML
+            // ต้องเซ็ต data-th ด้วย เพราะตัวสลับภาษาอ่านข้อความไทยจาก attribute นี้ ไม่ใช่จาก textContent
+            const subEl = optionEl.querySelector('.option-sub');
+            const desc = (d.desc || '').toString().trim();
+            if (subEl && desc) {
+              subEl.textContent = desc;
+              subEl.setAttribute('data-th', desc);
+            }
 
             if (badge) {
               badge.textContent = soldOut ? 'สินค้าหมด' : currencyDelta(price);
